@@ -53,7 +53,6 @@ workflows:
       app_store_connect:
         auth: integration
         submit_to_testflight: true
-        cancel_previous_submissions: true
       email:
         recipients:
           - soporte@promofy.mx

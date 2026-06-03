@@ -1,0 +1,142 @@
+{
+  "project_info": {
+    "project_number": "612781804475",
+    "project_id": "promofy-765c0",
+    "storage_bucket": "promofy-765c0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:612781804475:android:85d6a6b9aefab17712529e",
+        "android_client_info": {
+          "package_name": "com.example.flutter_promofy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "612781804475-c3rotrmvu7cqi0ju063smr4vkvvgueoi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWKXaJyBNS9NWkFbVeCc752ug4DQDfUOc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "612781804475-c3rotrmvu7cqi0ju063smr4vkvvgueoi.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "612781804475-l2gvuqe90j1rkvphbsgldjv8u9n6hf4l.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flutterPromofy"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:612781804475:android:bd5da3c569c695ec12529e",
+        "android_client_info": {
+          "package_name": "com.promofy.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "612781804475-mrsqc3q1onvm5lqfkomj828mg4l72a8h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.promofy.app",
+            "certificate_hash": "912f10b233b5bc629c00f59eca6b438b2a7ef988"
+          }
+        },
+        {
+          "client_id": "612781804475-c3rotrmvu7cqi0ju063smr4vkvvgueoi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWKXaJyBNS9NWkFbVeCc752ug4DQDfUOc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "612781804475-c3rotrmvu7cqi0ju063smr4vkvvgueoi.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "612781804475-l2gvuqe90j1rkvphbsgldjv8u9n6hf4l.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flutterPromofy"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:612781804475:android:c33ccb658634ae0a12529e",
+        "android_client_info": {
+          "package_name": "mx.promofy.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "612781804475-k68um3uvd75um5j5o56an9j6700jtpjr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "mx.promofy.app",
+            "certificate_hash": "c829cb126971696cb6e176fcd99250d6e9fc8df5"
+          }
+        },
+        {
+          "client_id": "612781804475-t7qnb63i1d83e0en2cidshlu141458es.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "mx.promofy.app",
+            "certificate_hash": "912f10b233b5bc629c00f59eca6b438b2a7ef988"
+          }
+        },
+        {
+          "client_id": "612781804475-c3rotrmvu7cqi0ju063smr4vkvvgueoi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWKXaJyBNS9NWkFbVeCc752ug4DQDfUOc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "612781804475-c3rotrmvu7cqi0ju063smr4vkvvgueoi.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "612781804475-l2gvuqe90j1rkvphbsgldjv8u9n6hf4l.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flutterPromofy"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

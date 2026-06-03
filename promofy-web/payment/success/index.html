@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pago exitoso · Promofy</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f9f9f9;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 24px;
+    }
+    .card {
+      background: white; border-radius: 20px;
+      padding: 40px 32px; max-width: 360px; width: 100%;
+      text-align: center; box-shadow: 0 4px 24px rgba(0,0,0,.08);
+    }
+    .icon { font-size: 64px; margin-bottom: 16px; }
+    h1 { font-size: 22px; font-weight: 800; color: #1a1a1a; margin-bottom: 8px; }
+    p  { font-size: 14px; color: #666; line-height: 1.6; margin-bottom: 28px; }
+    .btn {
+      display: block; width: 100%; padding: 14px;
+      background: #E53935; color: white; border: none;
+      border-radius: 12px; font-size: 16px; font-weight: 600;
+      cursor: pointer; text-decoration: none;
+    }
+    .btn:hover { background: #c62828; }
+    .spinner { display: inline-block; width: 20px; height: 20px;
+      border: 2px solid #eee; border-top-color: #E53935;
+      border-radius: 50%; animation: spin .7s linear infinite;
+      vertical-align: middle; margin-right: 6px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">✅</div>
+    <h1>¡Pago exitoso!</h1>
+    <p>Tu crédito publicitario se verá reflejado<br>en tu panel de Promofy en breve.</p>
+    <a id="openBtn" class="btn" href="promofy:///payment/success">
+      <span class="spinner" id="spin"></span> Abriendo Promofy…
+    </a>
+  </div>
+  <script>
+    // Intentar abrir la app inmediatamente
+    window.location.href = 'promofy:///payment/success';
+    // Después de 2 s, cambiar el botón por si no se abrió
+    setTimeout(() => {
+      document.getElementById('spin').style.display = 'none';
+      document.getElementById('openBtn').textContent = 'Abrir Promofy';
+    }, 2000);
+  </script>
+</body>
+</html>

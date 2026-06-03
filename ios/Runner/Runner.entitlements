@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Notificaciones push (APNs) -->
+	<key>aps-environment</key>
+	<string>production</string>
+
+	<!-- Universal Links — para que promofy.fun abra la app directamente -->
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:promofy.fun</string>
+		<string>applinks:www.promofy.fun</string>
+	</array>
+</dict>
+</plist>

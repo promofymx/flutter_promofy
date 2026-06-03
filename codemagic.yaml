@@ -1,0 +1,120 @@
+workflows:
+
+  # ══════════════════════════════════════════════════════════════════
+  # iOS — Release → TestFlight
+  # ══════════════════════════════════════════════════════════════════
+  ios-release:
+    name: iOS Release → TestFlight
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+
+      # ── Code signing (configura en Codemagic → Teams → Code signing) ──
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: mx.promofy.app
+
+      # ── Secrets (configura en Codemagic → Environment variables) ──────
+      # APP_STORE_CONNECT_ISSUER_ID       → App Store Connect API
+      # APP_STORE_CONNECT_KEY_IDENTIFIER  → App Store Connect API
+      # APP_STORE_CONNECT_PRIVATE_KEY     → App Store Connect API (.p8)
+      # CERTIFICATE_PRIVATE_KEY           → Tu private key del certificado
+      vars:
+        BUNDLE_ID: mx.promofy.app
+        XCODE_WORKSPACE: ios/Runner.xcworkspace
+        XCODE_SCHEME: Runner
+
+    scripts:
+      - name: Obtener dependencias Flutter
+        script: flutter packages pub get
+
+      - name: Instalar CocoaPods
+        script: |
+          find . -name "Podfile" -execdir pod install \;
+
+      - name: Configurar code signing
+        script: xcode-project use-profiles
+
+      - name: Build IPA
+        script: |
+          flutter build ipa \
+            --release \
+            --export-options-plist=/Users/builder/export_options.plist
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        cancel_previous_submissions: true
+      email:
+        recipients:
+          - soporte@promofy.mx
+        notify:
+          success: true
+          failure: true
+
+  # ══════════════════════════════════════════════════════════════════
+  # Android — Release → Google Play (Internal Testing)
+  # ══════════════════════════════════════════════════════════════════
+  android-release:
+    name: Android Release → Play Store
+    max_build_duration: 45
+    instance_type: linux_x2
+
+    environment:
+      flutter: stable
+
+      # ── Secrets (configura en Codemagic → Environment variables) ──────
+      # CM_KEYSTORE          → El archivo promofy-release.jks (base64)
+      # CM_KEYSTORE_PASSWORD → MiPassword123
+      # CM_KEY_ALIAS         → promofy
+      # CM_KEY_PASSWORD      → Selg-1990*
+      # GCLOUD_SERVICE_ACCOUNT_CREDENTIALS → JSON de Google Play API
+      vars:
+        BUNDLE_ID: mx.promofy.app
+
+    scripts:
+      - name: Obtener dependencias Flutter
+        script: flutter packages pub get
+
+      - name: Configurar keystore de release
+        script: |
+          echo $CM_KEYSTORE | base64 --decode > android/promofy-release.jks
+          cat > android/key.properties <<EOF
+          storePassword=$CM_KEYSTORE_PASSWORD
+          keyPassword=$CM_KEY_PASSWORD
+          keyAlias=$CM_KEY_ALIAS
+          storeFile=../promofy-release.jks
+          EOF
+
+      - name: Build AAB
+        script: |
+          flutter build appbundle \
+            --release \
+            --build-number=$(($(google-play get-latest-build-number \
+              --package-name "$BUNDLE_ID" \
+              --tracks="internal") + 1))
+
+    artifacts:
+      - build/app/outputs/bundle/release/app-release.aab
+      - build/app/outputs/mapping/release/mapping.txt
+
+    publishing:
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+        submit_as_draft: false
+      email:
+        recipients:
+          - soporte@promofy.mx
+        notify:
+          success: true
+          failure: true

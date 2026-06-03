@@ -65,16 +65,22 @@ class AdsDatasource {
         .toList();
   }
 
-  // ── Anuncios para el usuario final (Phase C) ──────────────────────────────
+  // ── Anuncios para el usuario final ────────────────────────────────────────
 
-  /// Retorna campañas activas de formatos visibles al usuario (splash, banner,
-  /// featured_list), incluyendo nombre y foto del establecimiento via JOIN.
-  Future<List<AdDisplayModel>> getActiveAdsForDisplay() async {
-    final rows = await supabase
-        .from('ad_campaigns')
-        .select('id, establishment_id, format, establishments(name, photo_url)')
-        .eq('status', 'active')
-        .inFilter('format', ['splash', 'featured_list', 'banner']);
+  /// Retorna campañas rankeadas por relevancia via RPC get_ads_for_user.
+  /// [lat] y [lng] son opcionales; sin ellos el factor distancia es neutro (50).
+  Future<List<AdDisplayModel>> getAdsForUser({
+    double? lat,
+    double? lng,
+    String? format,
+    int limit = 10,
+  }) async {
+    final rows = await supabase.rpc('get_ads_for_user', params: {
+      if (lat    != null) 'p_lat':    lat,
+      if (lng    != null) 'p_lng':    lng,
+      if (format != null) 'p_format': format,
+      'p_limit': limit,
+    });
     return (rows as List)
         .map((e) => AdDisplayModel.fromJson(e as Map<String, dynamic>))
         .toList();

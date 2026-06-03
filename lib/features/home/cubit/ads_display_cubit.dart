@@ -11,9 +11,11 @@ class AdsDisplayCubit extends Cubit<AdsDisplayState> {
       : _repo = repository ?? AdsRepository(),
         super(const AdsDisplayState());
 
-  Future<void> load() async {
+  /// Carga anuncios rankeados por relevancia.
+  /// Pasa [lat] y [lng] cuando estén disponibles para activar el factor distancia.
+  Future<void> load({double? lat, double? lng}) async {
     try {
-      final ads = await _repo.getActiveAdsForDisplay();
+      final ads = await _repo.getAdsForUser(lat: lat, lng: lng, limit: 10);
       emit(AdsDisplayState(
         splashAds:   ads.where((a) => a.format == 'splash').toList(),
         bannerAds:   ads.where((a) => a.format == 'banner').toList(),

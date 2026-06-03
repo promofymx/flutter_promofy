@@ -77,10 +77,15 @@ class AdsRepository {
     required String gender,
   }) => _ds.getReachEstimate(minAge: minAge, maxAge: maxAge, gender: gender);
 
-  // ── Anuncios para el usuario final (Phase C) ──────────────────────────────
+  // ── Anuncios para el usuario final ────────────────────────────────────────
 
-  Future<List<AdDisplayModel>> getActiveAdsForDisplay() =>
-      _ds.getActiveAdsForDisplay();
+  Future<List<AdDisplayModel>> getAdsForUser({
+    double? lat,
+    double? lng,
+    String? format,
+    int limit = 10,
+  }) =>
+      _ds.getAdsForUser(lat: lat, lng: lng, format: format, limit: limit);
 
   // ── Admin: créditos ────────────────────────────────────────────────────────
 

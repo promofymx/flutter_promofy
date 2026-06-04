@@ -10,6 +10,12 @@ import '../../../features/auth/bloc/auth_state.dart';
 import '../cubit/stamps_cubit.dart';
 import '../cubit/stamps_state.dart';
 
+// ── Colores de sección ────────────────────────────────────────────────────────
+const _kGold   = Color(0xFFFF8F00);
+const _kBlue   = Color(0xFF1565C0);
+const _kGreen  = Color(0xFF2E7D32);
+const _kOrange = Color(0xFFE65100);
+
 class StampsScreen extends StatefulWidget {
   const StampsScreen({super.key});
 
@@ -27,21 +33,19 @@ class _StampsScreenState extends State<StampsScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = context.read<AuthBloc>().state;
-    final userId = authState is AuthAuthenticated ? authState.user.id : null;
+    final userId    = authState is AuthAuthenticated ? authState.user.id : null;
 
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text(
-          'Visitas',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        title: const Text('Mis Sellos',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         actions: [
           if (userId != null)
             IconButton(
               icon:    const Icon(Icons.qr_code_2),
-              tooltip: 'Mi QR',
+              tooltip: 'Mi QR de visitas',
               onPressed: () => _showMyQr(context, userId),
             ),
         ],
@@ -52,37 +56,21 @@ class _StampsScreenState extends State<StampsScreen> {
             return const Center(child: CircularProgressIndicator());
           }
           if (state is StampsError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(state.message,
-                      style: const TextStyle(color: Colors.red)),
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () => context.read<StampsCubit>().refresh(),
-                    child:     const Text('Reintentar'),
-                  ),
-                ],
-              ),
+            return _ErrorView(
+              message: state.message,
+              onRetry: () => context.read<StampsCubit>().refresh(),
             );
           }
           if (state is StampsLoaded) {
             if (state.cards.isEmpty) {
               return _EmptyState(
-                userId: userId,
-                onQrTap: userId != null
+                userId:   userId,
+                onQrTap:  userId != null
                     ? () => _showMyQr(context, userId)
                     : null,
               );
             }
-            return _LoadedBody(
-              cards:  state.cards,
-              userId: userId,
-              onQrTap: userId != null
-                  ? () => _showMyQr(context, userId)
-                  : null,
-            );
+            return _LoadedBody(cards: state.cards);
           }
           return const SizedBox.shrink();
         },
@@ -92,7 +80,7 @@ class _StampsScreenState extends State<StampsScreen> {
 
   void _showMyQr(BuildContext context, String userId) {
     showModalBottomSheet<void>(
-      context:       context,
+      context:            context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
@@ -101,77 +89,330 @@ class _StampsScreenState extends State<StampsScreen> {
   }
 }
 
-// ─── Cuerpo con tarjetas ──────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// CUERPO PRINCIPAL — 3 secciones
+// ═══════════════════════════════════════════════════════════════════════════════
 
-class _LoadedBody extends StatelessWidget {
+class _LoadedBody extends StatefulWidget {
   final List<StampCardModel> cards;
-  final String?              userId;
-  final VoidCallback?        onQrTap;
+  const _LoadedBody({required this.cards});
 
-  const _LoadedBody({required this.cards, this.userId, this.onQrTap});
+  @override
+  State<_LoadedBody> createState() => _LoadedBodyState();
+}
+
+class _LoadedBodyState extends State<_LoadedBody> {
+  bool _showAllClaimed = false;
 
   @override
   Widget build(BuildContext context) {
+    // Clasificar tarjetas
+    final ready    = widget.cards
+        .where((c) => c.rewardReady)
+        .toList();
+    final progress = widget.cards
+        .where((c) => !c.rewardClaimed && !c.rewardReady)
+        .toList();
+    final claimed  = widget.cards
+        .where((c) => c.rewardClaimed)
+        .toList();
+
+    final claimedVisible = _showAllClaimed
+        ? claimed
+        : claimed.take(3).toList();
+
     return RefreshIndicator(
       onRefresh: () => context.read<StampsCubit>().refresh(),
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // Banner de QR propio
-          if (userId != null)
-            _QrBannerTile(onTap: onQrTap),
-          if (userId != null) const SizedBox(height: 12),
 
-          ...cards.map((c) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child:   _StampCard(card: c),
-              )),
+          // ── Sección 1: Recompensas listas para canjear ─────────────────
+          if (ready.isNotEmpty) ...[
+            _SectionHeader(
+              icon:  Icons.card_giftcard_rounded,
+              label: 'Recompensas listas para canjear',
+              count: ready.length,
+              color: _kGold,
+              showCountBadge: true,
+            ),
+            const SizedBox(height: 10),
+            ...ready.map((c) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child:   _ReadyCard(card: c),
+            )),
+            const SizedBox(height: 8),
+          ],
+
+          // ── Sección 2: En progreso ──────────────────────────────────────
+          if (progress.isNotEmpty) ...[
+            _SectionHeader(
+              icon:   Icons.pending_actions_rounded,
+              label:  'En progreso',
+              count:  progress.length,
+              suffix: progress.length == 1 ? 'programa' : 'programas',
+              color:  AppColors.textDark,
+            ),
+            const SizedBox(height: 10),
+            ...progress.map((c) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child:   _ProgressCard(card: c),
+            )),
+            const SizedBox(height: 8),
+          ],
+
+          // ── Sección 3: Recompensas ganadas ─────────────────────────────
+          if (claimed.isNotEmpty) ...[
+            _SectionHeader(
+              icon:   Icons.emoji_events_rounded,
+              label:  'Recompensas ganadas',
+              count:  claimed.length,
+              suffix: 'totales',
+              color:  _kGreen,
+            ),
+            const SizedBox(height: 10),
+            ...claimedVisible.map((c) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child:   _ClaimedTile(card: c),
+            )),
+            if (claimed.length > 3 && !_showAllClaimed) ...[
+              const SizedBox(height: 6),
+              GestureDetector(
+                onTap: () => setState(() => _showAllClaimed = true),
+                child: const Center(
+                  child: Text(
+                    'Ver todas las recompensas →',
+                    style: TextStyle(
+                      color:      AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                      fontSize:   14,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+            const SizedBox(height: 16),
+          ],
         ],
       ),
     );
   }
 }
 
-// ─── Banner "Muestra tu QR" ───────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// WIDGETS DE SECCIÓN
+// ═══════════════════════════════════════════════════════════════════════════════
 
-class _QrBannerTile extends StatelessWidget {
-  final VoidCallback? onTap;
-  const _QrBannerTile({this.onTap});
+class _SectionHeader extends StatelessWidget {
+  final IconData icon;
+  final String   label;
+  final int      count;
+  final String?  suffix;
+  final Color    color;
+  final bool     showCountBadge;
+
+  const _SectionHeader({
+    required this.icon,
+    required this.label,
+    required this.count,
+    this.suffix,
+    required this.color,
+    this.showCountBadge = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: color),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(label,
+              style: TextStyle(
+                fontSize:   14,
+                fontWeight: FontWeight.w700,
+                color:      color,
+              )),
+        ),
+        if (showCountBadge)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+            decoration: BoxDecoration(
+              color:        color.withAlpha(25),
+              borderRadius: BorderRadius.circular(12),
+              border:       Border.all(color: color.withAlpha(80)),
+            ),
+            child: Text('$count',
+                style: TextStyle(
+                  fontSize:   12,
+                  fontWeight: FontWeight.bold,
+                  color:      color,
+                )),
+          )
+        else if (suffix != null)
+          Text('$count $suffix',
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+      ],
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TARJETA: LISTA PARA CANJEAR (dorada)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+class _ReadyCard extends StatelessWidget {
+  final StampCardModel card;
+  const _ReadyCard({required this.card});
+
+  String get _daysLeft {
+    final days = card.programEndsAt.difference(DateTime.now()).inDays;
+    if (days <= 0) return 'Caduca hoy';
+    return 'Caduca en $days ${days == 1 ? 'día' : 'días'}';
+  }
+
+  void _openRedemptionQr(BuildContext context) {
+    showModalBottomSheet<void>(
+      context:            context,
+      isScrollControlled: true,
+      backgroundColor:    Colors.transparent,
+      builder:            (_) => _RedemptionQrSheet(card: card),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () => _openRedemptionQr(context),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [AppColors.primary, AppColors.primary.withAlpha(180)],
-            begin:  Alignment.topLeft,
-            end:    Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(14),
+          color:        const Color(0xFFFFF8E1),
+          borderRadius: BorderRadius.circular(16),
+          border:       Border.all(color: _kGold.withAlpha(100)),
+          boxShadow: [
+            BoxShadow(
+              color:      _kGold.withAlpha(35),
+              blurRadius: 10,
+              offset:     const Offset(0, 3),
+            ),
+          ],
         ),
-        child: const Row(
+        child: Stack(
           children: [
-            Icon(Icons.qr_code_2, color: Colors.white, size: 32),
-            SizedBox(width: 14),
-            Expanded(
+            Padding(
+              padding: const EdgeInsets.all(14),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Mi código QR',
-                      style: TextStyle(
-                          color:      Colors.white,
-                          fontSize:   15,
-                          fontWeight: FontWeight.bold)),
-                  SizedBox(height: 2),
-                  Text('Muéstraselo al negocio para registrar tu visita.',
-                      style: TextStyle(color: Colors.white70, fontSize: 12)),
+                  // ── Logo + nombre + descripción ───────────────────────
+                  Row(
+                    children: [
+                      _Avatar(logo: card.establishmentLogo, color: _kGold, size: 50),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              card.establishmentName,
+                              style: const TextStyle(
+                                fontSize:   15,
+                                fontWeight: FontWeight.bold,
+                                color:      AppColors.textDark,
+                              ),
+                            ),
+                            const SizedBox(height: 3),
+                            Row(
+                              children: [
+                                const Text('🎁 ', style: TextStyle(fontSize: 13)),
+                                Expanded(
+                                  child: Text(
+                                    card.rewardDescription,
+                                    style: const TextStyle(
+                                      fontSize:   13,
+                                      fontWeight: FontWeight.w600,
+                                      color:      _kGold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      // Espacio para el badge "¡LISTA!"
+                      const SizedBox(width: 48),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
+                  // ── Botón QR ──────────────────────────────────────────
+                  Container(
+                    width:   double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    decoration: BoxDecoration(
+                      color:        Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      border:       Border.all(color: _kGold.withAlpha(90)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.qr_code_2, size: 18, color: _kGold),
+                        const SizedBox(width: 8),
+                        const Text('Toca para ver QR de canje',
+                            style: TextStyle(
+                              fontSize:   13,
+                              fontWeight: FontWeight.w600,
+                              color:      _kGold,
+                            )),
+                        const SizedBox(width: 4),
+                        Icon(Icons.chevron_right,
+                            size: 16, color: _kGold.withAlpha(160)),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+
+                  // ── Caducidad ─────────────────────────────────────────
+                  Row(
+                    children: [
+                      Icon(Icons.timer_outlined,
+                          size: 12, color: _kGold.withAlpha(180)),
+                      const SizedBox(width: 4),
+                      Text(_daysLeft,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color:    _kGold.withAlpha(200),
+                          )),
+                    ],
+                  ),
                 ],
               ),
             ),
-            Icon(Icons.chevron_right, color: Colors.white70),
+
+            // ── Badge "¡LISTA!" ───────────────────────────────────────────
+            Positioned(
+              top:   0,
+              right: 0,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: const BoxDecoration(
+                  color:        _kGold,
+                  borderRadius: BorderRadius.only(
+                    topRight:    Radius.circular(16),
+                    bottomLeft:  Radius.circular(10),
+                  ),
+                ),
+                child: const Text('¡LISTA!',
+                    style: TextStyle(
+                      fontSize:      10,
+                      fontWeight:    FontWeight.bold,
+                      color:         Colors.white,
+                      letterSpacing: 0.8,
+                    )),
+              ),
+            ),
           ],
         ),
       ),
@@ -179,67 +420,48 @@ class _QrBannerTile extends StatelessWidget {
   }
 }
 
-// ─── Tarjeta de sello individual ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// TARJETA: EN PROGRESO (azul — visitas)
+// ═══════════════════════════════════════════════════════════════════════════════
 
-class _StampCard extends StatelessWidget {
+class _ProgressCard extends StatelessWidget {
   final StampCardModel card;
-  const _StampCard({required this.card});
+  const _ProgressCard({required this.card});
 
   static final _fmt = DateFormat('dd/MM/yyyy', 'es_MX');
 
+  bool get _inactive => !card.programIsActive || card.programExpired;
+
+  Color get _accent => _inactive ? Colors.grey.shade400 : _kBlue;
+
   @override
   Widget build(BuildContext context) {
-    final isRewardReady  = card.rewardReady;
-    final isExpired      = card.programExpired;
-    final isInactive     = !card.programIsActive;
-
-    Color borderColor;
-    if (isRewardReady) {
-      borderColor = Colors.amber.shade600;
-    } else if (isExpired || isInactive) {
-      borderColor = Colors.grey.shade300;
-    } else {
-      borderColor = AppColors.primary.withAlpha(60);
-    }
+    final faded  = _inactive;
+    final accent = _accent;
 
     return Container(
       decoration: BoxDecoration(
         color:        Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border:       Border.all(color: borderColor),
+        border: Border.all(
+          color: faded ? Colors.grey.shade200 : _kBlue.withAlpha(50)),
         boxShadow: [
           BoxShadow(
-              color:      Colors.black.withAlpha(10),
-              blurRadius: 6,
-              offset:     const Offset(0, 2)),
+            color:      Colors.black.withAlpha(10),
+            blurRadius: 6,
+            offset:     const Offset(0, 2),
+          ),
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Encabezado
+          // ── Encabezado ────────────────────────────────────────────────
           Padding(
-            padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
+            padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
             child: Row(
               children: [
-                // Logo
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: card.establishmentLogo != null
-                      ? CachedNetworkImage(
-                          imageUrl:   card.establishmentLogo!,
-                          width: 42, height: 42,
-                          fit:        BoxFit.cover,
-                        )
-                      : Container(
-                          width: 42, height: 42,
-                          decoration: BoxDecoration(
-                            color:        AppColors.primary.withAlpha(20),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(Icons.store_outlined,
-                              color: AppColors.primary, size: 22),
-                        ),
-                ),
+                _Avatar(logo: card.establishmentLogo, color: accent, size: 46),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -249,108 +471,99 @@ class _StampCard extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                              fontSize:   14,
-                              fontWeight: FontWeight.bold,
-                              color:      AppColors.textDark)),
+                            fontSize:   14,
+                            fontWeight: FontWeight.bold,
+                            color:      AppColors.textDark,
+                          )),
                       const SizedBox(height: 2),
-                      Text(card.rewardDescription,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                              fontSize: 12,
-                              color:    Colors.grey.shade600)),
+                      Row(
+                        children: [
+                          const Text('🎁 ', style: TextStyle(fontSize: 12)),
+                          Expanded(
+                            child: Text(card.rewardDescription,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color:    Colors.grey.shade600,
+                                )),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
-                // Badge de estado
-                _StatusBadge(
-                  card:      card,
-                  isExpired: isExpired,
-                  isInactive: isInactive,
-                ),
+                if (faded)
+                  _MiniChip(label: 'Terminado', color: Colors.grey.shade500),
               ],
             ),
           ),
 
-          // Sellos visuales
+          // ── Grid de sellos ────────────────────────────────────────────
           Padding(
-            padding: const EdgeInsets.fromLTRB(14, 14, 14, 4),
+            padding: const EdgeInsets.fromLTRB(14, 0, 14, 8),
             child: _StampGrid(
               earned:   card.programVisits.clamp(0, card.visitsRequired),
               required: card.visitsRequired,
-              faded:    isExpired || isInactive,
+              color:    accent,
             ),
           ),
 
-          // Barra de progreso
+          // ── Contador + texto motivacional ─────────────────────────────
           Padding(
-            padding: const EdgeInsets.fromLTRB(14, 4, 14, 0),
+            padding: const EdgeInsets.fromLTRB(14, 0, 14, 0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   '${card.programVisits}/${card.visitsRequired} visitas',
                   style: TextStyle(
-                    fontSize:   12,
-                    fontWeight: FontWeight.w500,
-                    color: isRewardReady
-                        ? Colors.amber.shade700
-                        : AppColors.primary,
+                    fontSize:   13,
+                    fontWeight: FontWeight.w700,
+                    color:      accent,
                   ),
                 ),
-                Text(
-                  'Total histórico: ${card.lifetimeVisits}',
-                  style: TextStyle(
-                      fontSize: 11, color: Colors.grey.shade500),
-                ),
+                const Spacer(),
+                if (!faded && card.stampsLeft > 0)
+                  Text(
+                    '¡Te faltan ${card.stampsLeft}! 🔥',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color:    Colors.grey.shade600,
+                    ),
+                  ),
               ],
             ),
           ),
-          const SizedBox(height: 4),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(14, 0, 14, 6),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(
-                value: (card.programVisits / card.visitsRequired).clamp(0.0, 1.0),
-                minHeight:       6,
-                backgroundColor: Colors.grey.shade200,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  isRewardReady ? Colors.amber.shade600 : AppColors.primary,
-                ),
-              ),
-            ),
-          ),
 
-          // Pie: vigencia
+          // ── Pie: caducidad ────────────────────────────────────────────
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            margin:  const EdgeInsets.fromLTRB(14, 8, 14, 14),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-              color: Colors.grey.shade50,
-              borderRadius: const BorderRadius.vertical(
-                  bottom: Radius.circular(16)),
+              color:        faded
+                  ? Colors.grey.shade50
+                  : _kBlue.withAlpha(12),
+              borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
               children: [
                 Icon(
-                  isExpired || isInactive
+                  faded
                       ? Icons.timer_off_outlined
                       : Icons.event_outlined,
-                  size:  13,
-                  color: isExpired || isInactive
-                      ? Colors.grey
-                      : Colors.grey.shade600,
+                  size:  12,
+                  color: faded ? Colors.grey : _kBlue.withAlpha(180),
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  isExpired || isInactive
-                      ? 'Venció ${_fmt.format(card.programEndsAt)}'
-                      : 'Vigente hasta ${_fmt.format(card.programEndsAt)}',
+                  faded
+                      ? 'Venció el ${_fmt.format(card.programEndsAt)}'
+                      : 'Caduca el ${_fmt.format(card.programEndsAt)}',
                   style: TextStyle(
-                      fontSize: 11,
-                      color: isExpired || isInactive
-                          ? Colors.grey
-                          : Colors.grey.shade600),
+                    fontSize: 11,
+                    color: faded ? Colors.grey : _kBlue.withAlpha(180),
+                  ),
                 ),
               ],
             ),
@@ -361,35 +574,87 @@ class _StampCard extends StatelessWidget {
   }
 }
 
-// ─── Grid de sellos ───────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// TILE: RECOMPENSA CANJEADA (verde)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+class _ClaimedTile extends StatelessWidget {
+  final StampCardModel card;
+  const _ClaimedTile({required this.card});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color:        Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border:       Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        children: [
+          _Avatar(logo: card.establishmentLogo, color: _kGreen, size: 40),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  card.establishmentName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize:   13,
+                    fontWeight: FontWeight.w600,
+                    color:      AppColors.textDark,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  card.rewardDescription,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          _MiniChip(label: 'Canjeada', color: _kGreen),
+        ],
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// GRID DE SELLOS
+// ═══════════════════════════════════════════════════════════════════════════════
 
 class _StampGrid extends StatelessWidget {
-  final int  earned;
-  final int  required;
-  final bool faded;
+  final int   earned;
+  final int   required;
+  final Color color;
+
   const _StampGrid({
     required this.earned,
     required this.required,
-    this.faded = false,
+    required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Máximo 10 sellos visibles por fila
     final show = required.clamp(1, 20);
     return Wrap(
       spacing:    8,
       runSpacing: 8,
       children: List.generate(show, (i) {
         final filled = i < earned;
-        final color  = faded
-            ? Colors.grey.shade400
-            : (filled ? AppColors.primary : Colors.grey.shade200);
         return Container(
-          width:  36,
-          height: 36,
+          width:  34,
+          height: 34,
           decoration: BoxDecoration(
-            color:  filled ? color.withAlpha(faded ? 40 : 30) : color,
+            color:  filled ? color.withAlpha(25) : Colors.grey.shade100,
             shape:  BoxShape.circle,
             border: Border.all(
               color: filled ? color : Colors.grey.shade300,
@@ -397,9 +662,9 @@ class _StampGrid extends StatelessWidget {
             ),
           ),
           child: Icon(
-            Icons.local_cafe_outlined,
-            size:  18,
-            color: filled ? color : Colors.grey.shade400,
+            filled ? Icons.check_rounded : Icons.circle_outlined,
+            size:  16,
+            color: filled ? color : Colors.grey.shade300,
           ),
         );
       }),
@@ -407,55 +672,186 @@ class _StampGrid extends StatelessWidget {
   }
 }
 
-// ─── Badge de estado ──────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// BOTTOM-SHEET: QR DE CANJE DE RECOMPENSA
+// ═══════════════════════════════════════════════════════════════════════════════
 
-class _StatusBadge extends StatelessWidget {
+class _RedemptionQrSheet extends StatelessWidget {
   final StampCardModel card;
-  final bool           isExpired;
-  final bool           isInactive;
-  const _StatusBadge({
-    required this.card,
-    required this.isExpired,
-    required this.isInactive,
-  });
+  const _RedemptionQrSheet({required this.card});
 
-  @override
-  Widget build(BuildContext context) {
-    if (card.rewardClaimed) {
-      return _Badge(label: 'Canjeado', color: Colors.grey.shade500);
-    }
-    if (card.rewardReady) {
-      return _Badge(label: '¡Premio!', color: Colors.amber.shade700);
-    }
-    if (isExpired || isInactive) {
-      return _Badge(label: 'Terminado', color: Colors.grey.shade500);
-    }
-    return const SizedBox.shrink();
+  static final _fmtLong = DateFormat("dd 'de' MMMM yyyy", 'es_MX');
+
+  /// Código alfanumérico corto — primeros 8 chars del card UUID en 2 grupos.
+  String get _shortCode {
+    final hex = card.id.replaceAll('-', '').toUpperCase();
+    return '${hex.substring(0, 4)}-${hex.substring(4, 8)}';
   }
-}
-
-class _Badge extends StatelessWidget {
-  final String label;
-  final Color  color;
-  const _Badge({required this.label, required this.color});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color:        color.withAlpha(20),
-        borderRadius: BorderRadius.circular(20),
-        border:       Border.all(color: color.withAlpha(80)),
+      decoration: const BoxDecoration(
+        color:        Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      child: Text(label,
-          style: TextStyle(
-              fontSize: 11, fontWeight: FontWeight.w600, color: color)),
+      child: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Handle
+              Container(
+                width:  40,
+                height: 4,
+                margin: const EdgeInsets.only(top: 12, bottom: 4),
+                decoration: BoxDecoration(
+                  color:        Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+
+              // ── Banner naranja ────────────────────────────────────────
+              Container(
+                width:   double.infinity,
+                margin:  const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                decoration: BoxDecoration(
+                  color:        _kOrange,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Text(
+                  'Canjear recompensa',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color:      Colors.white,
+                    fontSize:   16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+
+              // ── Premio + establecimiento ──────────────────────────────
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  children: [
+                    Text(
+                      card.rewardDescription.toUpperCase(),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize:      12,
+                        fontWeight:    FontWeight.w700,
+                        letterSpacing: 1.2,
+                        color:         _kOrange,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'en ${card.establishmentName}',
+                          style: const TextStyle(
+                            fontSize:   18,
+                            fontWeight: FontWeight.bold,
+                            color:      AppColors.textDark,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+
+                    // ── QR ──────────────────────────────────────────────
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color:        const Color(0xFFFFF3E0),
+                        borderRadius: BorderRadius.circular(16),
+                        border:       Border.all(
+                          color: _kOrange.withAlpha(80),
+                          width: 2,
+                        ),
+                      ),
+                      child: QrImageView(
+                        data:    card.id,
+                        version: QrVersions.auto,
+                        size:    200,
+                        errorCorrectionLevel: QrErrorCorrectLevel.M,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // ── Código alfanumérico ──────────────────────────────
+                    Text(
+                      'Código: $_shortCode',
+                      style: const TextStyle(
+                        fontSize:      13,
+                        fontWeight:    FontWeight.w700,
+                        color:         _kOrange,
+                        letterSpacing: 1.5,
+                        fontFamily:    'monospace',
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // ── Instrucción ──────────────────────────────────────
+                    const Text(
+                      'Muestra este código al personal',
+                      style: TextStyle(
+                        fontSize:   14,
+                        fontWeight: FontWeight.w600,
+                        color:      AppColors.textDark,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Lo escanearán para validar tu recompensa',
+                      style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // ── Caducidad ────────────────────────────────────────
+                    Container(
+                      width:   double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        color:        const Color(0xFFFFF3E0),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: _kOrange.withAlpha(60)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.timer_outlined,
+                              size: 14, color: _kOrange),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Caduca el ${_fmtLong.format(card.programEndsAt)}',
+                            style: const TextStyle(
+                              fontSize:   12,
+                              fontWeight: FontWeight.w500,
+                              color:      _kOrange,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 28),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
 
-// ─── QR propio (bottom-sheet) ─────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// BOTTOM-SHEET: QR PROPIO (para que el negocio registre visitas)
+// ═══════════════════════════════════════════════════════════════════════════════
 
 class _MyQrSheet extends StatelessWidget {
   final String userId;
@@ -465,13 +861,14 @@ class _MyQrSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+        padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             // Handle
             Container(
-              width: 40, height: 4,
+              width:  40,
+              height: 4,
               margin: const EdgeInsets.only(bottom: 20),
               decoration: BoxDecoration(
                 color:        Colors.grey.shade300,
@@ -480,9 +877,10 @@ class _MyQrSheet extends StatelessWidget {
             ),
             const Text('Mi código QR',
                 style: TextStyle(
-                    fontSize:   20,
-                    fontWeight: FontWeight.bold,
-                    color:      AppColors.textDark)),
+                  fontSize:   20,
+                  fontWeight: FontWeight.bold,
+                  color:      AppColors.textDark,
+                )),
             const SizedBox(height: 8),
             Text(
               'Muéstrale este código al negocio para registrar tu visita.',
@@ -497,19 +895,20 @@ class _MyQrSheet extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                      color:      Colors.black.withAlpha(18),
-                      blurRadius: 14,
-                      offset:     const Offset(0, 4)),
+                    color:      Colors.black.withAlpha(18),
+                    blurRadius: 14,
+                    offset:     const Offset(0, 4),
+                  ),
                 ],
               ),
               child: QrImageView(
-                data:         userId,
-                version:      QrVersions.auto,
-                size:         220,
+                data:    userId,
+                version: QrVersions.auto,
+                size:    220,
                 errorCorrectionLevel: QrErrorCorrectLevel.M,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             Text(
               'Código único de tu cuenta',
               style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
@@ -521,7 +920,95 @@ class _MyQrSheet extends StatelessWidget {
   }
 }
 
-// ─── Vista vacía ──────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// WIDGETS AUXILIARES
+// ═══════════════════════════════════════════════════════════════════════════════
+
+class _Avatar extends StatelessWidget {
+  final String? logo;
+  final Color   color;
+  final double  size;
+  const _Avatar({this.logo, required this.color, required this.size});
+
+  @override
+  Widget build(BuildContext context) {
+    final radius = BorderRadius.circular(size * 0.22);
+    if (logo != null) {
+      return ClipRRect(
+        borderRadius: radius,
+        child: CachedNetworkImage(
+          imageUrl: logo!,
+          width:    size,
+          height:   size,
+          fit:      BoxFit.cover,
+        ),
+      );
+    }
+    return Container(
+      width:  size,
+      height: size,
+      decoration: BoxDecoration(
+        color:        color.withAlpha(20),
+        borderRadius: radius,
+      ),
+      child: Icon(Icons.store_outlined, color: color, size: size * 0.44),
+    );
+  }
+}
+
+class _MiniChip extends StatelessWidget {
+  final String label;
+  final Color  color;
+  const _MiniChip({required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color:        color.withAlpha(20),
+        borderRadius: BorderRadius.circular(20),
+        border:       Border.all(color: color.withAlpha(70)),
+      ),
+      child: Text(label,
+          style: TextStyle(
+            fontSize:   10,
+            fontWeight: FontWeight.w600,
+            color:      color,
+          )),
+    );
+  }
+}
+
+class _ErrorView extends StatelessWidget {
+  final String      message;
+  final VoidCallback onRetry;
+  const _ErrorView({required this.message, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.wifi_off_rounded, size: 48, color: Colors.grey.shade300),
+            const SizedBox(height: 12),
+            Text(message,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey.shade600)),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: onRetry,
+              child: const Text('Reintentar'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class _EmptyState extends StatelessWidget {
   final String?      userId;
@@ -537,9 +1024,10 @@ class _EmptyState extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 96, height: 96,
+              width:  96,
+              height: 96,
               decoration: BoxDecoration(
-                color:  AppColors.primary.withAlpha(20),
+                color: AppColors.primary.withAlpha(20),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.loyalty,
@@ -549,19 +1037,21 @@ class _EmptyState extends StatelessWidget {
             const Text(
               'Aún no tienes sellos',
               style: TextStyle(
-                  fontSize:   20,
-                  fontWeight: FontWeight.bold,
-                  color:      AppColors.textDark),
+                fontSize:   20,
+                fontWeight: FontWeight.bold,
+                color:      AppColors.textDark,
+              ),
             ),
             const SizedBox(height: 10),
             Text(
-              'Visita negocios que tengan programa de lealtad '
-              'y muéstrales tu código QR.',
+              'Visita negocios con programa de lealtad '
+              'y muéstrales tu código QR para acumular sellos.',
               textAlign: TextAlign.center,
               style: TextStyle(
-                  fontSize: 14,
-                  color:    Colors.grey.shade600,
-                  height:   1.5),
+                fontSize: 14,
+                color:    Colors.grey.shade600,
+                height:   1.5,
+              ),
             ),
             if (userId != null) ...[
               const SizedBox(height: 28),
@@ -570,7 +1060,9 @@ class _EmptyState extends StatelessWidget {
                 icon:  const Icon(Icons.qr_code_2),
                 label: const Text('Ver mi QR',
                     style: TextStyle(
-                        fontSize: 15, fontWeight: FontWeight.w600)),
+                      fontSize:   15,
+                      fontWeight: FontWeight.w600,
+                    )),
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(180, 48),
                   shape: RoundedRectangleBorder(

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:geolocator/geolocator.dart';
 import '../../data/repositories/categories_repository.dart';
 import '../../data/repositories/promotions_repository.dart';
 import '../../data/repositories/business_repository.dart';
@@ -35,6 +36,7 @@ import '../../features/home/cubit/ads_display_cubit.dart';
 import '../../data/repositories/ads_repository.dart';
 import '../../features/payment/screens/payment_result_screen.dart';
 import '../../features/auth/screens/reset_password_screen.dart';
+import '../../features/profile/screens/logros_screen.dart';
 import '../widgets/main_scaffold.dart';
 
 class AppRouter {
@@ -162,6 +164,17 @@ class AppRouter {
           },
         ),
 
+        // ── Mis Logros (pantalla completa, sin bottom nav) ─────────────────
+        GoRoute(
+          path: '/logros',
+          builder: (context, state) {
+            final userId = authBloc.state is AuthAuthenticated
+                ? (authBloc.state as AuthAuthenticated).user.id
+                : (state.extra as String? ?? '');
+            return LogrosScreen(userId: userId);
+          },
+        ),
+
         // ── Favoritos (pantalla completa, sin bottom nav) ───────────────────
         // Se navega con context.push('/favorites') desde Perfil.
         GoRoute(
@@ -231,10 +244,14 @@ class AppRouter {
                   ),
                 ),
                 // AdsDisplayCubit — anuncios visibles al usuario (Phase C)
+                // La ubicación se obtiene de forma asíncrona para activar
+                // el factor distancia (40 %) del ranking de anuncios.
                 BlocProvider(
-                  create: (_) => AdsDisplayCubit(
-                    repository: AdsRepository(),
-                  )..load(),
+                  create: (_) {
+                    final cubit = AdsDisplayCubit(repository: AdsRepository());
+                    unawaited(_loadAdsWithLocation(cubit));
+                    return cubit;
+                  },
                 ),
               ],
               child: MainScaffold(navigationShell: navigationShell),
@@ -305,6 +322,37 @@ class AppRouter {
       ],
     );
   }
+}
+
+// ─── Carga de anuncios con ubicación (fire-and-forget) ───────────────────────
+//
+// Intenta obtener la última posición conocida (instantáneo desde caché del OS)
+// o la posición actual con timeout de 4 s. Llama cubit.load() una sola vez.
+// Si el permiso está denegado o hay error, carga sin coordenadas → factor
+// distancia neutro (50/100) en el ranking de relevancia.
+Future<void> _loadAdsWithLocation(AdsDisplayCubit cubit) async {
+  double? lat, lng;
+  try {
+    final permission = await Geolocator.checkPermission();
+    if (permission != LocationPermission.denied &&
+        permission != LocationPermission.deniedForever) {
+      final last = await Geolocator.getLastKnownPosition();
+      if (last != null) {
+        lat = last.latitude;
+        lng = last.longitude;
+      } else {
+        final pos = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.medium,
+          timeLimit:        const Duration(seconds: 4),
+        );
+        lat = pos.latitude;
+        lng = pos.longitude;
+      }
+    }
+  } catch (_) {
+    // Sin ubicación — el factor distancia será neutro (50)
+  }
+  if (!cubit.isClosed) cubit.load(lat: lat, lng: lng);
 }
 
 // ─── Stream helper para refrescar el router con cambios de auth ───────────────

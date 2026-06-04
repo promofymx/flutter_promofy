@@ -53,9 +53,9 @@ class UserSubscriptionData {
   bool get hasActivePlan =>
       subscription != null && subscription!.isActive;
 
-  /// Plan ID efectivo — sólo cuando existe una fila de suscripción real.
-  /// Evita marcar como "Actual" el plan_id por defecto del perfil en DB.
-  int? get effectivePlanId => subscription != null ? plan?.id : null;
+  /// Plan ID efectivo — sólo cuando la suscripción está ACTIVA (authorized).
+  /// Las suscripciones pending/cancelled no marcan ningún plan como "Actual".
+  int? get effectivePlanId => hasActivePlan ? plan?.id : null;
 
   factory UserSubscriptionData.fromJson(Map<String, dynamic> json) {
     final subJson  = json['subscription'] as Map<String, dynamic>?;

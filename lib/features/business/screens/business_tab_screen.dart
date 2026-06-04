@@ -2780,7 +2780,30 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
   final _budgetCtrl = TextEditingController();
   final _adsRepo    = AdsRepository();
 
-  String      _format        = 'banner';
+  // ── Feature #1: Tipo de anuncio ───────────────────────────────────────────
+  String _adType = 'establishment'; // 'establishment' | 'promotion'
+
+  // ── Feature #2: Placements ────────────────────────────────────────────────
+  // Placements visuales ('splash' | 'featured_list' | 'banner')
+  Set<String> _placements = {'splash', 'featured_list'};
+  // Formato especial mutuamente exclusivo con placements visuales
+  String? _specialFormat; // null | 'push' | 'flash'
+
+  // Formato efectivo para billing (derivado de placements o specialFormat)
+  String get _effectiveFormat {
+    if (_specialFormat != null) return _specialFormat!;
+    if (_placements.contains('splash'))        return 'splash';
+    if (_placements.contains('featured_list')) return 'featured_list';
+    if (_placements.contains('banner'))        return 'banner';
+    return 'splash';
+  }
+
+  // Placements a guardar en DB
+  List<String> get _effectivePlacements {
+    if (_specialFormat != null) return [_specialFormat!];
+    return _placements.toList();
+  }
+
   String      _geoMode       = 'both';
   int         _radiusKm      = 5;
   bool        _saving        = false;
@@ -2792,15 +2815,7 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
   int?        _reachPool;               // audiencia potencial (async)
   bool        _fetchingReach = false;
   Timer?      _reachDebounce;
-  String?     _selectedPromoId;        // promo ligada a la campaña
-
-  static const _formats = <(String, String)>[
-    ('banner',        'Banner en home'),
-    ('featured_list', 'Destacada en lista'),
-    ('splash',        'Splash al abrir'),
-    ('push',          'Notif. push'),
-    ('flash',         'Promo Relámpago'),
-  ];
+  String?     _selectedPromoId;        // promo ligada a la campaña (cuando _adType == 'promotion')
 
   static const _geoModes = <(String, String)>[
     ('both',              'Física + búsqueda'),
@@ -2845,7 +2860,7 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
     final budget = double.tryParse(_budgetCtrl.text.replaceAll(',', '.'));
     if (budget == null || budget <= 0) return 0;
     final pricing = widget.state.pricing
-        .where((p) => p.format == _format)
+        .where((p) => p.format == _effectiveFormat)
         .firstOrNull;
     if (pricing == null || pricing.priceMxn <= 0) return 0;
     final unit = pricing.effectiveBillingUnit(widget.state.totalUserCount);
@@ -2853,7 +2868,7 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
   }
 
   double _minBudget() {
-    final p = widget.state.pricing.where((x) => x.format == _format).firstOrNull;
+    final p = widget.state.pricing.where((x) => x.format == _effectiveFormat).firstOrNull;
     return p?.minBudgetMxn ?? 0;
   }
 
@@ -2881,7 +2896,7 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
       setState(() => _error = 'Saldo insuficiente. Disponible: ${fmt.format(balance)}');
       return;
     }
-    if (widget.promotions.isNotEmpty && _selectedPromoId == null) {
+    if (_adType == 'promotion' && _selectedPromoId == null) {
       setState(() => _error = 'Selecciona la promoción que quieres publicitar');
       return;
     }
@@ -2890,14 +2905,15 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
     try {
       await context.read<BusinessAdsCubit>().createCampaign(
         name:         name,
-        format:       _format,
+        format:       _effectiveFormat,
+        placements:   _effectivePlacements,
         budgetMxn:    budget,
         radiusKm:     _radiusKm,
         geoMode:      _geoMode,
         targetMinAge: _ageRange.start.round(),
         targetMaxAge: _ageRange.end.round(),
         targetGender: _gender,
-        promotionId:  _selectedPromoId,
+        promotionId:  _adType == 'promotion' ? _selectedPromoId : null,
       );
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
@@ -2950,26 +2966,183 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
             ),
             const SizedBox(height: 16),
 
-            // Formato
-            const Text('Formato',
+            // ── Tipo de anuncio ─────────────────────────────────────────────
+            const Text('¿Qué publicitarás?',
                 style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
             const SizedBox(height: 8),
-            Wrap(
-              spacing: 8, runSpacing: 6,
-              children: _formats.map(((String, String) f) {
-                final sel = _format == f.$1;
-                return ChoiceChip(
-                  label:         Text(f.$2),
-                  selected:      sel,
-                  onSelected:    (_) => setState(() => _format = f.$1),
-                  selectedColor: const Color(0xFF00838F).withOpacity(0.15),
-                  labelStyle:    TextStyle(
-                      color: sel ? const Color(0xFF00838F) : Colors.black87,
-                      fontSize: 12),
-                );
-              }).toList(),
+            Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => setState(() {
+                      _adType = 'establishment';
+                      _selectedPromoId = null;
+                      _specialFormat = null;
+                    }),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 180),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        color: _adType == 'establishment'
+                            ? const Color(0xFF00838F).withOpacity(0.12)
+                            : Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: _adType == 'establishment'
+                              ? const Color(0xFF00838F)
+                              : Colors.grey.shade300,
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          Icon(Icons.store_outlined, size: 20,
+                              color: _adType == 'establishment'
+                                  ? const Color(0xFF00838F) : Colors.grey),
+                          const SizedBox(height: 4),
+                          Text('Tu negocio',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize:   12,
+                                fontWeight: FontWeight.w600,
+                                color: _adType == 'establishment'
+                                    ? const Color(0xFF00838F) : Colors.black54,
+                              )),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => setState(() {
+                      _adType = 'promotion';
+                      _specialFormat = null;
+                      // 'banner' no aplica para promos
+                      _placements.remove('banner');
+                      if (_placements.isEmpty) _placements.add('splash');
+                    }),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 180),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        color: _adType == 'promotion'
+                            ? const Color(0xFF00838F).withOpacity(0.12)
+                            : Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: _adType == 'promotion'
+                              ? const Color(0xFF00838F)
+                              : Colors.grey.shade300,
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          Icon(Icons.local_offer_outlined, size: 20,
+                              color: _adType == 'promotion'
+                                  ? const Color(0xFF00838F) : Colors.grey),
+                          const SizedBox(height: 4),
+                          Text('Una promoción',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize:   12,
+                                fontWeight: FontWeight.w600,
+                                color: _adType == 'promotion'
+                                    ? const Color(0xFF00838F) : Colors.black54,
+                              )),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
+
+            // ── ¿Dónde mostrar? (placements) ────────────────────────────────
+            if (_specialFormat == null) ...[
+              const Text('¿Dónde quieres mostrarlo?',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+              const SizedBox(height: 4),
+              ...<(String, IconData, String)>[
+                ('splash',        Icons.play_circle_outline,    'Splash al abrir la app'),
+                ('featured_list', Icons.grid_view_outlined,     'En el feed de promos'),
+                if (_adType == 'establishment')
+                  ('banner',      Icons.view_headline_outlined, 'Banner en el inicio'),
+              ].map(((String, IconData, String) p) {
+                final sel = _placements.contains(p.$1);
+                return InkWell(
+                  onTap: () => setState(() {
+                    if (sel) {
+                      if (_placements.length > 1) _placements.remove(p.$1);
+                    } else {
+                      _placements.add(p.$1);
+                    }
+                  }),
+                  borderRadius: BorderRadius.circular(8),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    child: Row(
+                      children: [
+                        Icon(
+                          sel ? Icons.check_box : Icons.check_box_outline_blank,
+                          size:  20,
+                          color: sel ? const Color(0xFF00838F) : Colors.grey,
+                        ),
+                        const SizedBox(width: 8),
+                        Icon(p.$2, size: 16, color: Colors.grey.shade600),
+                        const SizedBox(width: 6),
+                        Text(p.$3,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: sel ? const Color(0xFF00838F) : Colors.black87,
+                            )),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+              const SizedBox(height: 12),
+            ],
+
+            // ── Formatos especiales (solo establecimiento) ───────────────────
+            if (_adType == 'establishment') ...[
+              Text('Formatos especiales',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize:   12,
+                    color:      Colors.grey.shade600,
+                  )),
+              const SizedBox(height: 6),
+              Wrap(
+                spacing: 8, runSpacing: 6,
+                children: [
+                  ChoiceChip(
+                    label:    const Text('Notif. push'),
+                    selected: _specialFormat == 'push',
+                    onSelected: (v) => setState(() =>
+                        _specialFormat = v ? 'push' : null),
+                    selectedColor: const Color(0xFF00838F).withOpacity(0.15),
+                    labelStyle: TextStyle(
+                        color: _specialFormat == 'push'
+                            ? const Color(0xFF00838F) : Colors.black87,
+                        fontSize: 12),
+                  ),
+                  ChoiceChip(
+                    label:    const Text('Promo Relámpago'),
+                    selected: _specialFormat == 'flash',
+                    onSelected: (v) => setState(() =>
+                        _specialFormat = v ? 'flash' : null),
+                    selectedColor: const Color(0xFF00838F).withOpacity(0.15),
+                    labelStyle: TextStyle(
+                        color: _specialFormat == 'flash'
+                            ? const Color(0xFF00838F) : Colors.black87,
+                        fontSize: 12),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+            ],
 
             // Presupuesto
             TextField(
@@ -3137,37 +3310,40 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
 
             const SizedBox(height: 16),
 
-            // ── Promoción a publicitar ─────────────────────────────────────
-            const Text('Promoción a publicitar',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-            const SizedBox(height: 8),
-            if (widget.promotions.isEmpty)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                decoration: BoxDecoration(
-                  color:        Colors.orange.shade50,
-                  borderRadius: BorderRadius.circular(10),
-                  border:       Border.all(color: Colors.orange.shade200),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.info_outline, size: 16, color: Colors.orange.shade700),
-                    const SizedBox(width: 8),
-                    const Expanded(
-                      child: Text(
-                        'Crea al menos una promoción activa antes de lanzar una campaña.',
-                        style: TextStyle(fontSize: 12, color: Colors.orange),
+            // ── Promoción a publicitar (solo cuando _adType == 'promotion') ──
+            if (_adType == 'promotion') ...[
+              const Text('Promoción a publicitar',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+              const SizedBox(height: 8),
+              if (widget.promotions.isEmpty)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  decoration: BoxDecoration(
+                    color:        Colors.orange.shade50,
+                    borderRadius: BorderRadius.circular(10),
+                    border:       Border.all(color: Colors.orange.shade200),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline, size: 16, color: Colors.orange.shade700),
+                      const SizedBox(width: 8),
+                      const Expanded(
+                        child: Text(
+                          'Crea al menos una promoción activa antes de lanzar una campaña.',
+                          style: TextStyle(fontSize: 12, color: Colors.orange),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              )
-            else
-              ...widget.promotions.map((p) => _PromoPickerRow(
-                promo:    p,
-                selected: _selectedPromoId == p.id,
-                onTap:    () => setState(() => _selectedPromoId = p.id),
-              )),
+                    ],
+                  ),
+                )
+              else
+                ...widget.promotions.map((p) => _PromoPickerRow(
+                  promo:    p,
+                  selected: _selectedPromoId == p.id,
+                  onTap:    () => setState(() => _selectedPromoId = p.id),
+                )),
+              const SizedBox(height: 8),
+            ],
 
             // Error
             if (_error != null) ...[
@@ -3837,9 +4013,8 @@ class _TopUpSheetState extends State<_TopUpSheet> {
 
   Future<void> _pay() async {
     final amount = _amount;
-    // TODO: subir a 50 antes de producción final
-    if (amount == null || amount < 10) {
-      setState(() => _error = 'Ingresa un monto mínimo de \$10 MXN');
+    if (amount == null || amount < 50) {
+      setState(() => _error = 'Ingresa un monto mínimo de \$50 MXN');
       return;
     }
     setState(() { _loading = true; _error = null; });
@@ -3972,7 +4147,7 @@ class _TopUpSheetState extends State<_TopUpSheet> {
                 labelText:   'Otro monto',
                 prefixText:  '\$ ',
                 suffixText:  'MXN',
-                helperText:  'Mínimo \$10 MXN',
+                helperText:  'Mínimo \$50 MXN',
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10)),
                 contentPadding:

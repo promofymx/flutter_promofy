@@ -1,7 +1,7 @@
 name: promofy
 description: App de promociones para restaurantes y entretenimiento en México.
 publish_to: 'none'
-version: 1.1.0+8
+version: 1.1.0+10
 
 environment:
   sdk: '>=3.3.0 <4.0.0'

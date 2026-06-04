@@ -27,7 +27,7 @@ class AdSplashOverlay extends StatefulWidget {
 }
 
 class _AdSplashOverlayState extends State<AdSplashOverlay> {
-  static const _kDuration = 5;
+  static const _kDuration = 6;
   int    _remaining = _kDuration;
   Timer? _timer;
 
@@ -83,9 +83,9 @@ class _AdSplashOverlayState extends State<AdSplashOverlay> {
                 SizedBox(
                   height: 210,
                   width:  double.infinity,
-                  child: widget.ad.photoUrl != null
+                  child: widget.ad.displayPhotoUrl != null
                       ? CachedNetworkImage(
-                          imageUrl:    widget.ad.photoUrl!,
+                          imageUrl:    widget.ad.displayPhotoUrl!,
                           fit:         BoxFit.cover,
                           placeholder: (_, __) => const _CardPlaceholder(),
                           errorWidget: (_, __, ___) => const _CardPlaceholder(),
@@ -110,11 +110,11 @@ class _AdSplashOverlayState extends State<AdSplashOverlay> {
                   ),
                 ),
 
-                // Nombre del negocio sobre la foto
+                // Nombre del negocio/promo sobre la foto
                 Positioned(
                   left: 16, right: 56, bottom: 14,
                   child: Text(
-                    widget.ad.establishmentName,
+                    widget.ad.displayTitle,
                     style: const TextStyle(
                       color:      Colors.white,
                       fontSize:   20,
@@ -183,9 +183,11 @@ class _AdSplashOverlayState extends State<AdSplashOverlay> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text(
-                    'Toca para descubrir sus promociones exclusivas',
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  Text(
+                    widget.ad.isPromotionAd
+                        ? 'Promoción especial de ${widget.ad.establishmentName}'
+                        : 'Toca para descubrir sus promociones exclusivas',
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                   const SizedBox(height: 12),
                   ElevatedButton(

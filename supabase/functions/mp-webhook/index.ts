@@ -189,7 +189,7 @@ async function handleSubscriptionStatus(
       console.log(`Suscripción ${preapprovalId} → ${newStatus}`);
     }
 
-    // Si se autorizó, actualizar plan_id en profiles
+    // Si se autorizó, actualizar plan_id Y role en profiles
     if (newStatus === "authorized") {
       const { data: subRow } = await supabase
         .from("user_subscriptions")
@@ -200,12 +200,12 @@ async function handleSubscriptionStatus(
       if (subRow?.plan_id) {
         await supabase
           .from("profiles")
-          .update({ plan_id: subRow.plan_id })
+          .update({ plan_id: subRow.plan_id, role: "business_owner" })
           .eq("id", existing.user_id);
       }
     }
 
-    // Si se canceló o pausó, limpiar plan en profiles
+    // Si se canceló o pausó, limpiar plan en profiles (NO se revierte el role)
     if (newStatus === "cancelled" || newStatus === "paused") {
       await supabase
         .from("profiles")
@@ -235,7 +235,7 @@ async function handleSubscriptionStatus(
         if (newStatus === "authorized") {
           await supabase
             .from("profiles")
-            .update({ plan_id: planId })
+            .update({ plan_id: planId, role: "business_owner" })
             .eq("id", userId);
         }
       }

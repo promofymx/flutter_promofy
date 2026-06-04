@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/membership_plan_model.dart';
@@ -16,6 +18,10 @@ import '../../../features/home/bloc/home_bloc.dart';
 import '../../../features/home/bloc/home_event.dart';
 import '../../../features/plans/screens/plans_screen.dart';
 import '../../../main.dart';
+import '../cubit/achievements_cubit.dart';
+import '../cubit/achievements_state.dart';
+import '../../../data/models/user_stats_model.dart';
+import 'logros_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -25,6 +31,15 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  // ── Logros / gamificación ─────────────────────────────────────────────────
+  AchievementsCubit? _achievementsCubit;
+
+  void _initAchievements(String userId) {
+    if (_achievementsCubit != null) return;
+    _achievementsCubit = AchievementsCubit(userId: userId);
+    _achievementsCubit!.load();
+  }
+
   // ── Configuración ─────────────────────────────────────────────────────────
   final _settingsNameCtrl = TextEditingController();
   bool          _settingsInitialized = false;
@@ -48,6 +63,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void dispose() {
     _settingsNameCtrl.dispose();
+    _achievementsCubit?.close();
     super.dispose();
   }
 
@@ -155,6 +171,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         final userId  = state.user.id;
 
         _initSettingsIfNeeded(profile);
+        _initAchievements(userId);
 
         return Scaffold(
           backgroundColor: AppColors.background,
@@ -167,7 +184,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                _ProfileHeader(profile: profile, email: email),
+                // Header con badge real
+                BlocBuilder<AchievementsCubit, AchievementsState>(
+                  bloc: _achievementsCubit,
+                  builder: (_, achState) {
+                    final badge = achState is AchievementsLoaded
+                        ? achState.stats.currentBadge
+                        : null;
+                    return _ProfileHeader(
+                        profile: profile, email: email, badgeTier: badge);
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // ── Logros / estadísticas ─────────────────────────────────
+                BlocBuilder<AchievementsCubit, AchievementsState>(
+                  bloc: _achievementsCubit,
+                  builder: (context, achState) {
+                    if (achState is AchievementsLoaded) {
+                      return _AchievementsCard(
+                        stats: achState.stats,
+                        onVerTodos: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => LogrosScreen(userId: userId),
+                          ),
+                        ),
+                      );
+                    }
+                    if (achState is AchievementsLoading ||
+                        achState is AchievementsInitial) {
+                      return const _AchievementsCardSkeleton();
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
                 const SizedBox(height: 16),
 
                 _AccountCard(profile: profile),
@@ -200,6 +250,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 // ── Card membresía de negocio (dueño o superadmin) ────────
                 if (profile.isBusinessOwner || profile.isSuperadmin) ...[
                   _BusinessOwnerCard(profile: profile),
+                  const SizedBox(height: 16),
+                  _ReferralCard(profile: profile),
                   const SizedBox(height: 16),
                 ],
 
@@ -251,7 +303,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 class _ProfileHeader extends StatelessWidget {
   final ProfileModel profile;
   final String       email;
-  const _ProfileHeader({required this.profile, required this.email});
+  final BadgeTier?   badgeTier;
+  const _ProfileHeader({required this.profile, required this.email, this.badgeTier});
 
   String get _initials {
     final name  = profile.fullName ?? '';
@@ -321,7 +374,7 @@ class _ProfileHeader extends StatelessWidget {
                   spacing: 6,
                   runSpacing: 4,
                   children: [
-                    _LevelBadge(profile: profile),
+                    _LevelBadge(profile: profile, badgeTier: badgeTier),
                     if (profile.isBusinessOwner)
                       _Chip(
                         icon:  Icons.store_outlined,
@@ -343,28 +396,32 @@ class _ProfileHeader extends StatelessWidget {
 
 class _LevelBadge extends StatelessWidget {
   final ProfileModel profile;
-  const _LevelBadge({required this.profile});
+  final BadgeTier?   badgeTier;
+  const _LevelBadge({required this.profile, this.badgeTier});
 
-  // Nivel visual basado en el rol del perfil.
+  // Nivel visual: negocio/staff por rol, consumidor por insignia de visitas.
   _LevelData get _level {
     if (profile.isBusinessOwner) {
       return const _LevelData(
         label:  'Negocio activo',
         icon:   Icons.verified_outlined,
-        color:  Color(0xFF00897B), // teal
+        color:  Color(0xFF00897B),
       );
     }
     if (profile.isStaff) {
       return const _LevelData(
         label:  'Empleado',
         icon:   Icons.badge_outlined,
-        color:  Color(0xFF3949AB), // índigo
+        color:  Color(0xFF3949AB),
       );
     }
-    return const _LevelData(
-      label:  'Explorador',
-      icon:   Icons.explore_outlined,
-      color:  Color(0xFF5C6BC0), // índigo claro
+    final badge = badgeTier ?? BadgeTier.none;
+    return _LevelData(
+      label: badge.label,
+      icon:  badge == BadgeTier.none
+          ? Icons.explore_outlined
+          : Icons.military_tech_outlined,
+      color: badge.color,
     );
   }
 
@@ -1797,6 +1854,440 @@ class _JoinTeamCard extends StatelessWidget {
             ),
             child: const Text('Unirse',
                 style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Tarjeta de referidos ─────────────────────────────────────────────────────
+
+class _ReferralCard extends StatefulWidget {
+  final ProfileModel profile;
+  const _ReferralCard({required this.profile});
+
+  @override
+  State<_ReferralCard> createState() => _ReferralCardState();
+}
+
+class _ReferralCardState extends State<_ReferralCard> {
+  bool _copied = false;
+
+  String get _shareUrl {
+    final code = widget.profile.referralCode ?? '';
+    return 'https://promofy.fun/r/$code';
+  }
+
+  String get _shareText =>
+      '¡Únete a Promofy y atrae más clientes a tu negocio!\n'
+      'Crea tu cuenta con mi link y ambos ganamos:\n$_shareUrl';
+
+  Future<void> _copyLink() async {
+    await Clipboard.setData(ClipboardData(text: _shareUrl));
+    if (!mounted) return;
+    setState(() => _copied = true);
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) setState(() => _copied = false);
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('¡Link copiado al portapapeles!'),
+        backgroundColor: Colors.green.shade700,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  Future<void> _shareLink() async {
+    await Share.share(_shareText, subject: 'Únete a Promofy');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final code    = widget.profile.referralCode;
+    final credits = widget.profile.adCreditsMxn;
+
+    return _Card(
+      title: '🎁 Programa de referidos',
+      children: [
+        // Descripción
+        Text(
+          'Invita a otros negocios con tu link. Cuando activen una membresía de pago, recibes \$300 MXN en créditos de publicidad.',
+          style: TextStyle(fontSize: 13, color: Colors.grey.shade600, height: 1.4),
+        ),
+        const SizedBox(height: 14),
+
+        // Créditos acumulados
+        if (credits > 0) ...[
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.green.shade50,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.green.shade200),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.wallet_outlined, size: 18, color: Colors.green.shade600),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Créditos ganados',
+                    style: TextStyle(fontSize: 12, color: Colors.green.shade700),
+                  ),
+                ),
+                Text(
+                  '\$${credits.toStringAsFixed(0)} MXN',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.green.shade700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+        ],
+
+        // Link
+        if (code != null) ...[
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.grey.shade200),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    _shareUrl,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontFamily: 'monospace',
+                      color: AppColors.textDark,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // Chip del código
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withAlpha(20),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    code,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.primary,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+
+          // Botones
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _copyLink,
+                  icon: Icon(
+                    _copied ? Icons.check_rounded : Icons.copy_outlined,
+                    size: 16,
+                    color: _copied ? Colors.green : AppColors.primary,
+                  ),
+                  label: Text(
+                    _copied ? 'Copiado' : 'Copiar link',
+                    style: TextStyle(
+                      color: _copied ? Colors.green : AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(0, 44),
+                    side: BorderSide(
+                      color: _copied ? Colors.green : AppColors.primary,
+                    ),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: _shareLink,
+                  icon: const Icon(Icons.share_outlined, size: 16),
+                  label: const Text(
+                    'Compartir',
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(0, 44),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ] else ...[
+          // No tiene código aún (migración pendiente)
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              'Tu link de referido estará disponible en breve.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+// ─── Diálogo de aceptación de invitación de staff ─────────────────────────────
+
+// ─── Card de logros / gamificación ───────────────────────────────────────────
+
+class _AchievementsCard extends StatelessWidget {
+  final UserStatsModel stats;
+  final VoidCallback   onVerTodos;
+  const _AchievementsCard({required this.stats, required this.onVerTodos});
+
+  @override
+  Widget build(BuildContext context) {
+    final badge  = stats.currentBadge;
+    final streak = stats.streakBadge;
+    final topPct = stats.topPercent;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color:        Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(13),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Encabezado ──────────────────────────────────────────────────
+          Row(
+            children: [
+              const Text(
+                'Mis Logros',
+                style: TextStyle(
+                  fontSize:   15,
+                  fontWeight: FontWeight.bold,
+                  color:      AppColors.textDark,
+                ),
+              ),
+              const Spacer(),
+              GestureDetector(
+                onTap: onVerTodos,
+                child: Row(
+                  children: [
+                    Text(
+                      'Ver todos',
+                      style: TextStyle(
+                        fontSize:   13,
+                        color:      AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right,
+                        size: 18, color: AppColors.primary),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+
+          // ── Badge actual + progress ──────────────────────────────────────
+          Row(
+            children: [
+              // Emoji grande
+              Container(
+                width:  56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color:  badge.color.withAlpha(20),
+                  shape:  BoxShape.circle,
+                ),
+                alignment: Alignment.center,
+                child: Text(badge.emoji,
+                    style: const TextStyle(fontSize: 28)),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      badge.label,
+                      style: TextStyle(
+                        fontSize:   15,
+                        fontWeight: FontWeight.w700,
+                        color:      badge.color,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    if (stats.nextBadge != null) ...[
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: LinearProgressIndicator(
+                          value:           stats.badgeProgress,
+                          minHeight:       7,
+                          backgroundColor: stats.nextBadge!.color.withAlpha(25),
+                          valueColor:      AlwaysStoppedAnimation<Color>(
+                              stats.nextBadge!.color),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${stats.annualVisits} visitas · faltan '
+                        '${stats.visitsToNextBadge} para ${stats.nextBadge!.label}',
+                        style: TextStyle(
+                            fontSize: 11,
+                            color:    Colors.grey.shade500),
+                      ),
+                    ] else ...[
+                      Text(
+                        '${stats.annualVisits} visitas este año — ¡nivel máximo!',
+                        style: TextStyle(
+                            fontSize: 12,
+                            color:    badge.color),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          // ── Stats row (racha / top%) ─────────────────────────────────────
+          if (stats.currentStreakWeeks > 0 || topPct != null) ...[
+            const SizedBox(height: 14),
+            const Divider(height: 1),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                if (stats.currentStreakWeeks > 0) ...[
+                  Text(streak.emoji,
+                      style: const TextStyle(fontSize: 18)),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      '${stats.currentStreakWeeks} sem. en racha',
+                      style: TextStyle(
+                        fontSize:   13,
+                        fontWeight: FontWeight.w600,
+                        color:      streak.color,
+                      ),
+                    ),
+                  ),
+                ],
+                if (topPct != null) ...[
+                  const Text('📊',
+                      style: TextStyle(fontSize: 18)),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Top ${topPct.toStringAsFixed(0)}% en tu ciudad',
+                    style: const TextStyle(
+                      fontSize:   13,
+                      fontWeight: FontWeight.w600,
+                      color:      Color(0xFF00897B),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+// ── Skeleton mientras carga ────────────────────────────────────────────────────
+
+class _AchievementsCardSkeleton extends StatelessWidget {
+  const _AchievementsCardSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 120,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color:        Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color:      Colors.black.withAlpha(13),
+            blurRadius: 8,
+            offset:     const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 56, height: 56,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100, shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(height: 14, width: 120,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(6),
+                    )),
+                const SizedBox(height: 8),
+                Container(height: 8, decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(4))),
+                const SizedBox(height: 6),
+                Container(height: 10, width: 160,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(4),
+                    )),
+              ],
+            ),
           ),
         ],
       ),

@@ -1,3 +1,4 @@
+import 'dart:async';
 import '../../../main.dart';
 import '../../models/loyalty_client_model.dart';
 import '../../models/loyalty_program_model.dart';
@@ -69,6 +70,7 @@ class LoyaltyDatasource {
 
   /// RPC SECURITY DEFINER: el dueño registra una visita escaneando el QR
   /// del cliente. Devuelve el estado actualizado de la tarjeta.
+  /// Además actualiza las estadísticas globales del cliente (fire-and-forget).
   Future<Map<String, dynamic>> recordVisit({
     required String programId,
     required String clientId,
@@ -80,7 +82,17 @@ class LoyaltyDatasource {
         'p_client_id':  clientId,
       },
     );
-    return result as Map<String, dynamic>;
+    final data = result as Map<String, dynamic>;
+    // Actualizar estadísticas globales del cliente (visitas anuales, racha)
+    // Se ejecuta en segundo plano; el error no afecta el flujo principal.
+    if (data['ok'] == true) {
+      unawaited(
+        supabase
+            .rpc('update_user_visit_stats', params: {'p_user_id': clientId})
+            .catchError((_) {}),
+      );
+    }
+    return data;
   }
 
   /// RPC SECURITY DEFINER: el dueño confirma la entrega del premio.

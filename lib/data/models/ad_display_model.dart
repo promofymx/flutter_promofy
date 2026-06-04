@@ -6,9 +6,14 @@ class AdDisplayModel extends Equatable {
   final String  id;               // campaign id
   final String  establishmentId;
   final String  establishmentName;
-  final String? photoUrl;
+  final String? photoUrl;         // foto del establecimiento
   final String  format;           // splash | featured_list | banner
   final double  score;            // relevance score 0–100
+
+  // Campos de promoción (presentes cuando la campaña publicita una promo)
+  final String? promotionId;
+  final String? promotionName;
+  final String? promotionPhotoUrl;
 
   const AdDisplayModel({
     required this.id,
@@ -17,7 +22,19 @@ class AdDisplayModel extends Equatable {
     this.photoUrl,
     required this.format,
     this.score = 0,
+    this.promotionId,
+    this.promotionName,
+    this.promotionPhotoUrl,
   });
+
+  /// ¿Es un anuncio de promoción específica?
+  bool get isPromotionAd => promotionId != null;
+
+  /// Título a mostrar: nombre de la promo si existe, si no el negocio.
+  String get displayTitle => promotionName ?? establishmentName;
+
+  /// Foto a mostrar: prioriza la foto de la promo sobre la del negocio.
+  String? get displayPhotoUrl => promotionPhotoUrl ?? photoUrl;
 
   factory AdDisplayModel.fromJson(Map<String, dynamic> json) {
     // Soporta tanto el resultado plano del RPC como el antiguo JOIN anidado
@@ -32,10 +49,15 @@ class AdDisplayModel extends Equatable {
       photoUrl:          (json['photo_url']
                           ?? est?['photo_url'])   as String?,
       score:            (json['score']            as num?)?.toDouble() ?? 0,
+      promotionId:       json['promotion_id']       as String?,
+      promotionName:     json['promotion_name']     as String?,
+      promotionPhotoUrl: json['promotion_photo_url'] as String?,
     );
   }
 
   @override
-  List<Object?> get props =>
-      [id, establishmentId, establishmentName, photoUrl, format, score];
+  List<Object?> get props => [
+    id, establishmentId, establishmentName, photoUrl, format, score,
+    promotionId, promotionName, promotionPhotoUrl,
+  ];
 }

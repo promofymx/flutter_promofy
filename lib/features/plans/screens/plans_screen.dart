@@ -119,11 +119,20 @@ class _PlansBody extends StatelessWidget {
                 : (state is PlansPaymentReady ? state.loaded : null);
             if (loaded == null) return const SizedBox.shrink();
 
+            // ¿algún plan tiene promo activa?
+            final hasPromo = loaded.plans.any((p) => p.hasLaunchPromo);
+
             return RefreshIndicator(
               onRefresh: () => context.read<PlansCubit>().load(),
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 40),
                 children: [
+                  // Banner promo de lanzamiento
+                  if (hasPromo) ...[
+                    _LaunchPromoBanner(),
+                    const SizedBox(height: 16),
+                  ],
+
                   // Badge plan actual
                   _CurrentPlanBadge(subscription: loaded.subscription),
                   const SizedBox(height: 20),
@@ -184,6 +193,80 @@ class _PlansBody extends StatelessWidget {
   }
 }
 
+// ─── Banner promo de lanzamiento ─────────────────────────────────────────────
+
+class _LaunchPromoBanner extends StatelessWidget {
+  const _LaunchPromoBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFE53935), Color(0xFFFF7043)],
+          begin: Alignment.topLeft,
+          end:   Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color:      const Color(0xFFE53935).withAlpha(60),
+            blurRadius: 12,
+            offset:     const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color:        Colors.white.withAlpha(35),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Text('🚀', style: TextStyle(fontSize: 22)),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Promoción de Lanzamiento',
+                  style: TextStyle(
+                    fontSize:   14,
+                    fontWeight: FontWeight.bold,
+                    color:      Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  'Desde \$99 MXN. Lo que vale el plan lo recibes en créditos de publicidad.',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color:    Colors.white.withAlpha(220),
+                    height:   1.35,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Válido hasta el 18 de julio de 2026',
+                  style: TextStyle(
+                    fontSize:   11,
+                    color:      Colors.white.withAlpha(180),
+                    fontStyle:  FontStyle.italic,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // ─── Badge plan actual ────────────────────────────────────────────────────────
 
 class _CurrentPlanBadge extends StatelessWidget {
@@ -195,7 +278,7 @@ class _CurrentPlanBadge extends StatelessWidget {
     // Muestra el nombre del plan sólo cuando existe una suscripción real.
     // Si sólo hay un plan_id por defecto en profiles (sin fila de suscripción),
     // se muestra "Sin plan activo" para no confundir al usuario.
-    final planName = subscription.subscription != null
+    final planName = subscription.hasActivePlan
         ? (subscription.plan?.name ?? 'Plan activo')
         : 'Sin plan activo';
     final isActive = subscription.hasActivePlan as bool;
@@ -353,6 +436,19 @@ class _PlanCard extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 4),
+                      if (plan.hasLaunchPromo) ...[
+                        // Precio tachado (original)
+                        Text(
+                          '\$${plan.originalPriceMxn!.toStringAsFixed(0)} MXN/mes',
+                          style: TextStyle(
+                            fontSize:      13,
+                            color:         Colors.grey.shade400,
+                            decoration:    TextDecoration.lineThrough,
+                            decorationColor: Colors.grey.shade400,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                      ],
                       RichText(
                         text: TextSpan(
                           children: [
@@ -378,6 +474,34 @@ class _PlanCard extends StatelessWidget {
                           ],
                         ),
                       ),
+                      // Badge crédito de publicidad
+                      if (plan.hasLaunchPromo) ...[
+                        const SizedBox(height: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color:        Colors.green.shade50,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.green.shade200),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text('🎁', style: TextStyle(fontSize: 11)),
+                              const SizedBox(width: 4),
+                              Text(
+                                '+\$${plan.originalPriceMxn!.toStringAsFixed(0)} en publicidad',
+                                style: TextStyle(
+                                  fontSize:   11,
+                                  fontWeight: FontWeight.w600,
+                                  color:      Colors.green.shade700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),

@@ -143,6 +143,7 @@ class AdsDatasource {
     int     targetMaxAge  = 99,
     String  targetGender  = 'all',
     String? promotionId,
+    List<String>?   placements,
     DateTime?       startDate,
     DateTime?       endDate,
   }) async {
@@ -163,6 +164,8 @@ class AdsDatasource {
           'target_max_age': targetMaxAge,
           'target_gender':  targetGender,
           if (promotionId != null) 'promotion_id': promotionId,
+          if (placements  != null && placements.isNotEmpty)
+            'placements': placements,
           if (startDate != null) 'start_date': startDate.toIso8601String().split('T').first,
           if (endDate   != null) 'end_date':   endDate.toIso8601String().split('T').first,
         })

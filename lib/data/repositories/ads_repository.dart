@@ -48,6 +48,7 @@ class AdsRepository {
     int     targetMaxAge  = 99,
     String  targetGender  = 'all',
     String? promotionId,
+    List<String>?   placements,
     DateTime?       startDate,
     DateTime?       endDate,
   }) =>
@@ -64,6 +65,7 @@ class AdsRepository {
         targetMaxAge:       targetMaxAge,
         targetGender:       targetGender,
         promotionId:        promotionId,
+        placements:         placements,
         startDate:          startDate,
         endDate:            endDate,
       );

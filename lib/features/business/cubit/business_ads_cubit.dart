@@ -55,6 +55,7 @@ class BusinessAdsCubit extends Cubit<BusinessAdsState> {
     int     targetMaxAge  = 99,
     String  targetGender  = 'all',
     String? promotionId,
+    List<String>?     placements,
     DateTime?         startDate,
     DateTime?         endDate,
   }) async {
@@ -74,6 +75,7 @@ class BusinessAdsCubit extends Cubit<BusinessAdsState> {
       targetMaxAge:      targetMaxAge,
       targetGender:      targetGender,
       promotionId:       promotionId,
+      placements:        placements,
       startDate:         startDate,
       endDate:           endDate,
     );

@@ -1,22 +1,43 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/ad_display_model.dart';
+import '../cubit/ads_display_cubit.dart';
 
 /// Card con aspecto similar a PromoCard pero marcada como "Patrocinado".
 /// Se intercala en el grid del Home cada 5 promos orgánicas.
-class SponsoredPromoCard extends StatelessWidget {
+class SponsoredPromoCard extends StatefulWidget {
   final AdDisplayModel ad;
   const SponsoredPromoCard({super.key, required this.ad});
 
   @override
+  State<SponsoredPromoCard> createState() => _SponsoredPromoCardState();
+}
+
+class _SponsoredPromoCardState extends State<SponsoredPromoCard> {
+  @override
+  void initState() {
+    super.initState();
+    // Registrar impresión una sola vez al renderizarse la card (CPM → débito).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<AdsDisplayCubit>().trackImpression(widget.ad.id);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final ad = widget.ad;
     return GestureDetector(
-      onTap: () => context.push(
-        '/restaurant/${ad.establishmentId}',
-        extra: ad.establishmentName,
-      ),
+      onTap: () {
+        context.read<AdsDisplayCubit>().trackClick(ad.id);
+        context.push(
+          '/restaurant/${ad.establishmentId}',
+          extra: ad.establishmentName,
+        );
+      },
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -58,9 +79,9 @@ class _SponsoredImageSection extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            ad.photoUrl != null
+            ad.displayPhotoUrl != null
                 ? CachedNetworkImage(
-                    imageUrl: ad.photoUrl!,
+                    imageUrl: ad.displayPhotoUrl!,
                     fit: BoxFit.cover,
                     placeholder: (_, __) => const _SponsoredPlaceholder(),
                     errorWidget: (_, __, ___) =>
@@ -117,7 +138,7 @@ class _SponsoredInfoSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            ad.establishmentName,
+            ad.displayTitle,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize:   13,
@@ -127,9 +148,9 @@ class _SponsoredInfoSection extends StatelessWidget {
             overflow:  TextOverflow.ellipsis,
           ),
           const SizedBox(height: 4),
-          const Text(
-            'Ver sus promociones',
-            style: TextStyle(
+          Text(
+            ad.isPromotionAd ? ad.establishmentName : 'Ver sus promociones',
+            style: const TextStyle(
               fontSize:   12,
               color:      AppColors.secondary,
               fontWeight: FontWeight.w600,

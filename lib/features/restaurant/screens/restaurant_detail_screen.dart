@@ -1215,6 +1215,21 @@ class _PromosSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Día de la semana actual (1=Lun … 7=Dom), igual que activeDays
+    final today = DateTime.now().weekday;
+
+    // Promos activas hoy (o sin restricción de día / todos los días)
+    final todayPromos = promos.where((p) =>
+        p.activeDays.isEmpty ||
+        p.activeDays.length == 7 ||
+        p.activeDays.contains(today)).toList();
+
+    // Promos de otros días de la semana
+    final weekPromos = promos.where((p) =>
+        p.activeDays.isNotEmpty &&
+        p.activeDays.length < 7 &&
+        !p.activeDays.contains(today)).toList();
+
     return Container(
       margin: const EdgeInsets.only(top: 8),
       color:  Colors.white,
@@ -1222,6 +1237,7 @@ class _PromosSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // ── Encabezado "Promociones activas" ──────────────────────────────
           Row(
             children: [
               Text(
@@ -1233,7 +1249,7 @@ class _PromosSection extends StatelessWidget {
                   letterSpacing: 0.4,
                 ),
               ),
-              if (promos.isNotEmpty) ...[
+              if (todayPromos.isNotEmpty) ...[
                 const SizedBox(width: 6),
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -1243,7 +1259,7 @@ class _PromosSection extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    '${promos.length}',
+                    '${todayPromos.length}',
                     style: const TextStyle(
                       fontSize:   10,
                       fontWeight: FontWeight.bold,
@@ -1255,22 +1271,54 @@ class _PromosSection extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
-          if (promos.isEmpty)
+
+          // ── Promos de hoy ──────────────────────────────────────────────────
+          if (todayPromos.isEmpty)
             Padding(
-              padding: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.only(bottom: 4),
               child: Text(
-                'Sin promociones activas por ahora.',
+                weekPromos.isEmpty
+                    ? 'Sin promociones activas por ahora.'
+                    : 'Sin promociones para hoy.',
                 style: TextStyle(
                     fontSize: 13, color: Colors.grey.shade500),
               ),
             )
           else
-            ...promos.map((p) => _PromoListCard(
+            ...todayPromos.map((p) => _PromoListCard(
                   promo:             p,
                   onFavoriteToggled: onFavoriteToggled != null
                       ? () => onFavoriteToggled!(p)
                       : null,
                 )),
+
+          // ── Promos de otros días de la semana ──────────────────────────────
+          if (weekPromos.isNotEmpty) ...[
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                const Icon(Icons.calendar_today_outlined,
+                    size: 11, color: Colors.grey),
+                const SizedBox(width: 5),
+                Text(
+                  'También esta semana',
+                  style: TextStyle(
+                    fontSize:   10,
+                    fontWeight: FontWeight.w600,
+                    color:      Colors.grey.shade500,
+                    letterSpacing: 0.4,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            ...weekPromos.map((p) => _PromoListCard(
+                  promo:             p,
+                  onFavoriteToggled: onFavoriteToggled != null
+                      ? () => onFavoriteToggled!(p)
+                      : null,
+                )),
+          ],
         ],
       ),
     );

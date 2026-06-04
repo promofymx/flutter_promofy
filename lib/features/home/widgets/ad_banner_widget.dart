@@ -24,17 +24,36 @@ class AdBannerWidget extends StatelessWidget {
   }
 }
 
-class _AdBannerCard extends StatelessWidget {
+class _AdBannerCard extends StatefulWidget {
   final AdDisplayModel ad;
   const _AdBannerCard({required this.ad});
 
   @override
+  State<_AdBannerCard> createState() => _AdBannerCardState();
+}
+
+class _AdBannerCardState extends State<_AdBannerCard> {
+  @override
+  void initState() {
+    super.initState();
+    // Registrar impresión una sola vez al mostrarse el banner (CPM → débito).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<AdsDisplayCubit>().trackImpression(widget.ad.id);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final ad = widget.ad;
     return GestureDetector(
-      onTap: () => context.push(
-        '/restaurant/${ad.establishmentId}',
-        extra: ad.establishmentName,
-      ),
+      onTap: () {
+        context.read<AdsDisplayCubit>().trackClick(ad.id);
+        context.push(
+          '/restaurant/${ad.establishmentId}',
+          extra: ad.establishmentName,
+        );
+      },
       child: Container(
         margin: const EdgeInsets.fromLTRB(12, 6, 12, 2),
         height: 72,
@@ -59,9 +78,9 @@ class _AdBannerCard extends StatelessWidget {
               child: SizedBox(
                 width: 80,
                 height: 72,
-                child: ad.photoUrl != null
+                child: ad.displayPhotoUrl != null
                     ? CachedNetworkImage(
-                        imageUrl: ad.photoUrl!,
+                        imageUrl: ad.displayPhotoUrl!,
                         fit: BoxFit.cover,
                         placeholder: (_, __) => const _BannerPlaceholder(),
                         errorWidget: (_, __, ___) =>
@@ -80,7 +99,7 @@ class _AdBannerCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      ad.establishmentName,
+                      ad.displayTitle,
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -90,9 +109,9 @@ class _AdBannerCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 2),
-                    const Text(
-                      'Ver sus promociones',
-                      style: TextStyle(fontSize: 11, color: Colors.grey),
+                    Text(
+                      ad.isPromotionAd ? ad.establishmentName : 'Ver sus promociones',
+                      style: const TextStyle(fontSize: 11, color: Colors.grey),
                     ),
                   ],
                 ),

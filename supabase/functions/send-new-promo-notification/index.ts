@@ -205,31 +205,34 @@ serve(async (req) => {
       .replace(/{establishment_name}/g, establishmentName)
       .replace(/{promo_name}/g, promo_name);
 
-    // Obtener tokens de usuarios que tienen el establecimiento como favorito
-    const { data: tokens, error: tokensError } = await admin
-      .from('device_tokens')
-      .select('token')
-      .in(
-        'user_id',
-        admin
-          .from('user_favorite_establishments')
-          .select('user_id')
-          .eq('establishment_id', establishment_id),
-      );
+    // 1) Usuarios que tienen el establecimiento como favorito
+    const { data: favs, error: favErr } = await admin
+      .from('user_favorite_establishments')
+      .select('user_id')
+      .eq('establishment_id', establishment_id);
+    if (favErr) throw favErr;
+    const userIds = (favs ?? []).map((f: { user_id: string }) => f.user_id);
 
+    // 2) Tokens de dispositivo de esos usuarios
+    const { data: tokens, error: tokensError } = userIds.length === 0
+      ? { data: [] as { token: string }[], error: null }
+      : await admin.from('device_tokens').select('token').in('user_id', userIds);
     if (tokensError) throw tokensError;
 
     // Insertar log primero para obtener el ID (se incluye en payload FCM)
-    const { data: logRow } = await admin.from('notification_logs').insert({
-      title:            notifTitle,
-      body:             notifBody,
-      target_type:      'new_promo',
-      sent_count:       0,
-      failed_count:     0,
-      created_by:       null,
-      establishment_id: establishment_id,
-    }).select('id').single().catch(() => ({ data: null }));
-    const logId: string = (logRow as { id: string } | null)?.id ?? '';
+    let logId = '';
+    try {
+      const { data: logRow } = await admin.from('notification_logs').insert({
+        title:            notifTitle,
+        body:             notifBody,
+        target_type:      'new_promo',
+        sent_count:       0,
+        failed_count:     0,
+        created_by:       null,
+        establishment_id: establishment_id,
+      }).select('id').single();
+      logId = (logRow as { id: string } | null)?.id ?? '';
+    } catch (_) { /* el log es opcional */ }
 
     if (!tokens || tokens.length === 0) {
       return new Response(
@@ -276,10 +279,11 @@ serve(async (req) => {
 
     // Actualizar log con conteos reales
     if (logId) {
-      await admin.from('notification_logs')
-        .update({ sent_count: sent, failed_count: failed })
-        .eq('id', logId)
-        .catch(() => {});
+      try {
+        await admin.from('notification_logs')
+          .update({ sent_count: sent, failed_count: failed })
+          .eq('id', logId);
+      } catch (_) { /* no crítico */ }
     }
 
     return new Response(

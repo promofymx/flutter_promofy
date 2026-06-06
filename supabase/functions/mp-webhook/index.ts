@@ -152,6 +152,13 @@ async function handleSubscriptionStatus(
   }
   const sub = await res.json();
 
+  // ¿Es un add-on (suscripción de promo/local extra)? → manejar aparte.
+  const extRefTop = (sub.external_reference as string) ?? "";
+  if (extRefTop.startsWith("addon|")) {
+    await handleAddonStatus(supabase, preapprovalId, sub, extRefTop);
+    return;
+  }
+
   // sub.status: pending | authorized | paused | cancelled
   const newStatus: string = sub.status ?? "pending";
 
@@ -244,6 +251,55 @@ async function handleSubscriptionStatus(
   }
 }
 
+/** Maneja el cambio de estado de un add-on (suscripción de promo/local extra). */
+async function handleAddonStatus(
+  supabase: ReturnType<typeof createClient>,
+  preapprovalId: string,
+  sub: Record<string, unknown>,
+  extRef: string,
+) {
+  const newStatus = (sub.status as string) ?? "pending";
+  const now       = new Date();
+  const nextMonth = new Date(now); nextMonth.setMonth(nextMonth.getMonth() + 1);
+
+  const updates: Record<string, unknown> = { status: newStatus, updated_at: now.toISOString() };
+  if (newStatus === "authorized") {
+    updates.current_period_start = now.toISOString();
+    updates.current_period_end   = nextMonth.toISOString();
+  }
+
+  const { data: existing } = await supabase
+    .from("add_on_subscriptions")
+    .select("id")
+    .eq("mp_preapproval_id", preapprovalId)
+    .maybeSingle();
+
+  if (existing) {
+    await supabase.from("add_on_subscriptions").update(updates).eq("id", existing.id);
+    console.log(`Add-on ${preapprovalId} → ${newStatus}`);
+    return;
+  }
+
+  // No existe la fila aún (raro): crearla a partir de external_reference = addon|user|type
+  const parts  = extRef.split("|");
+  const userId = parts[1];
+  const type   = parts[2];
+  if (!userId || !type) return;
+  const { data: pr } = await supabase
+    .from("addon_pricing").select("price_mxn").eq("type", type).maybeSingle();
+  await supabase.from("add_on_subscriptions").insert({
+    user_id:           userId,
+    add_on_type:       type,
+    mp_preapproval_id: preapprovalId,
+    status:            newStatus,
+    price_mxn:         (pr as { price_mxn: number } | null)?.price_mxn ?? 0,
+    ...(newStatus === "authorized" ? {
+      current_period_start: now.toISOString(),
+      current_period_end:   nextMonth.toISOString(),
+    } : {}),
+  });
+}
+
 /** Extiende la vigencia de la suscripción al recibir cada cobro mensual. */
 async function handleSubscriptionPayment(
   supabase: ReturnType<typeof createClient>,
@@ -262,6 +318,27 @@ async function handleSubscriptionPayment(
 
   const preapprovalId: string = ap.preapproval_id;
   if (!preapprovalId) return;
+
+  // ¿Es un cobro de add-on? → extender el add-on y salir.
+  const { data: addonSub } = await supabase
+    .from("add_on_subscriptions")
+    .select("id, current_period_end, last_authorized_payment_id")
+    .eq("mp_preapproval_id", preapprovalId)
+    .maybeSingle();
+
+  if (addonSub) {
+    if (addonSub.last_authorized_payment_id === String(authorizedPaymentId)) return;
+    const aBase = addonSub.current_period_end ? new Date(addonSub.current_period_end) : new Date();
+    const aNext = new Date(aBase); aNext.setMonth(aNext.getMonth() + 1);
+    await supabase.from("add_on_subscriptions").update({
+      status:                     "authorized",
+      current_period_start:       aBase.toISOString(),
+      current_period_end:         aNext.toISOString(),
+      last_authorized_payment_id: String(authorizedPaymentId),
+      updated_at:                 new Date().toISOString(),
+    }).eq("id", addonSub.id);
+    return;
+  }
 
   // Idempotencia — el mismo pago no debe extender 2 veces
   const { data: sub } = await supabase

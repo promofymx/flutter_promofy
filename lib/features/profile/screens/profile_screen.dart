@@ -7,7 +7,6 @@ import 'package:share_plus/share_plus.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/membership_plan_model.dart';
 import '../../../data/models/profile_model.dart';
-import '../../../data/repositories/auth_repository.dart';
 import '../../../data/repositories/staff_repository.dart';
 import '../../../features/auth/bloc/auth_bloc.dart';
 import '../../../features/auth/bloc/auth_event.dart';
@@ -15,12 +14,12 @@ import '../../../features/auth/bloc/auth_state.dart';
 import '../../../features/business/cubit/business_cubit.dart';
 import '../../../features/business/cubit/business_state.dart';
 import '../../../features/home/bloc/home_bloc.dart';
-import '../../../features/home/bloc/home_event.dart';
 import '../../../features/plans/screens/plans_screen.dart';
 import '../../../main.dart';
 import '../cubit/achievements_cubit.dart';
 import '../cubit/achievements_state.dart';
 import '../../../data/models/user_stats_model.dart';
+import 'settings_screen.dart';
 import 'logros_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -40,78 +39,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _achievementsCubit!.load();
   }
 
-  // ── Configuración ─────────────────────────────────────────────────────────
-  final _settingsNameCtrl = TextEditingController();
-  bool          _settingsInitialized = false;
-  int           _selectedRadius      = 25;
-  Set<String>   _selectedTypes       = {};
-  bool          _isSavingSettings    = false;
-
-  static const _radiusOptions = [5, 10, 25, 50];
-
-  static const _typeOptions = <String, String>{
-    'restaurante': 'Restaurante',
-    'bar':         'Bar',
-    'cafeteria':   'Cafetería',
-    'fast_food':   'Fast food',
-    'antojitos':   'Antojitos',
-    'mariscos':    'Mariscos',
-    'pizza':       'Pizza',
-    'sushi':       'Sushi',
-  };
-
   @override
   void dispose() {
-    _settingsNameCtrl.dispose();
     _achievementsCubit?.close();
     super.dispose();
-  }
-
-  void _initSettingsIfNeeded(ProfileModel profile) {
-    if (_settingsInitialized) return;
-    _settingsNameCtrl.text = profile.fullName ?? '';
-    _selectedRadius        = profile.searchRadiusKm;
-    _selectedTypes         = Set<String>.from(profile.preferredTypes);
-    _settingsInitialized   = true;
-  }
-
-  Future<void> _saveSettings(String userId) async {
-    final name = _settingsNameCtrl.text.trim();
-    if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('El nombre no puede estar vacío.'),
-        behavior: SnackBarBehavior.floating,
-      ));
-      return;
-    }
-    setState(() => _isSavingSettings = true);
-    try {
-      await AuthRepository().updateSettings(
-        userId:         userId,
-        fullName:       name,
-        searchRadiusKm: _selectedRadius,
-        preferredTypes: _selectedTypes.toList(),
-      );
-      if (!mounted) return;
-      // Propaga el nuevo radio al feed de inicio
-      context.read<HomeBloc>().add(HomeRadiusChanged(radiusKm: _selectedRadius));
-      // Refresca el perfil en AuthBloc para que todos los widgets lo lean
-      context.read<AuthBloc>().add(AuthProfileRefreshRequested());
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: const Text('Configuración guardada.'),
-        backgroundColor: Colors.green.shade700,
-        behavior: SnackBarBehavior.floating,
-      ));
-    } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Error al guardar. Intenta de nuevo.'),
-          behavior: SnackBarBehavior.floating,
-        ));
-      }
-    } finally {
-      if (mounted) setState(() => _isSavingSettings = false);
-    }
   }
 
   // ── Abrir sheet "¿Tienes un negocio?" ────────────────────────────────────
@@ -170,7 +101,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         final email   = state.user.email ?? '';
         final userId  = state.user.id;
 
-        _initSettingsIfNeeded(profile);
         _initAchievements(userId);
 
         return Scaffold(
@@ -229,21 +159,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // ── Configuración de búsqueda ─────────────────────────────
-                _SettingsCard(
-                  nameCtrl:        _settingsNameCtrl,
-                  selectedRadius:  _selectedRadius,
-                  radiusOptions:   _radiusOptions,
-                  selectedTypes:   _selectedTypes,
-                  typeOptions:     _typeOptions,
-                  isSaving:        _isSavingSettings,
-                  onRadiusChanged: (r) => setState(() => _selectedRadius = r),
-                  onTypeToggled: (key) => setState(() {
-                    _selectedTypes.contains(key)
-                        ? _selectedTypes.remove(key)
-                        : _selectedTypes.add(key);
-                  }),
-                  onSave: () => _saveSettings(userId),
+                // ── Configuración (abre pantalla dedicada) ────────────────
+                _SettingsEntryCard(
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => MultiBlocProvider(
+                        providers: [
+                          BlocProvider.value(value: context.read<AuthBloc>()),
+                          BlocProvider.value(value: context.read<HomeBloc>()),
+                        ],
+                        child: SettingsScreen(profile: profile, userId: userId),
+                      ),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 16),
 
@@ -1440,175 +1368,45 @@ class _Card extends StatelessWidget {
   }
 }
 
-// ─── Card de configuración ────────────────────────────────────────────────────
+// --- Card de entrada a Configuraci�n ------------------------------------------
 
-class _SettingsCard extends StatelessWidget {
-  final TextEditingController    nameCtrl;
-  final int                      selectedRadius;
-  final List<int>                radiusOptions;
-  final Set<String>              selectedTypes;
-  final Map<String, String>      typeOptions;
-  final bool                     isSaving;
-  final ValueChanged<int>        onRadiusChanged;
-  final ValueChanged<String>     onTypeToggled;
-  final VoidCallback             onSave;
-
-  const _SettingsCard({
-    required this.nameCtrl,
-    required this.selectedRadius,
-    required this.radiusOptions,
-    required this.selectedTypes,
-    required this.typeOptions,
-    required this.isSaving,
-    required this.onRadiusChanged,
-    required this.onTypeToggled,
-    required this.onSave,
-  });
+class _SettingsEntryCard extends StatelessWidget {
+  final VoidCallback onTap;
+  const _SettingsEntryCard({required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return _Card(
-      title: 'Configuración',
-      children: [
-
-        // ── Nombre ────────────────────────────────────────────────────────
-        const _SectionLabel('Nombre'),
-        const SizedBox(height: 6),
-        TextField(
-          controller: nameCtrl,
-          textCapitalization: TextCapitalization.words,
-          decoration: InputDecoration(
-            hintText: 'Tu nombre completo',
-            filled: true,
-            fillColor: Colors.grey.shade50,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: Colors.grey.shade300),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: Colors.grey.shade300),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: AppColors.primary),
-            ),
-          ),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [BoxShadow(color: Colors.black.withAlpha(13), blurRadius: 8, offset: const Offset(0, 2))],
         ),
-        const SizedBox(height: 16),
-
-        // ── Radio de búsqueda ─────────────────────────────────────────────
-        Row(
+        child: Row(
           children: [
-            const _SectionLabel('Radio de búsqueda'),
-            const SizedBox(width: 6),
-            Icon(Icons.info_outline,
-                size: 14, color: Colors.grey.shade400),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(color: AppColors.primary.withAlpha(20), shape: BoxShape.circle),
+              child: const Icon(Icons.settings_outlined, color: AppColors.primary, size: 22),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Configuración', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+                  SizedBox(height: 2),
+                  Text('Nombre, radio, gustos, contraseña y cuenta', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right, color: Colors.grey.shade400),
           ],
         ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          children: radiusOptions.map((km) {
-            final selected = km == selectedRadius;
-            return ChoiceChip(
-              label: Text('$km km'),
-              selected: selected,
-              onSelected: (_) => onRadiusChanged(km),
-              selectedColor: AppColors.primary.withAlpha(30),
-              labelStyle: TextStyle(
-                color: selected ? AppColors.primary : Colors.grey.shade700,
-                fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
-                fontSize: 13,
-              ),
-              side: BorderSide(
-                color: selected
-                    ? AppColors.primary
-                    : Colors.grey.shade300,
-              ),
-              backgroundColor: Colors.grey.shade50,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
-            );
-          }).toList(),
-        ),
-        const SizedBox(height: 16),
-
-        // ── Tipos de lugar preferidos ─────────────────────────────────────
-        const _SectionLabel('Tipos de lugar preferidos'),
-        const SizedBox(height: 4),
-        Text(
-          'Próximamente para notificaciones personalizadas',
-          style: TextStyle(fontSize: 11, color: Colors.grey.shade400),
-        ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: typeOptions.entries.map((e) {
-            final selected = selectedTypes.contains(e.key);
-            return FilterChip(
-              label: Text(e.value),
-              selected: selected,
-              onSelected: (_) => onTypeToggled(e.key),
-              selectedColor: AppColors.primary.withAlpha(25),
-              checkmarkColor: AppColors.primary,
-              labelStyle: TextStyle(
-                color: selected ? AppColors.primary : Colors.grey.shade700,
-                fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
-                fontSize: 13,
-              ),
-              side: BorderSide(
-                color: selected ? AppColors.primary : Colors.grey.shade300,
-              ),
-              backgroundColor: Colors.grey.shade50,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
-            );
-          }).toList(),
-        ),
-        const SizedBox(height: 16),
-
-        // ── Botón guardar ─────────────────────────────────────────────────
-        SizedBox(
-          width: double.infinity,
-          height: 48,
-          child: ElevatedButton(
-            onPressed: isSaving ? null : onSave,
-            style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-            ),
-            child: isSaving
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                        strokeWidth: 2.5, color: Colors.white),
-                  )
-                : const Text('Guardar configuración',
-                    style: TextStyle(fontWeight: FontWeight.w600)),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _SectionLabel extends StatelessWidget {
-  final String text;
-  const _SectionLabel(this.text);
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontSize: 13,
-        fontWeight: FontWeight.w600,
-        color: AppColors.textDark,
       ),
     );
   }

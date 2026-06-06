@@ -21,32 +21,38 @@ class PlansLoaded extends PlansState {
   final List<MembershipPlanModel> plans;
   final UserSubscriptionData      subscription;
   final List<AddOnPurchaseModel>  addOns;
+  /// Add-ons activos como suscripción mensual (filas de add_on_subscriptions).
+  final List<Map<String, dynamic>> addonSubscriptions;
   /// true mientras se espera respuesta de una Edge Function de pago.
   final bool                      isProcessing;
 
   const PlansLoaded({
     required this.plans,
     required this.subscription,
-    this.addOns      = const [],
-    this.isProcessing = false,
+    this.addOns             = const [],
+    this.addonSubscriptions = const [],
+    this.isProcessing       = false,
   });
 
   PlansLoaded copyWith({
-    List<MembershipPlanModel>? plans,
-    UserSubscriptionData?      subscription,
-    List<AddOnPurchaseModel>?  addOns,
-    bool?                      isProcessing,
+    List<MembershipPlanModel>?  plans,
+    UserSubscriptionData?       subscription,
+    List<AddOnPurchaseModel>?   addOns,
+    List<Map<String, dynamic>>? addonSubscriptions,
+    bool?                       isProcessing,
   }) {
     return PlansLoaded(
-      plans:        plans        ?? this.plans,
-      subscription: subscription ?? this.subscription,
-      addOns:       addOns       ?? this.addOns,
-      isProcessing: isProcessing ?? this.isProcessing,
+      plans:              plans              ?? this.plans,
+      subscription:       subscription       ?? this.subscription,
+      addOns:             addOns             ?? this.addOns,
+      addonSubscriptions: addonSubscriptions ?? this.addonSubscriptions,
+      isProcessing:       isProcessing       ?? this.isProcessing,
     );
   }
 
   @override
-  List<Object?> get props => [plans, subscription, addOns, isProcessing];
+  List<Object?> get props =>
+      [plans, subscription, addOns, addonSubscriptions, isProcessing];
 }
 
 /// Se emite cuando la URL de pago está lista → la pantalla abre el WebView.

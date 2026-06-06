@@ -72,10 +72,12 @@ workflows:
       flutter: stable
 
       # ── Secrets (configura en Codemagic → Environment variables) ──────
+      # ⚠️ NUNCA pongas los valores reales aquí — defínelos en
+      #    Codemagic → Environment variables (marcados como "Secure").
       # CM_KEYSTORE          → El archivo promofy-release.jks (base64)
-      # CM_KEYSTORE_PASSWORD → MiPassword123
+      # CM_KEYSTORE_PASSWORD → (secret) password del keystore
       # CM_KEY_ALIAS         → promofy
-      # CM_KEY_PASSWORD      → Selg-1990*
+      # CM_KEY_PASSWORD      → (secret) password de la key
       # GCLOUD_SERVICE_ACCOUNT_CREDENTIALS → JSON de Google Play API
       vars:
         BUNDLE_ID: mx.promofy.app
@@ -98,6 +100,7 @@ workflows:
         script: |
           flutter build appbundle \
             --release \
+            --target-platform android-arm,android-arm64,android-x64 \
             --build-number=$(($(google-play get-latest-build-number \
               --package-name "$BUNDLE_ID" \
               --tracks="internal") + 1))

@@ -18,12 +18,14 @@ class PlansCubit extends Cubit<PlansState> {
         _repo.getPlans(),
         _repo.getMySubscription(),
         _repo.getMyAddOns(),
+        _repo.getMyAddonSubscriptions(),
       ]);
 
       emit(PlansLoaded(
-        plans:        results[0] as dynamic,
-        subscription: results[1] as dynamic,
-        addOns:       results[2] as dynamic,
+        plans:              results[0] as dynamic,
+        subscription:       results[1] as dynamic,
+        addOns:             results[2] as dynamic,
+        addonSubscriptions: results[3] as List<Map<String, dynamic>>,
       ));
     } catch (e) {
       emit(PlansError('No se pudieron cargar los planes: $e'));
@@ -69,12 +71,40 @@ class PlansCubit extends Cubit<PlansState> {
 
     emit(current.copyWith(isProcessing: true));
     try {
-      final result = await _repo.createAddOnPreference(addOnType: addOnType);
+      // Add-on como suscripción mensual recurrente (preapproval).
+      final result = await _repo.createAddonSubscription(addOnType: addOnType);
       emit(PlansPaymentReady(
-        checkoutUrl: result['checkout_url']!,
+        checkoutUrl: result['init_point']!,
         type:        'addon',
         loaded:      current.copyWith(isProcessing: false),
       ));
+    } catch (e) {
+      emit(current.copyWith(isProcessing: false));
+      rethrow;
+    }
+  }
+
+  // ── Cancelar un add-on (suscripción mensual) ──────────────────────────────
+
+  /// Promos activas del usuario (para que elija cuáles desactivar al cancelar).
+  Future<List<Map<String, dynamic>>> activePromotions() =>
+      _repo.getMyActivePromotions();
+
+  /// Desactiva las promos elegidas (si quedó sobre el límite) y cancela el add-on.
+  Future<void> cancelAddon(
+    String addOnSubscriptionId, {
+    List<String> deactivatePromoIds = const [],
+  }) async {
+    final current = state;
+    if (current is! PlansLoaded) return;
+    emit(current.copyWith(isProcessing: true));
+    try {
+      for (final pid in deactivatePromoIds) {
+        await _repo.deactivatePromotion(pid);
+      }
+      await _repo.cancelAddonSubscription(addOnSubscriptionId);
+      final subs = await _repo.getMyAddonSubscriptions();
+      emit(current.copyWith(addonSubscriptions: subs, isProcessing: false));
     } catch (e) {
       emit(current.copyWith(isProcessing: false));
       rethrow;

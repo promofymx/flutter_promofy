@@ -38,6 +38,9 @@ class BusinessLoaded extends BusinessState {
   final int                      totalPromoCount;
   final MembershipPlanModel?     plan;
   final bool                     isSubscriptionActive;
+  /// Promos/locales extra comprados como add-on (suscripción activa).
+  final int                      extraPromotions;
+  final int                      extraEstablishments;
 
   const BusinessLoaded({
     required this.establishments,
@@ -47,9 +50,19 @@ class BusinessLoaded extends BusinessState {
     this.totalPromoCount      = 0,
     this.plan,
     this.isSubscriptionActive = false,
+    this.extraPromotions      = 0,
+    this.extraEstablishments  = 0,
   });
 
   EstablishmentModel get selected => establishments[selectedIndex];
+
+  /// Límite efectivo de promociones = plan + add-ons activos.
+  int get maxPromotionsEffective =>
+      (plan?.maxPromotions ?? 2) + extraPromotions;
+
+  /// Límite efectivo de establecimientos = plan + add-ons activos.
+  int get maxEstablishmentsEffective =>
+      (plan?.maxEstablishments ?? 1) + extraEstablishments;
 
   BusinessLoaded copyWith({
     List<EstablishmentModel>? establishments,
@@ -59,6 +72,8 @@ class BusinessLoaded extends BusinessState {
     int?                      totalPromoCount,
     MembershipPlanModel?      plan,
     bool?                     isSubscriptionActive,
+    int?                      extraPromotions,
+    int?                      extraEstablishments,
   }) =>
       BusinessLoaded(
         establishments:       establishments       ?? this.establishments,
@@ -68,11 +83,14 @@ class BusinessLoaded extends BusinessState {
         totalPromoCount:      totalPromoCount      ?? this.totalPromoCount,
         plan:                 plan                 ?? this.plan,
         isSubscriptionActive: isSubscriptionActive ?? this.isSubscriptionActive,
+        extraPromotions:      extraPromotions      ?? this.extraPromotions,
+        extraEstablishments:  extraEstablishments  ?? this.extraEstablishments,
       );
 
   @override
   List<Object?> get props =>
-      [establishments, selectedIndex, promos, promosLoaded, totalPromoCount, plan, isSubscriptionActive];
+      [establishments, selectedIndex, promos, promosLoaded, totalPromoCount,
+       plan, isSubscriptionActive, extraPromotions, extraEstablishments];
 }
 
 class BusinessSaving extends BusinessState {

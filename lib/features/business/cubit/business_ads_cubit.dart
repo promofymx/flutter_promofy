@@ -83,6 +83,17 @@ class BusinessAdsCubit extends Cubit<BusinessAdsState> {
     emit(current.copyWith(
       campaigns: [campaign, ...current.campaigns],
     ));
+
+    // Si es de formato push, dispara el envío a la audiencia y cobra. Best-effort:
+    // la campaña ya quedó creada aunque el envío falle.
+    if (format == 'push') {
+      try {
+        await _repo.sendAdPush(campaign.id);
+        final refreshed = await _repo.getCampaigns(_establishmentId);
+        final st = state;
+        if (st is BusinessAdsLoaded) emit(st.copyWith(campaigns: refreshed));
+      } catch (_) {/* sin interrumpir el flujo */}
+    }
   }
 
   // ── Pausar / reanudar campaña ──────────────────────────────────────────────

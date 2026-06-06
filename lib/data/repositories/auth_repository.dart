@@ -74,6 +74,23 @@ class AuthRepository {
 
   Future<void> signOut() async => await supabase.auth.signOut();
 
+  /// Elimina permanentemente la cuenta del usuario y todos sus datos.
+  /// Llama a la edge function `delete-account` (service role) y luego cierra
+  /// la sesión local. Lanza una excepción si el borrado falla.
+  Future<void> deleteAccount() async {
+    final res = await supabase.functions.invoke('delete-account');
+    final data = res.data;
+    if (res.status != 200 || (data is Map && data['error'] != null)) {
+      throw Exception(
+        (data is Map ? data['error'] : null) ?? 'No se pudo eliminar la cuenta.',
+      );
+    }
+    // La cuenta ya no existe → la sesión es inválida; cerrar localmente.
+    try {
+      await supabase.auth.signOut();
+    } catch (_) {/* sesión ya invalidada tras borrar el usuario */}
+  }
+
   Future<ProfileModel?> getProfile(String userId) async {
     final response = await supabase
         .from('profiles')
@@ -100,19 +117,28 @@ class AuthRepository {
     });
   }
 
-  /// Guarda nombre, radio de búsqueda y tipos preferidos del usuario.
+  /// Guarda nombre, radio de búsqueda, tipos preferidos y categorías favoritas.
   Future<void> updateSettings({
-    required String      userId,
-    required String      fullName,
-    required int         searchRadiusKm,
+    required String       userId,
+    required String       fullName,
+    required int          searchRadiusKm,
     required List<String> preferredTypes,
+    List<int>             favoriteCategoryIds = const [],
   }) async {
     await supabase.from('profiles').update({
-      'full_name':         fullName,
-      'search_radius_km':  searchRadiusKm,
-      'preferred_types':   preferredTypes,
-      'updated_at':        DateTime.now().toIso8601String(),
+      'full_name':             fullName,
+      'search_radius_km':      searchRadiusKm,
+      'preferred_types':       preferredTypes,
+      'favorite_category_ids': favoriteCategoryIds,
+      'updated_at':            DateTime.now().toIso8601String(),
     }).eq('id', userId);
+  }
+
+  /// Cambia la contraseña del usuario con sesión activa.
+  Future<void> changePassword(String newPassword) async {
+    await supabase.auth.updateUser(
+      UserAttributes(password: newPassword),
+    );
   }
 
   // ── Ubicación ──────────────────────────────────────────────────

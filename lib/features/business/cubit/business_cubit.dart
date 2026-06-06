@@ -42,12 +42,16 @@ class BusinessCubit extends Cubit<BusinessState> {
         totalPromos = await _repo.countTotalPromos(ests.map((e) => e.id).toList());
       } catch (_) {}
 
+      final addons = await _repo.getActiveAddonCounts(_userId);
+
       emit(BusinessLoaded(
         establishments:       ests,
         selectedIndex:        0,
         totalPromoCount:      totalPromos,
         plan:                 plan,
         isSubscriptionActive: isSubActive,
+        extraPromotions:      addons.promotions,
+        extraEstablishments:  addons.establishments,
       ));
       _loadPromos(ests[0]);
     } catch (_) {

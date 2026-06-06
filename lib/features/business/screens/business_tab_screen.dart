@@ -58,15 +58,15 @@ class _BusinessTabScreenState extends State<BusinessTabScreen> {
     final s = context.read<BusinessCubit>().state;
     if (s is! BusinessLoaded) return;
 
-    // Si es nueva, verifica el límite del plan
+    // Si es nueva, verifica el límite efectivo (plan + add-ons)
     if (promo == null) {
-      final max = s.plan?.maxPromotions ?? 2;
+      final max = s.maxPromotionsEffective;
       if (s.totalPromoCount >= max) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
-            'Tu plan "${s.plan?.name ?? ""}" permite hasta $max '
-            'promoción${max != 1 ? "es" : ""} en total. '
-            'Actualiza tu plan para agregar más.',
+            'Llegaste a tu límite de $max '
+            'promoción${max != 1 ? "es" : ""}. '
+            'Compra espacio extra o sube de plan para agregar más.',
           ),
           behavior: SnackBarBehavior.floating,
         ));
@@ -92,7 +92,7 @@ class _BusinessTabScreenState extends State<BusinessTabScreen> {
     if (establishment == null) {
       final s = context.read<BusinessCubit>().state;
       if (s is BusinessLoaded) {
-        final max = s.plan?.maxEstablishments ?? 1;
+        final max = s.maxEstablishmentsEffective;
         if (s.establishments.length >= max) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -212,6 +212,8 @@ class _LoadedBody extends StatelessWidget {
               plan:       state.plan!,
               estCount:   state.establishments.length,
               promoCount: state.totalPromoCount,
+              maxEst:     state.maxEstablishmentsEffective,
+              maxPromos:  state.maxPromotionsEffective,
             ),
           if (state.plan != null) const SizedBox(height: 12),
 
@@ -254,10 +256,10 @@ class _LoadedBody extends StatelessWidget {
           _PromosSection(
             promos:       state.promos,
             promosLoaded: state.promosLoaded,
-            maxPromos:    state.plan?.maxPromotions,
+            maxPromos:    state.plan == null ? null : state.maxPromotionsEffective,
             totalUsed:    state.totalPromoCount,
             canAdd:       state.plan == null ||
-                state.totalPromoCount < state.plan!.maxPromotions,
+                state.totalPromoCount < state.maxPromotionsEffective,
             onAdd:        onAddPromo,
             onEdit:       onEditPromo,
           ),
@@ -365,11 +367,15 @@ class _PlanUsageBar extends StatelessWidget {
   final MembershipPlanModel plan;
   final int                 estCount;
   final int                 promoCount;
+  final int                 maxEst;
+  final int                 maxPromos;
 
   const _PlanUsageBar({
     required this.plan,
     required this.estCount,
     required this.promoCount,
+    required this.maxEst,
+    required this.maxPromos,
   });
 
   @override
@@ -396,9 +402,9 @@ class _PlanUsageBar extends StatelessWidget {
                 fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.primary),
           ),
           const SizedBox(width: 10),
-          _UsagePill(current: estCount,   max: plan.maxEstablishments, label: 'neg.'),
+          _UsagePill(current: estCount,   max: maxEst,    label: 'neg.'),
           const SizedBox(width: 6),
-          _UsagePill(current: promoCount, max: plan.maxPromotions,     label: 'promos'),
+          _UsagePill(current: promoCount, max: maxPromos, label: 'promos'),
           const Spacer(),
           TextButton(
             onPressed: () => Navigator.of(context).push(
@@ -1024,6 +1030,51 @@ class _PromosSection extends StatelessWidget {
               onToggleFeatured:   onToggleFeatured,
               showFeaturedToggle: showFeaturedToggle,
             )),
+
+          // ── Comprar espacio cuando se llegó al límite de promos ──────────
+          if (maxPromos != null && totalUsed >= maxPromos!) ...[
+            const SizedBox(height: 14),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color:        AppColors.primary.withAlpha(12),
+                borderRadius: BorderRadius.circular(12),
+                border:       Border.all(color: AppColors.primary.withAlpha(40)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Llegaste al límite de tu plan',
+                      style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textDark)),
+                  const SizedBox(height: 2),
+                  Text('Compra espacio extra y sigue publicando sin cambiar de plan.',
+                      style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const PlansScreen()),
+                      ),
+                      icon:  const Icon(Icons.add_business_outlined, size: 18),
+                      label: const Text('Comprar espacio de promoción',
+                          style: TextStyle(fontWeight: FontWeight.w600)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(double.infinity, 46),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -2158,7 +2209,7 @@ class _EmptyState extends StatelessWidget {
               Text(
                 'Tu plan "${plan!.name}" incluye hasta '
                 '${plan!.maxEstablishments} negocio${plan!.maxEstablishments != 1 ? "s" : ""} '
-                'y ${plan!.maxPromotions} promociones.',
+                'y ${plan!.maxPromotions} promociones normales.',
                 style: TextStyle(fontSize: 14, color: Colors.grey.shade600, height: 1.5),
                 textAlign: TextAlign.center,
               ),

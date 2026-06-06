@@ -35,13 +35,54 @@ class MainScaffold extends StatefulWidget {
   State<MainScaffold> createState() => _MainScaffoldState();
 }
 
-class _MainScaffoldState extends State<MainScaffold> {
-  /// Garantiza que el splash solo se muestra una vez por sesión.
+class _MainScaffoldState extends State<MainScaffold>
+    with WidgetsBindingObserver {
+  /// Evita re-mostrar el splash dentro del mismo ciclo de presentación.
   bool _splashShown = false;
+
+  /// Última vez que se mostró el splash, para aplicar un margen entre apariciones.
+  DateTime? _lastSplashAt;
+
+  /// Margen mínimo entre apariciones del splash al regresar a la app.
+  /// Permite "varios por día" sin volverse molesto.
+  static const Duration _splashCooldown = Duration(minutes: 10);
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) return;
+    final last = _lastSplashAt;
+    final cooldownPassed =
+        last == null || DateTime.now().difference(last) >= _splashCooldown;
+    if (!cooldownPassed) return;
+    _reloadAndShowSplash();
+  }
+
+  /// Recarga anuncios (dispara impresiones; el servidor deduplica por día) y
+  /// vuelve a mostrar el splash al regresar a la app.
+  Future<void> _reloadAndShowSplash() async {
+    final cubit = context.read<AdsDisplayCubit>();
+    await cubit.load();
+    if (!mounted) return;
+    _splashShown = false;
+    _maybeShowSplash(context, cubit.state);
+  }
 
   void _maybeShowSplash(BuildContext context, AdsDisplayState state) {
     if (_splashShown || state.splashAds.isEmpty) return;
     _splashShown = true;
+    _lastSplashAt = DateTime.now();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final AdDisplayModel ad    = state.splashAds.first;

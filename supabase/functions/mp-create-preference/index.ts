@@ -24,9 +24,9 @@ const ADD_ONS: Record<string, { title: string; unit_price: number; quantity: num
     quantity:   1,
   },
   extra_promotions: {
-    title:      "Pack 10 promociones extra",
+    title:      "1 promoción adicional",
     unit_price: 49,
-    quantity:   10,
+    quantity:   1,
   },
 };
 

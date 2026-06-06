@@ -73,6 +73,9 @@ class AdsRepository {
   Future<AdCampaignModel> updateCampaignStatus(String id, String status) =>
       _ds.updateCampaignStatus(id, status);
 
+  Future<Map<String, dynamic>> sendAdPush(String campaignId) =>
+      _ds.sendAdPush(campaignId);
+
   Future<int> getReachEstimate({
     required int    minAge,
     required int    maxAge,

@@ -19,6 +19,8 @@ class ProfileModel extends Equatable {
   final int searchRadiusKm;
   /// Tipos de lugar preferidos para notificaciones (ej. ['bar', 'restaurante']).
   final List<String> preferredTypes;
+  /// IDs de categorías favoritas (comida favorita), referencian a `categories`.
+  final List<int> favoriteCategoryIds;
 
   // ── Programa de referidos ────────────────────────────────────────────
   /// Código único de referido (ej. "AB12CD34"). Null si aún no se generó.
@@ -47,6 +49,7 @@ class ProfileModel extends Equatable {
     this.planExpiresAt,
     this.searchRadiusKm  = 25,
     this.preferredTypes  = const [],
+    this.favoriteCategoryIds = const [],
     this.referralCode,
     this.adCreditsMxn    = 0,
     this.city,
@@ -96,6 +99,10 @@ class ProfileModel extends Equatable {
       preferredTypes: (json['preferred_types'] as List<dynamic>? ?? [])
           .map((e) => e as String)
           .toList(),
+      favoriteCategoryIds: (json['favorite_category_ids'] as List<dynamic>? ?? [])
+          .map((e) => e is int ? e : int.tryParse('$e') ?? 0)
+          .where((e) => e != 0)
+          .toList(),
       referralCode:  json['referral_code'] as String?,
       adCreditsMxn:  ((json['ad_credits_mxn'] as num?) ?? 0).toDouble(),
       city:         json['city']         as String?,
@@ -119,7 +126,7 @@ class ProfileModel extends Equatable {
   List<Object?> get props => [
         id, fullName, birthDate, gender, cityId, role,
         phone, phoneVerified, isSuperadmin, planId, planExpiresAt,
-        searchRadiusKm, preferredTypes,
+        searchRadiusKm, preferredTypes, favoriteCategoryIds,
         referralCode, adCreditsMxn,
         city, municipality, state, postalCode,
       ];

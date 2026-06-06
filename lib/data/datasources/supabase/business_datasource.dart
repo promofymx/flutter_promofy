@@ -36,16 +36,18 @@ class BusinessDatasource {
     return response != null;
   }
 
-  /// Cuenta todas las promociones de una lista de establecimientos.
-  /// Excluye las promos creadas por el superadmin (is_admin_created = true)
-  /// para que no cuenten contra el límite del plan del dueño.
+  /// Cuenta solo las promociones normales (type = 'normal') de una lista
+  /// de establecimientos. Las promos flash y cumpleañero son gratuitas y no
+  /// cuentan contra el límite del plan. Tampoco cuentan las creadas por el
+  /// superadmin (is_admin_created = true).
   Future<int> countTotalPromos(List<String> establishmentIds) async {
     if (establishmentIds.isEmpty) return 0;
     final response = await supabase
         .from('promotions')
         .select('id')
         .inFilter('establishment_id', establishmentIds)
-        .eq('is_admin_created', false);
+        .eq('is_admin_created', false)
+        .eq('type', 'normal');
     return (response as List).length;
   }
 

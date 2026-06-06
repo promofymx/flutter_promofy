@@ -114,7 +114,8 @@ class PromotionModel extends Equatable {
     return '🍽️ $establishmentName\n'
         '🏷️ $name\n'
         '⏰ $_formattedDays, $time\n'
-        '¡Descúbrelo en Promofy! 🎉';
+        '¡Descúbrelo en Promofy! 🎉\n'
+        '👉 https://promofy.fun';
   }
 
   // ¿La promo está activa ahora mismo?

@@ -47,6 +47,14 @@
                 <data android:scheme="promofy"/>
             </intent-filter>
         </activity>
+        <!-- Ícono y color de las notificaciones push (FCM en background) -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_notification" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/promofy_notification" />
+
         <!-- Clave para google_maps_flutter y google_places_flutter -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"

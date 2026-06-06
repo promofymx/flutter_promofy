@@ -488,18 +488,24 @@ class _StatPill extends StatelessWidget {
           children: [
             Icon(icon, size: 14, color: color),
             const SizedBox(width: 6),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(value,
-                    style: TextStyle(
-                        fontSize:   16,
-                        fontWeight: FontWeight.bold,
-                        color:      color)),
-                Text(label,
-                    style: TextStyle(
-                        fontSize: 10, color: Colors.grey.shade600)),
-              ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(value,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          fontSize:   16,
+                          fontWeight: FontWeight.bold,
+                          color:      color)),
+                  Text(label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          fontSize: 10, color: Colors.grey.shade600)),
+                ],
+              ),
             ),
           ],
         ),

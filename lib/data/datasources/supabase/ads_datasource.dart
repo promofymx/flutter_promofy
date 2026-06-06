@@ -93,28 +93,15 @@ class AdsDatasource {
     required int    maxAge,
     required String gender, // 'all' | 'male' | 'female'
   }) async {
-    final now     = DateTime.now();
-    // Quienes tienen AL MENOS minAge: birth_date <= (hoy - minAge años)
-    final latest  = DateTime(now.year - minAge,  now.month, now.day);
-    // Quienes tienen COMO MUCHO maxAge: birth_date >= (hoy - maxAge años)
-    final earliest = DateTime(now.year - maxAge, now.month, now.day);
-
-    final baseRows = gender == 'all'
-        ? await supabase
-            .from('profiles')
-            .select('id')
-            .not('birth_date', 'is', null)
-            .gte('birth_date', earliest.toIso8601String().split('T').first)
-            .lte('birth_date', latest.toIso8601String().split('T').first)
-        : await supabase
-            .from('profiles')
-            .select('id')
-            .not('birth_date', 'is', null)
-            .gte('birth_date', earliest.toIso8601String().split('T').first)
-            .lte('birth_date', latest.toIso8601String().split('T').first)
-            .eq('gender', gender);
-
-    return (baseRows as List).length;
+    // Se cuenta del lado del servidor con un RPC SECURITY DEFINER.
+    // Una consulta directa a `profiles` devolvería 0 por RLS (el dueño solo
+    // puede leer su propio perfil).
+    final result = await supabase.rpc('get_ad_reach_estimate', params: {
+      'p_min_age': minAge,
+      'p_max_age': maxAge,
+      'p_gender':  gender,
+    });
+    return (result as num?)?.toInt() ?? 0;
   }
 
   // ── Campañas ───────────────────────────────────────────────────────────────
@@ -172,6 +159,16 @@ class AdsDatasource {
         .select()
         .single();
     return AdCampaignModel.fromJson(row);
+  }
+
+  /// Dispara el envío del push de una campaña de formato 'push'.
+  /// Devuelve {sent, failed, charged} o {error}.
+  Future<Map<String, dynamic>> sendAdPush(String campaignId) async {
+    final res = await supabase.functions.invoke(
+      'send-ad-push',
+      body: {'campaign_id': campaignId},
+    );
+    return (res.data as Map<String, dynamic>?) ?? const {};
   }
 
   Future<AdCampaignModel> updateCampaignStatus(

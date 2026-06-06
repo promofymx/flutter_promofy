@@ -173,7 +173,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     ],
 
                     // Sección 2: Categoría (solo raíces — sin parent)
-                    if (widget.categories.isNotEmpty) ...[
+                    if (widget.categories.any((c) => c.parentId == null)) ...[
                       _SectionTitle('Categoría'),
                       const SizedBox(height: 10),
                       Wrap(
@@ -181,6 +181,30 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                         runSpacing: 8,
                         children: widget.categories
                             .where((c) => c.parentId == null)
+                            .map((c) {
+                          final active = _draft.categoryId == c.id;
+                          return _SelectableChip(
+                            label: c.name,
+                            isActive: active,
+                            // Seleccionar categoría limpia tipo de comida y viceversa
+                            onTap: () => setState(() => _draft =
+                                _draft.copyWith(
+                                    categoryId: active ? null : c.id)),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+
+                    // Sección 3: Tipo de comida (subcategorías — con parent)
+                    if (widget.categories.any((c) => c.parentId != null)) ...[
+                      _SectionTitle('Tipo de comida'),
+                      const SizedBox(height: 10),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: widget.categories
+                            .where((c) => c.parentId != null)
                             .map((c) {
                           final active = _draft.categoryId == c.id;
                           return _SelectableChip(
@@ -195,7 +219,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       const SizedBox(height: 20),
                     ],
 
-                    // Sección 3: Día de la semana
+                    // Sección 4: Día de la semana
                     _SectionTitle('Día'),
                     const SizedBox(height: 10),
                     Wrap(
@@ -214,7 +238,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     ),
                     const SizedBox(height: 20),
 
-                    // Sección 4: Método de pago
+                    // Sección 5: Método de pago
                     _SectionTitle('Método de pago'),
                     const SizedBox(height: 10),
                     Wrap(

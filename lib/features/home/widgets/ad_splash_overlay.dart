@@ -27,7 +27,7 @@ class AdSplashOverlay extends StatefulWidget {
 }
 
 class _AdSplashOverlayState extends State<AdSplashOverlay> {
-  static const _kDuration = 6;
+  static const _kDuration = 3;
   int    _remaining = _kDuration;
   Timer? _timer;
 
@@ -147,7 +147,7 @@ class _AdSplashOverlayState extends State<AdSplashOverlay> {
                 Positioned(
                   top: 8, right: 8,
                   child: GestureDetector(
-                    onTap: _close,
+                    onTap: _remaining <= 0 ? _close : null,
                     child: Container(
                       width:  36,
                       height: 36,

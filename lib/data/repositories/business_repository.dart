@@ -6,6 +6,7 @@ import '../datasources/supabase/promotions_datasource.dart';
 import '../models/establishment_model.dart';
 import '../models/membership_plan_model.dart';
 import '../models/promotion_model.dart';
+import '../../main.dart';
 
 class BusinessRepository {
   final BusinessDatasource        _datasource;
@@ -117,6 +118,23 @@ class BusinessRepository {
   /// Devuelve true si el usuario tiene una suscripción mensual activa.
   Future<bool> getSubscriptionStatus(String userId) =>
       _datasource.hasActiveSubscription(userId);
+
+  /// Add-ons activos (suscripciones) para sumar al límite del plan.
+  Future<({int promotions, int establishments})> getActiveAddonCounts(
+      String userId) async {
+    try {
+      final p = await supabase.rpc('active_addon_count',
+          params: {'p_user': userId, 'p_type': 'extra_promotion'});
+      final e = await supabase.rpc('active_addon_count',
+          params: {'p_user': userId, 'p_type': 'extra_establishment'});
+      return (
+        promotions:     (p as num?)?.toInt() ?? 0,
+        establishments: (e as num?)?.toInt() ?? 0,
+      );
+    } catch (_) {
+      return (promotions: 0, establishments: 0);
+    }
+  }
 
   // ── Promociones — consulta ─────────────────────────────────────────────────
 

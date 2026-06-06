@@ -1148,10 +1148,10 @@ class _PlanCard extends StatelessWidget {
   const _PlanCard({required this.plan, required this.onEdit});
 
   static const _planColors = <String, Color>{
-    '1 Mesa':  Color(0xFF1976D2),
-    '2 Mesas': Color(0xFF00897B),
-    '3 Mesas': Color(0xFFEF6C00),
-    '4 Mesas': Color(0xFF6A1B9A),
+    '1 Local':   Color(0xFF1976D2),
+    '2 Locales': Color(0xFF00897B),
+    '3 Locales': Color(0xFFEF6C00),
+    '5 Locales': Color(0xFF6A1B9A),
   };
 
   @override

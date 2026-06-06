@@ -150,6 +150,10 @@ class _PlansBody extends StatelessWidget {
                   if (loaded.subscription.hasActivePlan) ...[
                     const SizedBox(height: 28),
                     const _AddOnsSection(),
+                    if (loaded.addonSubscriptions.isNotEmpty) ...[
+                      const SizedBox(height: 20),
+                      _ActiveAddonsSection(items: loaded.addonSubscriptions),
+                    ],
                   ],
                 ],
               ),
@@ -530,7 +534,29 @@ class _PlanCard extends StatelessWidget {
                 ),
                 _FeatureRow(
                   icon:  Icons.local_offer_outlined,
-                  label: '${plan.maxPromotions} promociones activas',
+                  label: '${plan.maxPromotions} promociones normales activas',
+                ),
+                _FeatureRow(
+                  icon:  Icons.flash_on_outlined,
+                  label: plan.maxEstablishments == 1
+                      ? '1 promo flash al mes'
+                      : '1 promo flash/mes por establecimiento',
+                ),
+                _FeatureRow(
+                  icon:  Icons.cake_outlined,
+                  label: plan.maxEstablishments == 1
+                      ? 'Promo cumpleañero'
+                      : 'Promo cumpleañero por establecimiento',
+                ),
+                _FeatureRow(
+                  icon:  Icons.loyalty_outlined,
+                  label: plan.maxEstablishments == 1
+                      ? 'Programa de fidelización'
+                      : 'Programa de fidelización por establecimiento',
+                ),
+                _FeatureRow(
+                  icon:  Icons.bar_chart_rounded,
+                  label: 'Estadísticas en tiempo real',
                 ),
                 if (plan.maxPushNotifications > 0)
                   _FeatureRow(
@@ -538,14 +564,6 @@ class _PlanCard extends StatelessWidget {
                     label:
                         '${plan.maxPushNotifications} notificaciones push/mes',
                   ),
-                _FeatureRow(
-                  icon:  Icons.loyalty_outlined,
-                  label: 'Programa de lealtad con QR',
-                ),
-                _FeatureRow(
-                  icon:  Icons.bar_chart_rounded,
-                  label: 'Estadísticas de negocio',
-                ),
               ],
             ),
           ),
@@ -694,7 +712,7 @@ class _AddOnsSection extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         Text(
-          'Amplía tu plan con extras de un solo pago.',
+          'Amplía tu plan con complementos mensuales. Se cobran cada mes y los cancelas cuando quieras.',
           style: TextStyle(
               fontSize: 12,
               color:    Colors.grey.shade500,
@@ -704,16 +722,16 @@ class _AddOnsSection extends StatelessWidget {
         _AddOnTile(
           icon:        Icons.store_outlined,
           title:       '1 establecimiento adicional',
-          description: 'Agrega un local extra a tu cuenta de forma permanente.',
-          price:       '\$199 MXN',
+          description: 'Un local extra en tu cuenta. Se cobra cada mes hasta que lo canceles.',
+          price:       '\$199 MXN/mes',
           addOnType:   'extra_establishment',
         ),
         _AddOnTile(
           icon:        Icons.local_offer_outlined,
-          title:       'Pack 10 promociones',
-          description: 'Activa 10 promociones adicionales en cualquier local.',
-          price:       '\$49 MXN',
-          addOnType:   'extra_promotions',
+          title:       '1 promoción adicional',
+          description: 'Una promoción extra en cualquier local. Se cobra cada mes hasta que la canceles.',
+          price:       '\$49 MXN/mes',
+          addOnType:   'extra_promotion',
         ),
       ],
     );
@@ -831,5 +849,197 @@ class _AddOnTile extends StatelessWidget {
         );
       }
     });
+  }
+}
+
+// ─── Mis complementos activos (cancelar suscripciones de add-on) ──────────────
+
+class _ActiveAddonsSection extends StatelessWidget {
+  final List<Map<String, dynamic>> items;
+  const _ActiveAddonsSection({required this.items});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Mis complementos activos',
+            style: TextStyle(
+                fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.textDark)),
+        const SizedBox(height: 4),
+        Text('Se renuevan cada mes. Cancélalos cuando quieras.',
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+        const SizedBox(height: 12),
+        ...items.map((a) => _ActiveAddonRow(addon: a)),
+      ],
+    );
+  }
+}
+
+class _ActiveAddonRow extends StatelessWidget {
+  final Map<String, dynamic> addon;
+  const _ActiveAddonRow({required this.addon});
+
+  String get _type => addon['add_on_type'] as String? ?? '';
+  String get _label => _type == 'extra_promotion'
+      ? 'Promoción adicional'
+      : (_type == 'extra_establishment' ? 'Establecimiento adicional' : _type);
+
+  @override
+  Widget build(BuildContext context) {
+    final price = (addon['price_mxn'] as num?)?.toStringAsFixed(0) ?? '';
+    return Container(
+      margin:  const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color:        Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border:       Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(_label,
+                    style: const TextStyle(
+                        fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+                Text('\$$price MXN/mes',
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+              ],
+            ),
+          ),
+          TextButton(
+            onPressed: () => _onCancel(context),
+            style: TextButton.styleFrom(foregroundColor: Colors.red.shade600),
+            child: const Text('Cancelar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _onCancel(BuildContext context) async {
+    final cubit = context.read<PlansCubit>();
+    final state = cubit.state;
+    if (state is! PlansLoaded) return;
+    final id = addon['id'] as String;
+
+    List<String> toDeactivate = [];
+
+    // Si es promo y quedarías sobre el límite → elegir cuáles desactivar.
+    if (_type == 'extra_promotion') {
+      MembershipPlanModel? plan;
+      for (final p in state.plans) {
+        if (p.id == state.subscription.effectivePlanId) { plan = p; break; }
+      }
+      final planMax  = plan?.maxPromotions ?? 2;
+      final extra    = state.addonSubscriptions
+          .where((a) => a['add_on_type'] == 'extra_promotion').length;
+      final newMax   = planMax + (extra - 1);
+      final promos   = await cubit.activePromotions();
+      final excess   = promos.length - newMax;
+      if (excess > 0) {
+        if (!context.mounted) return;
+        final chosen = await _chooseToDeactivate(context, promos, excess);
+        if (chosen == null) return; // cerró sin confirmar
+        toDeactivate = chosen;
+      }
+    }
+
+    if (!context.mounted) return;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Cancelar complemento'),
+        content: Text(toDeactivate.isEmpty
+            ? '¿Cancelar "$_label"? Dejará de cobrarse el próximo mes.'
+            : 'Se desactivarán ${toDeactivate.length} promoción(es) y se cancelará "$_label". ¿Continuar?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('No')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Sí, cancelar'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+
+    try {
+      await cubit.cancelAddon(id, deactivatePromoIds: toDeactivate);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content:         const Text('Complemento cancelado.'),
+          backgroundColor: Colors.green.shade700,
+          behavior:        SnackBarBehavior.floating,
+        ));
+      }
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content:  Text('No se pudo cancelar. Intenta de nuevo.'),
+          behavior: SnackBarBehavior.floating,
+        ));
+      }
+    }
+  }
+
+  /// Diálogo para elegir EXACTAMENTE [need] promociones a desactivar.
+  Future<List<String>?> _chooseToDeactivate(
+      BuildContext context, List<Map<String, dynamic>> promos, int need) {
+    final selected = <String>{};
+    return showDialog<List<String>>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSt) => AlertDialog(
+          title: Text('Desactiva $need promoción(es)'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Al cancelar este complemento superas tu límite. '
+                  'Elige $need para desactivar:',
+                  style: const TextStyle(fontSize: 12),
+                ),
+                const SizedBox(height: 8),
+                Flexible(
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: promos.map((p) {
+                      final pid      = p['id'] as String;
+                      final checked  = selected.contains(pid);
+                      final disabled = !checked && selected.length >= need;
+                      return CheckboxListTile(
+                        value:    checked,
+                        dense:    true,
+                        title:    Text(p['name'] as String? ?? 'Promo',
+                            style: const TextStyle(fontSize: 13)),
+                        onChanged: disabled ? null : (v) => setSt(() {
+                          (v == true) ? selected.add(pid) : selected.remove(pid);
+                        }),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancelar')),
+            TextButton(
+              onPressed: selected.length == need
+                  ? () => Navigator.pop(ctx, selected.toList())
+                  : null,
+              child: const Text('Continuar'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

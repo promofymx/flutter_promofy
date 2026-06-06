@@ -37,4 +37,23 @@ class PlansRepository {
 
   Future<List<AddOnPurchaseModel>> getMyAddOns() =>
       _paymentDs.getMyAddOns();
+
+  // ── Add-ons recurrentes (suscripción mensual) ──────────────────────────────
+
+  Future<Map<String, String>> createAddonSubscription({
+    required String addOnType,
+  }) =>
+      _paymentDs.createAddonSubscription(addOnType: addOnType);
+
+  Future<void> cancelAddonSubscription(String id) =>
+      _paymentDs.cancelAddonSubscription(id);
+
+  Future<List<Map<String, dynamic>>> getMyAddonSubscriptions() =>
+      _paymentDs.getMyAddonSubscriptions();
+
+  Future<List<Map<String, dynamic>>> getMyActivePromotions() =>
+      _paymentDs.getMyActivePromotions();
+
+  Future<void> deactivatePromotion(String promoId) =>
+      _paymentDs.deactivatePromotion(promoId);
 }

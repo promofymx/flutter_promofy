@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/audience_model.dart';
 import '../../../data/models/business_stats_model.dart';
@@ -82,10 +83,10 @@ class _StatsSectionState extends State<StatsSection> {
                   color: AppColors.primary,
                 ),
                 const SizedBox(width: 8),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'Estadísticas',
-                    style: TextStyle(
+                    AppLocalizations.of(context).statsTitle,
+                    style: const TextStyle(
                       fontSize:   15,
                       fontWeight: FontWeight.bold,
                       color:      AppColors.textDark,
@@ -157,7 +158,7 @@ class _StatsSectionState extends State<StatsSection> {
                       TextButton(
                         onPressed: () =>
                             context.read<StatsCubit>().load(days: _days),
-                        child: const Text('Reintentar'),
+                        child: Text(AppLocalizations.of(context).statsRetry),
                       ),
                     ],
                   ),
@@ -280,21 +281,21 @@ class _StatsContent extends StatelessWidget {
                 children: [
                   _StatTile(
                     icon:    Icons.storefront_outlined,
-                    label:   'Vistas negocio',
+                    label:   AppLocalizations.of(context).statsBusinessViews,
                     value:   '${stats.establishmentViews}',
                     color:   AppColors.primary,
                   ),
                   const SizedBox(width: 8),
                   _StatTile(
                     icon:    Icons.campaign_outlined,
-                    label:   'Vistas promos',
+                    label:   AppLocalizations.of(context).statsPromoViews,
                     value:   '${stats.totalPromoViews}',
                     color:   AppColors.secondary,
                   ),
                   const SizedBox(width: 8),
                   _StatTile(
                     icon:    Icons.favorite_rounded,
-                    label:   'Nuevos favs',
+                    label:   AppLocalizations.of(context).statsNewFavs,
                     value:   '${stats.newFavs}',
                     color:   Colors.pinkAccent.shade100,
                     iconColor: Colors.pinkAccent,
@@ -308,21 +309,21 @@ class _StatsContent extends StatelessWidget {
                 children: [
                   _StatTile(
                     icon:    Icons.phone_in_talk_outlined,
-                    label:   'Contactos',
+                    label:   AppLocalizations.of(context).statsContacts,
                     value:   '${stats.totalContacts}',
                     color:   Colors.teal.shade300,
                   ),
                   const SizedBox(width: 8),
                   _StatTile(
                     icon:    Icons.qr_code_scanner,
-                    label:   'Visitas QR',
+                    label:   AppLocalizations.of(context).statsQrVisits,
                     value:   '${stats.loyaltyVisits}',
                     color:   Colors.deepPurple.shade300,
                   ),
                   const SizedBox(width: 8),
                   _StatTile(
                     icon:      Icons.favorite_rounded,
-                    label:     'Favs totales',
+                    label:     AppLocalizations.of(context).statsTotalFavs,
                     value:     '${stats.totalFavs}',
                     color:     Colors.pink.shade200,
                     iconColor: Colors.pinkAccent,
@@ -337,7 +338,7 @@ class _StatsContent extends StatelessWidget {
                   children: [
                     _StatTile(
                       icon:  Icons.receipt_long_outlined,
-                      label: 'Ticket prom.',
+                      label: AppLocalizations.of(context).statsAvgTicket,
                       value: _moneyFmt.format(stats.avgTicket!),
                       color: Colors.amber.shade600,
                       // Sin spacers — el único Expanded llena el Row completo
@@ -353,7 +354,7 @@ class _StatsContent extends StatelessWidget {
                   children: [
                     _StatTile(
                       icon:  Icons.payments_outlined,
-                      label: 'Ingresos generados',
+                      label: AppLocalizations.of(context).statsRevenue,
                       value: _moneyFmt.format(stats.totalRevenue!),
                       color: Colors.green.shade600,
                       // Sin spacers — el único Expanded llena el Row completo
@@ -374,7 +375,7 @@ class _StatsContent extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'DETALLE POR PROMO',
+                  AppLocalizations.of(context).statsPromoBreakdown,
                   style: TextStyle(
                     fontSize:    10,
                     fontWeight:  FontWeight.w700,
@@ -385,22 +386,28 @@ class _StatsContent extends StatelessWidget {
                 const SizedBox(height: 8),
 
                 // Encabezado tabla
-                const Row(
+                Row(
                   children: [
                     Expanded(
                       flex: 3,
                       child: Text(
-                        'Promo',
-                        style: TextStyle(
+                        AppLocalizations.of(context).statsColPromo,
+                        style: const TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
                           color: AppColors.textDark,
                         ),
                       ),
                     ),
-                    _PromoCol(label: 'Vistas', tooltip: 'Veces que abrieron el detalle'),
-                    _PromoCol(label: 'Favs +', tooltip: 'Nuevos favoritos en el período'),
-                    _PromoCol(label: 'Favs Σ', tooltip: 'Total de favoritos acumulados'),
+                    _PromoCol(
+                        label: AppLocalizations.of(context).statsColViews,
+                        tooltip: AppLocalizations.of(context).statsColViewsTooltip),
+                    _PromoCol(
+                        label: AppLocalizations.of(context).statsColNewFavs,
+                        tooltip: AppLocalizations.of(context).statsColNewFavsTooltip),
+                    _PromoCol(
+                        label: AppLocalizations.of(context).statsColTotalFavs,
+                        tooltip: AppLocalizations.of(context).statsColTotalFavsTooltip),
                   ],
                 ),
                 const Divider(height: 10, color: Color(0xFFF0F0F0)),
@@ -447,7 +454,7 @@ class _StatsContent extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'CANALES DE CONTACTO',
+                  AppLocalizations.of(context).statsContactChannels,
                   style: TextStyle(
                     fontSize:    10,
                     fontWeight:  FontWeight.w700,
@@ -599,15 +606,6 @@ class _ContactRow extends StatelessWidget {
     'maps':      Icons.map_outlined,
   };
 
-  static const _labels = {
-    'whatsapp':  'WhatsApp',
-    'phone':     'Llamada',
-    'facebook':  'Facebook',
-    'instagram': 'Instagram',
-    'website':   'Sitio web',
-    'maps':      'Mapa',
-  };
-
   static const _colors = {
     'whatsapp':  Color(0xFF25D366),
     'phone':     AppColors.primary,
@@ -619,9 +617,18 @@ class _ContactRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n  = AppLocalizations.of(context);
     final icon  = _icons[type]  ?? Icons.touch_app_outlined;
-    final label = _labels[type] ?? type;
     final color = _colors[type] ?? Colors.grey;
+    final label = switch (type) {
+      'whatsapp'  => 'WhatsApp',
+      'phone'     => l10n.statsChannelPhone,
+      'facebook'  => 'Facebook',
+      'instagram' => 'Instagram',
+      'website'   => l10n.statsChannelWebsite,
+      'maps'      => l10n.statsChannelMaps,
+      _           => type,
+    };
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -681,7 +688,7 @@ class _AudienceSectionState extends State<_AudienceSection> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'AUDIENCIA (${aud.total} favoriteadores)',
+                AppLocalizations.of(context).statsAudienceHeader(aud.total),
                 style: TextStyle(
                   fontSize: 10, fontWeight: FontWeight.w700,
                   color: Colors.grey.shade500, letterSpacing: 0.6,
@@ -690,7 +697,8 @@ class _AudienceSectionState extends State<_AudienceSection> {
               const SizedBox(height: 12),
 
               // ── Sexo ──────────────────────────────────────────────────────
-              Text('Sexo', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600,
+              Text(AppLocalizations.of(context).statsGender,
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600,
                   color: Colors.grey.shade700)),
               const SizedBox(height: 6),
               _GenderBars(genderCounts: aud.genderCounts, total: aud.total),
@@ -698,7 +706,8 @@ class _AudienceSectionState extends State<_AudienceSection> {
               if (aud.ageBuckets.isNotEmpty) ...[
                 const SizedBox(height: 14),
                 // ── Edad ────────────────────────────────────────────────────
-                Text('Edad', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600,
+                Text(AppLocalizations.of(context).statsAge,
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600,
                     color: Colors.grey.shade700)),
                 const SizedBox(height: 6),
                 _AgeBars(buckets: aud.ageBuckets, total: aud.total),
@@ -711,7 +720,7 @@ class _AudienceSectionState extends State<_AudienceSection> {
                   onTap: () => setState(() => _expanded = !_expanded),
                   child: Row(
                     children: [
-                      Text('Por promoción',
+                      Text(AppLocalizations.of(context).statsByPromo,
                           style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600,
                               color: Colors.grey.shade700)),
                       const Spacer(),
@@ -741,7 +750,6 @@ class _GenderBars extends StatelessWidget {
   const _GenderBars({required this.genderCounts, required this.total});
 
   static const _order  = ['male', 'female', 'unknown'];
-  static const _labels = {'male': 'Hombres', 'female': 'Mujeres', 'unknown': 'N/E'};
   static const _colors = {
     'male':    Color(0xFF1976D2),
     'female':  Color(0xFFE91E8C),
@@ -751,13 +759,19 @@ class _GenderBars extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (total == 0) return const SizedBox.shrink();
+    final l10n = AppLocalizations.of(context);
     final entries = _order.where((k) => genderCounts.containsKey(k)).toList();
     return Column(
       children: entries.map((key) {
         final count = genderCounts[key] ?? 0;
         final pct   = total > 0 ? count / total : 0.0;
         final color = _colors[key] ?? Colors.grey;
-        final label = _labels[key] ?? key;
+        final label = switch (key) {
+          'male'    => l10n.statsGenderMale,
+          'female'  => l10n.statsGenderFemale,
+          'unknown' => l10n.statsGenderUnknown,
+          _         => key,
+        };
         return Padding(
           padding: const EdgeInsets.only(bottom: 6),
           child: Row(

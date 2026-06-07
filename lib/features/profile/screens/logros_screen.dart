@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/user_stats_model.dart';
 import '../cubit/achievements_cubit.dart';
@@ -28,9 +29,9 @@ class _LogrosView extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text(
-          'Mis Logros',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          AppLocalizations.of(context).logrosTitle,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
       body: BlocBuilder<AchievementsCubit, AchievementsState>(
@@ -47,14 +48,14 @@ class _LogrosView extends StatelessWidget {
                       size: 48, color: Colors.grey.shade300),
                   const SizedBox(height: 12),
                   Text(
-                    'No se pudieron cargar tus logros.',
+                    AppLocalizations.of(context).logrosLoadError,
                     style: TextStyle(color: Colors.grey.shade500),
                   ),
                   const SizedBox(height: 16),
                   OutlinedButton(
                     onPressed: () =>
                         context.read<AchievementsCubit>().load(),
-                    child: const Text('Reintentar'),
+                    child: Text(AppLocalizations.of(context).logrosRetry),
                   ),
                 ],
               ),
@@ -93,13 +94,14 @@ class _LogrosContent extends StatelessWidget {
         const SizedBox(height: 24),
 
         // ── Insignias anuales ─────────────────────────────────────────────
-        _SectionTitle('Insignias de visitas'),
+        _SectionTitle(AppLocalizations.of(context).logrosSectionVisits),
         const SizedBox(height: 12),
         ...BadgeTier.values.where((t) => t != BadgeTier.none).map(
           (tier) => _BadgeTile(
             emoji:     tier.emoji,
             label:     tier.label,
-            subtitle:  '${tier.minVisits} visitas anuales',
+            subtitle:  AppLocalizations.of(context)
+                .logrosAnnualVisits(tier.minVisits),
             desc:      tier.description,
             unlocked:  stats.annualVisits >= tier.minVisits,
             color:     tier.color,
@@ -108,14 +110,15 @@ class _LogrosContent extends StatelessWidget {
         const SizedBox(height: 24),
 
         // ── Insignias de racha ────────────────────────────────────────────
-        _SectionTitle('Rachas semanales'),
+        _SectionTitle(AppLocalizations.of(context).logrosSectionStreaks),
         const SizedBox(height: 12),
         ...StreakBadge.values.where((s) => s != StreakBadge.none).map(
           (sb) => _BadgeTile(
             emoji:    sb.emoji,
             label:    sb.label,
-            subtitle: '${sb.minWeeks} semanas consecutivas',
-            desc:     _streakDesc(sb),
+            subtitle: AppLocalizations.of(context)
+                .logrosConsecutiveWeeks(sb.minWeeks),
+            desc:     _streakDesc(context, sb),
             unlocked: stats.currentStreakWeeks >= sb.minWeeks,
             color:    sb.color,
           ),
@@ -125,11 +128,12 @@ class _LogrosContent extends StatelessWidget {
     );
   }
 
-  String _streakDesc(StreakBadge sb) {
+  String _streakDesc(BuildContext context, StreakBadge sb) {
+    final l10n = AppLocalizations.of(context);
     switch (sb) {
-      case StreakBadge.enRacha:   return 'Visitaste negocios 3 semanas seguidas';
-      case StreakBadge.imparable: return '8 semanas sin parar — eres imparable';
-      case StreakBadge.leyenda:   return '26 semanas (medio año) de racha perfecta';
+      case StreakBadge.enRacha:   return l10n.logrosStreakDescEnRacha;
+      case StreakBadge.imparable: return l10n.logrosStreakDescImparable;
+      case StreakBadge.leyenda:   return l10n.logrosStreakDescLeyenda;
       default:                    return '';
     }
   }
@@ -218,7 +222,7 @@ class _ProgressSection extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Próximo nivel: ${next.label}',
+                  AppLocalizations.of(context).logrosNextLevel(next.label),
                   style: const TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 14,
@@ -248,7 +252,8 @@ class _ProgressSection extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            '${stats.visitsToNextBadge} visitas más para alcanzarlo',
+            AppLocalizations.of(context)
+                .logrosVisitsToGo(stats.visitsToNextBadge),
             style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
           ),
         ],

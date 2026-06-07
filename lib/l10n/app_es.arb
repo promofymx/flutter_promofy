@@ -1,0 +1,1780 @@
+{
+  "settingsTitle": "Configuración",
+  "language": "Idioma",
+  "languageAuto": "Automático (del dispositivo)",
+  "retry": "Reintentar",
+  "explore": "Explorar",
+  "favTitle": "Mis favoritos",
+  "favTabPromos": "Promociones",
+  "favTabEstablishments": "Establecimientos",
+  "favEmptyPromosTitle": "Aún no tienes promos favoritas",
+  "favEmptyPromosSubtitle": "Toca el corazón en cualquier promo\npara guardarla aquí",
+  "favEmptyEstTitle": "Aún no tienes negocios favoritos",
+  "favEmptyEstSubtitle": "Entra a un negocio y toca el corazón\npara guardarlo aquí",
+  "removeFromFavorites": "Quitar de favoritos",
+  "loginWelcome": "Bienvenido a Promofy",
+  "loginSubtitle": "Descubre promociones cerca de ti",
+  "loginContinueGoogle": "Continuar con Google",
+  "loginOr": "o",
+  "loginEmailLabel": "Correo electrónico",
+  "loginEmailEmpty": "Ingresa tu correo",
+  "loginEmailInvalid": "Correo no válido",
+  "loginPasswordLabel": "Contraseña",
+  "loginPasswordEmpty": "Ingresa tu contraseña",
+  "loginPasswordMinLength": "Mínimo 6 caracteres",
+  "loginForgotPassword": "¿Olvidaste tu contraseña?",
+  "loginSignInButton": "Iniciar sesión",
+  "loginSignUpButton": "Crear cuenta",
+  "loginNoAccount": "¿No tienes cuenta? ",
+  "loginHaveAccount": "¿Ya tienes cuenta? ",
+  "loginSignUpLink": "Regístrate",
+  "loginSignInLink": "Inicia sesión",
+  "loginResetInvalidEmail": "Ingresa un correo válido.",
+  "loginResetTitle": "Recuperar contraseña",
+  "loginResetDone": "Listo",
+  "loginResetCancel": "Cancelar",
+  "loginResetSend": "Enviar",
+  "loginResetDescription": "Te enviaremos un enlace para restablecer tu contraseña.",
+  "loginResetEmailHint": "tu@correo.com",
+  "loginResetSuccessTitle": "¡Correo enviado!",
+  "loginResetSuccessBody": "Revisa tu bandeja de entrada y sigue las instrucciones.",
+  "loginResetSpamHint": "Si no llega en unos minutos, revisa la carpeta de spam.",
+  "onboardingTitle": "Completa tu perfil",
+  "onboardingExit": "Salir",
+  "onboardingHeading": "Cuéntanos sobre ti",
+  "onboardingAdultOnlyNotice": "Promofy es exclusivo para mayores de 18 años",
+  "onboardingNameQuestion": "¿Cuál es tu nombre?",
+  "onboardingNameHint": "Tu nombre completo",
+  "onboardingNameRequired": "Ingresa tu nombre",
+  "onboardingBirthQuestion": "¿Cuándo naciste?",
+  "onboardingSelectBirthDate": "Selecciona tu fecha de nacimiento",
+  "onboardingGenderQuestion": "¿Cuál es tu sexo?",
+  "onboardingGenderMale": "Masculino",
+  "onboardingGenderFemale": "Femenino",
+  "onboardingGenderPreferNot": "Prefiero no decir",
+  "onboardingSubmit": "Completar mi perfil",
+  "onboardingMustBeAdult": "Debes ser mayor de 18 años",
+  "onboardingConfirm": "Confirmar",
+  "onboardingCancel": "Cancelar",
+  "onboardingMustBeAdultToUse": "Debes ser mayor de 18 años para usar Promofy",
+  "onboardingSelectGender": "Selecciona tu género",
+  "resetPwdAppBarTitle": "Nueva contraseña",
+  "resetPwdUpdateError": "No se pudo actualizar la contraseña.",
+  "resetPwdSuccessTitle": "¡Contraseña actualizada!",
+  "resetPwdSuccessSubtitle": "Ya puedes iniciar sesión\ncon tu nueva contraseña.",
+  "resetPwdGoHome": "Ir al inicio",
+  "resetPwdFormTitle": "Crea tu nueva contraseña",
+  "resetPwdFormHint": "Debe tener al menos 6 caracteres.",
+  "resetPwdNewLabel": "Nueva contraseña",
+  "resetPwdMinLength": "Mínimo 6 caracteres",
+  "resetPwdConfirmLabel": "Confirmar contraseña",
+  "resetPwdMismatch": "Las contraseñas no coinciden",
+  "resetPwdSave": "Guardar contraseña",
+  "homeSearchHint": "Buscar promo o restaurante...",
+  "homeEmptySearch": "Sin resultados para \"{query}\"",
+  "homeEmptyFilters": "Sin resultados para estos filtros",
+  "homeEmptyNoPromos": "No hay promociones por aquí aún",
+  "homeClearSearchAndFilters": "Limpiar búsqueda y filtros",
+  "homeRetry": "Reintentar",
+  "promoDetailNew": "Nuevo",
+  "promoDetailBirthdayGift": "Tu regalo de cumpleaños",
+  "promoDetailConditions": "Condiciones: {terms}",
+  "promoDetailDescription": "Descripción",
+  "promoDetailAvailability": "Disponibilidad",
+  "promoDetailShare": "Compartir",
+  "promoDetailSaved": "Guardado",
+  "promoDetailSave": "Guardar",
+  "promoDetailFlash": "⚡ Relámpago",
+  "promoDetailFlashEndsInHours": "⚡ Termina en {hours}h {minutes}m",
+  "promoDetailFlashEndsInMinutes": "⚡ Termina en {minutes}m",
+  "restaurantNew": "Nuevo",
+  "restaurantTypeUrbanMobile": "Urbano / Móvil",
+  "restaurantTypeLocal": "Local",
+  "restaurantCall": "Llamar",
+  "restaurantWebsite": "Web",
+  "restaurantCharacteristics": "Características",
+  "restaurantPaymentMethods": "Métodos de pago",
+  "restaurantSchedule": "Horario",
+  "restaurantClosed": "Cerrado",
+  "restaurantLocation": "Ubicación",
+  "restaurantViewOnMap": "Ver en mapa",
+  "restaurantGetDirections": "Cómo llegar",
+  "restaurantPhotos": "Fotos",
+  "restaurantLoyaltyProgram": "Programa de lealtad",
+  "restaurantVisitsCount": "{count} visitas",
+  "restaurantValidUntil": "Vigente hasta {date} · {days} días",
+  "restaurantEnded": "Terminó {date}",
+  "restaurantViewStampsAndQr": "Ver mis sellos y QR",
+  "restaurantActivePromos": "Promociones activas",
+  "restaurantNoActivePromos": "Sin promociones activas por ahora.",
+  "restaurantNoPromosToday": "Sin promociones para hoy.",
+  "restaurantAlsoThisWeek": "También esta semana",
+  "restaurantFlash": "Flash",
+  "restaurantRetry": "Reintentar",
+  "lugaresSearchHint": "Buscar negocio...",
+  "lugaresChipOpenNow": "Abiertos ahora",
+  "lugaresChipFlash": "⚡ Relámpago",
+  "lugaresChipFavorites": "⭐ Mis favoritos",
+  "lugaresChipMoreFilters": "Más filtros",
+  "lugaresChipFiltersCount": "Filtros ({count})",
+  "lugaresFiltersTitle": "Filtros",
+  "lugaresClearAll": "Limpiar todo",
+  "lugaresSectionCharacteristics": "Características del lugar",
+  "lugaresSectionCategory": "Categoría",
+  "lugaresSectionDay": "Día",
+  "lugaresSectionPayment": "Método de pago",
+  "lugaresDayMon": "Lun",
+  "lugaresDayTue": "Mar",
+  "lugaresDayWed": "Mié",
+  "lugaresDayThu": "Jue",
+  "lugaresDayFri": "Vie",
+  "lugaresDaySat": "Sáb",
+  "lugaresDaySun": "Dom",
+  "lugaresPaymentCash": "Efectivo",
+  "lugaresPaymentCard": "Tarjeta",
+  "lugaresPaymentTransfer": "Transferencia",
+  "lugaresPaymentMercadopago": "MercadoPago",
+  "lugaresApplyWithCount": "Aplicar ({count} {count, plural, one {filtro} other {filtros}})",
+  "lugaresApplyFilters": "Aplicar filtros",
+  "lugaresEmptyFiltered": "Sin resultados para los filtros aplicados",
+  "lugaresEmptyNoNearby": "No hay negocios cerca por ahora",
+  "lugaresClearFilters": "Limpiar filtros",
+  "lugaresRetry": "Reintentar",
+  "stampsTitle": "Mis Sellos",
+  "stampsMyQrTooltip": "Mi QR de visitas",
+  "stampsSectionReady": "Recompensas listas para canjear",
+  "stampsSectionInProgress": "En progreso",
+  "stampsSuffixProgram": "programa",
+  "stampsSuffixPrograms": "programas",
+  "stampsSectionEarned": "Recompensas ganadas",
+  "stampsSuffixTotal": "totales",
+  "stampsSeeAllRewards": "Ver todas las recompensas →",
+  "stampsTapForRedemptionQr": "Toca para ver QR de canje",
+  "stampsReadyBadge": "¡LISTA!",
+  "stampsFinished": "Terminado",
+  "stampsVisitsCount": "{visits}/{required} visitas",
+  "stampsStampsLeft": "¡Te faltan {count}! 🔥",
+  "stampsExpiredOn": "Venció el {date}",
+  "stampsExpiresOn": "Caduca el {date}",
+  "stampsRedeemed": "Canjeada",
+  "stampsRedeemReward": "Canjear recompensa",
+  "stampsAtEstablishment": "en {name}",
+  "stampsCodeLabel": "Código: {code}",
+  "stampsShowCodeToStaff": "Muestra este código al personal",
+  "stampsStaffWillScan": "Lo escanearán para validar tu recompensa",
+  "stampsMyQrTitle": "Mi código QR",
+  "stampsMyQrSubtitle": "Muéstrale este código al negocio para registrar tu visita.",
+  "stampsUniqueAccountCode": "Código único de tu cuenta",
+  "stampsRetry": "Reintentar",
+  "stampsEmptyTitle": "Aún no tienes sellos",
+  "stampsEmptyMsg": "Visita negocios con programa de lealtad y muéstrales tu código QR para acumular sellos.",
+  "stampsViewMyQr": "Ver mi QR",
+  "loyaltyTitle": "Programa de lealtad",
+  "loyaltyScan": "Escanear",
+  "loyaltyStatusDeactivated": "Desactivado",
+  "loyaltyStatusExpired": "Venció el {date}",
+  "loyaltyStatusExpiresIn": "{days, plural, one{Vence en {days} día} other{Vence en {days} días}}",
+  "loyaltyStatusActive": "Activo — termina {date}",
+  "loyaltyVisitsRequired": "Visitas requeridas",
+  "loyaltyReward": "Premio",
+  "loyaltyStart": "Inicio",
+  "loyaltyEnd": "Fin",
+  "loyaltyEndNow": "Terminar programa ahora",
+  "loyaltyCreateNew": "Crear nuevo programa",
+  "loyaltyEndDialogTitle": "¿Terminar programa?",
+  "loyaltyEndDialogContent": "Todos los clientes dejarán de acumular visitas en este programa. Podrás crear uno nuevo cuando quieras.",
+  "loyaltyCancel": "Cancelar",
+  "loyaltyEnd2": "Terminar",
+  "loyaltyNoProgramDesc": "Fideliza a tus clientes con un sistema de sellos digital. Define cuántas visitas necesitan para ganar su premio.",
+  "loyaltyCreate": "Crear programa",
+  "loyaltyParticipants": "Participantes",
+  "loyaltyRewardWon": "Premio ganado",
+  "loyaltyViewClients": "Ver clientes",
+  "loyaltyClientsTitle": "Mis clientes",
+  "loyaltyClientsLoadError": "No se pudieron cargar los clientes.",
+  "loyaltyClientsRetry": "Reintentar",
+  "loyaltyClientsCurrentProgram": "PROGRAMA ACTUAL",
+  "loyaltyClientsParticipants": "{count, plural, =1{{count} participante} other{{count} participantes}}",
+  "loyaltyClientsEmptyProgram": "Aún no hay clientes en este programa. Escanea el QR de tus primeros visitantes.",
+  "loyaltyClientsReward": "¡Premio!",
+  "loyaltyClientsStampsLeft": "{count} para su premio",
+  "loyaltyClientsHistoryHeader": "HISTORIAL DE COMENSALES",
+  "loyaltyClientsHistorySubtitle": "Total de visitas registradas con QR, de mayor a menor.",
+  "loyaltyClientsEmptyHistory": "El historial aparecerá aquí conforme escanees a tus clientes con QR.",
+  "loyaltyClientsColumnClient": "Cliente",
+  "loyaltyClientsColumnVisits": "Visitas",
+  "loyaltyClientsColumnSpent": "Gasto",
+  "loyaltyClientsColumnLast": "Última",
+  "qrInvalidCode": "QR no válido. Pide al cliente que muestre su código.",
+  "qrScanTitle": "Escanear cliente",
+  "qrTorch": "Linterna",
+  "qrPointInstruction": "Apunta al QR del cliente",
+  "qrErrorUnauthorized": "No tienes permiso para registrar visitas en este programa.",
+  "qrErrorProgramInactive": "El programa está inactivo o venció.",
+  "qrErrorNetwork": "Error de conexión. Intenta de nuevo.",
+  "qrErrorUnexpected": "Ocurrió un error inesperado.",
+  "qrCouldNotRegister": "No se pudo registrar",
+  "qrRewardWonTitle": "¡Premio ganado! 🎉",
+  "qrRewardWonMessage": "El cliente completó {visits} visitas. ¡Es momento de entregarle su regalo!",
+  "qrVisitRegistered": "Visita registrada",
+  "qrVisitsLeft": "Al cliente le faltan {count} visita(s) para su premio.",
+  "qrProgramCompleted": "¡Completó el programa!",
+  "qrBillAmountLabel": "Importe de la cuenta (opcional)",
+  "qrBillAmountHint": "Ej. 350",
+  "qrBillAmountHelper": "Registra cuánto gastó el cliente para medir el ROI de Promofy.",
+  "qrDone": "Listo",
+  "qrVisitsCount": "{current}/{total} visitas",
+  "loyaltyFormTitle": "Nuevo programa de lealtad",
+  "loyaltyFormInfo": "El cliente muestra su QR, tú lo escaneas en cada visita. Al completar el número de visitas, recibirá su premio. Cuando el programa termine puedes crear uno nuevo y todos los contadores se reinician.",
+  "loyaltyFormVisitsLabel": "Visitas para ganar el premio",
+  "loyaltyFormVisitsHint": "Ej. 5",
+  "loyaltyFormVisitsSuffix": "visitas",
+  "loyaltyFormVisitsMin": "Mínimo 2 visitas",
+  "loyaltyFormVisitsMax": "Máximo 50 visitas",
+  "loyaltyFormRewardLabel": "¿Qué gana el cliente?",
+  "loyaltyFormRewardHint": "Ej. Café gratis, 20% de descuento, postre gratis…",
+  "loyaltyFormRewardRequired": "Describe el premio",
+  "loyaltyFormValidityLabel": "Vigencia del programa",
+  "loyaltyFormStartLabel": "Inicio",
+  "loyaltyFormEndLabel": "Fin",
+  "loyaltyFormSelectDate": "Seleccionar",
+  "loyaltyFormSaving": "Guardando…",
+  "loyaltyFormSubmit": "Activar programa",
+  "loyaltyFormSelectEndDate": "Selecciona la fecha de fin del programa.",
+  "loyaltyFormCreateError": "Error al crear el programa. Intenta de nuevo.",
+  "plansWebviewSubscriptionTitle": "Suscripción Promofy",
+  "plansWebviewAddonTitle": "Comprar add-on",
+  "plansAppBarTitle": "Planes y pagos",
+  "plansRetry": "Reintentar",
+  "plansPaymentApprovedTitle": "¡Pago aprobado!",
+  "plansPaymentPendingTitle": "Pago en proceso",
+  "plansPaymentApprovedBody": "Tu suscripción fue activada correctamente. Ya puedes disfrutar de todos los beneficios de tu plan.",
+  "plansPaymentPendingBody": "Tu pago está siendo procesado. En cuanto se confirme, tu plan se actualizará automáticamente.",
+  "plansGotIt": "Entendido",
+  "plansLaunchPromoTitle": "Promoción de Lanzamiento",
+  "plansLaunchPromoSubtitle": "Desde $99 MXN. Lo que vale el plan lo recibes en créditos de publicidad.",
+  "plansLaunchPromoValidUntil": "Válido hasta el 18 de julio de 2026",
+  "plansActivePlanFallback": "Plan activo",
+  "plansNoActivePlan": "Sin plan activo",
+  "plansCurrentPlanLabel": "Tu plan actual",
+  "plansActiveBadge": "Activo",
+  "plansCurrentBadge": "Actual",
+  "plansPricePerMonth": "${amount} MXN/mes",
+  "plansFree": "Gratis",
+  "plansMxnPerMonthSuffix": " MXN/mes",
+  "plansAdCredit": "+${amount} en publicidad",
+  "plansFeatureEstablishments": "{count} establecimiento(s)",
+  "plansFeaturePromotions": "{count} promociones normales activas",
+  "plansFeatureFlashSingle": "1 promo flash al mes",
+  "plansFeatureFlashMulti": "1 promo flash/mes por establecimiento",
+  "plansFeatureBirthdaySingle": "Promo cumpleañero",
+  "plansFeatureBirthdayMulti": "Promo cumpleañero por establecimiento",
+  "plansFeatureLoyaltySingle": "Programa de fidelización",
+  "plansFeatureLoyaltyMulti": "Programa de fidelización por establecimiento",
+  "plansFeatureStats": "Estadísticas en tiempo real",
+  "plansFeaturePush": "{count} notificaciones push/mes",
+  "plansActivePlanButton": "Plan activo",
+  "plansProcessing": "Procesando...",
+  "plansSubscribe": "Suscribirme",
+  "plansAddonsLabel": "ADD-ONS",
+  "plansAddonsDescription": "Amplía tu plan con complementos mensuales. Se cobran cada mes y los cancelas cuando quieras.",
+  "plansAddonEstablishmentTitle": "1 establecimiento adicional",
+  "plansAddonEstablishmentDesc": "Un local extra en tu cuenta. Se cobra cada mes hasta que lo canceles.",
+  "plansAddonEstablishmentPrice": "$199 MXN/mes",
+  "plansAddonPromotionTitle": "1 promoción adicional",
+  "plansAddonPromotionDesc": "Una promoción extra en cualquier local. Se cobra cada mes hasta que la canceles.",
+  "plansAddonPromotionPrice": "$49 MXN/mes",
+  "plansBuy": "Comprar",
+  "plansActiveAddonsTitle": "Mis complementos activos",
+  "plansActiveAddonsSubtitle": "Se renuevan cada mes. Cancélalos cuando quieras.",
+  "plansAddonPromotionLabel": "Promoción adicional",
+  "plansAddonEstablishmentLabel": "Establecimiento adicional",
+  "plansCancel": "Cancelar",
+  "plansCancelAddonTitle": "Cancelar complemento",
+  "plansCancelAddonConfirm": "¿Cancelar \"{label}\"? Dejará de cobrarse el próximo mes.",
+  "plansCancelAddonConfirmWithPromos": "Se desactivarán {count} promoción(es) y se cancelará \"{label}\". ¿Continuar?",
+  "plansNo": "No",
+  "plansYesCancel": "Sí, cancelar",
+  "plansAddonCancelled": "Complemento cancelado.",
+  "plansCancelError": "No se pudo cancelar. Intenta de nuevo.",
+  "plansDeactivateDialogTitle": "Desactiva {count} promoción(es)",
+  "plansDeactivateDialogBody": "Al cancelar este complemento superas tu límite. Elige {count} para desactivar:",
+  "plansPromoFallback": "Promo",
+  "plansContinue": "Continuar",
+  "paymentSecureTitle": "Pago seguro",
+  "paymentOpeningBrowser": "Abriendo MercadoPago en tu navegador...",
+  "paymentCancelTooltip": "Cancelar pago",
+  "profileTitle": "Mi perfil",
+  "profileSignOut": "Cerrar sesión",
+  "profileNoName": "Sin nombre",
+  "profileBusinessOwnerChip": "Dueño de negocio",
+  "profileLevelBusinessActive": "Negocio activo",
+  "profileLevelStaff": "Empleado",
+  "profileAccountInfoTitle": "Información de la cuenta",
+  "profileFieldName": "Nombre",
+  "profileFieldBirthDate": "Fecha de nacimiento",
+  "profileFieldGender": "Género",
+  "profileGenderMale": "Hombre",
+  "profileGenderFemale": "Mujer",
+  "profileGenderOther": "Otro",
+  "profileBusinessMembershipTitle": "Membresía de negocio",
+  "profileGoToMyBusiness": "Ir a Mi negocio",
+  "profileViewPlansAndPayments": "Ver planes y pagos",
+  "profileBasicPlan": "Plan básico",
+  "profileNoExpiry": "Sin vencimiento",
+  "profileExpired": "Vencido ({date})",
+  "profileExpiresOn": "Vence el {date}",
+  "profileHaveBusinessTitle": "¿Tienes un negocio?",
+  "profileHaveBusinessSubtitle": "Regístralo y llega a más clientes",
+  "profileRegisterIt": "Regístralo",
+  "profileSheetTitleLoaded": "Ya está en Promofy",
+  "profileSheetTitleCode": "Ingresa tu código",
+  "profileSheetTitleNoCode": "Encuentra tu negocio",
+  "profileSheetTitleInitial": "Registra tu negocio",
+  "profileOptionNewTitle": "Es nuevo",
+  "profileOptionNewSubtitle": "Quiero registrar mi negocio en Promofy",
+  "profileOptionLoadedTitle": "Ya está cargado",
+  "profileOptionLoadedSubtitle": "Mi negocio ya existe en Promofy",
+  "profileOptionHaveCodeTitle": "Tengo código",
+  "profileOptionHaveCodeSubtitle": "Ingresar mi código de invitación",
+  "profileOptionNoCodeTitle": "No tengo código",
+  "profileOptionNoCodeSubtitle": "Buscar mi negocio por nombre y dirección",
+  "profileEnterInvitationCode": "Ingresa tu código de invitación.",
+  "profileInvalidCode": "Código inválido.",
+  "profileConnectionError": "Error de conexión.",
+  "profileInvitationCodeHint": "CÓDIGO DE INVITACIÓN",
+  "profileVerifyCode": "Verificar código",
+  "profileValidCode": "¡Código válido!",
+  "profileEstablishmentFound": "Establecimiento encontrado",
+  "profileChooseMyPlan": "Elegir mi plan",
+  "profileBusinessNameHint": "Nombre de tu negocio",
+  "profileAddressHint": "Dirección (calle, número, colonia…)",
+  "profileEnterBusinessName": "Ingresa el nombre de tu negocio.",
+  "profileSearchError": "Error al buscar. Intenta de nuevo.",
+  "profileSearchMyBusiness": "Buscar mi negocio",
+  "profileNoMatches": "No encontramos coincidencias.\nRevisa el nombre o la dirección.",
+  "profileSelectYourBusiness": "Selecciona tu negocio:",
+  "profileYourBusiness": "Tu negocio",
+  "profileAddressMatchQuestion": "Verificamos que la dirección coincide. ¿Es tu negocio?",
+  "profileYesItsMineChoosePlan": "Sí, es mío — Elegir plan",
+  "profileNotThisBusiness": "No es este negocio",
+  "profileBack": "Volver",
+  "profileFavoritesTitle": "Mis favoritos",
+  "profileFavoritesSubtitle": "Promos y negocios que guardaste",
+  "profileSettingsTitle": "Configuración",
+  "profileSettingsSubtitle": "Nombre, radio, gustos, contraseña y cuenta",
+  "profileWorkplacesTitle": "Mis lugares de trabajo",
+  "profileNoWorkplaces": "No se encontraron establecimientos asociados.",
+  "profileRoleManager": "Gerente",
+  "profileRoleCashierWaiter": "Cajero / Mesero",
+  "profileRoleCashier": "Cajero",
+  "profileRoleCustom": "Personalizado",
+  "profileRoleLabel": "Rol: {role}",
+  "profilePermLoyaltyQr": "QR lealtad",
+  "profilePermStats": "Estadísticas",
+  "profilePermPromos": "Promos",
+  "profileWorkAtBusinessTitle": "¿Trabajas en un negocio?",
+  "profileWorkAtBusinessSubtitle": "Ingresa tu código de invitación",
+  "profileJoin": "Unirse",
+  "profileLinkCopied": "¡Link copiado al portapapeles!",
+  "profileReferralShareText": "¡Únete a Promofy y atrae más clientes a tu negocio!\nCrea tu cuenta con mi link y ambos ganamos:\n{url}",
+  "profileReferralShareSubject": "Únete a Promofy",
+  "profileReferralTitle": "Programa de referidos",
+  "profileReferralDescription": "Invita a otros negocios con tu link. Cuando activen una membresía de pago, recibes $300 MXN en créditos de publicidad.",
+  "profileCreditsEarned": "Créditos ganados",
+  "profileCopied": "Copiado",
+  "profileCopyLink": "Copiar link",
+  "profileShare": "Compartir",
+  "profileReferralLinkSoon": "Tu link de referido estará disponible en breve.",
+  "profileAchievementsTitle": "Mis Logros",
+  "profileSeeAll": "Ver todos",
+  "profileVisitsToNextBadge": "{visits} visitas · faltan {toGo} para {nextBadge}",
+  "profileVisitsMaxLevel": "{visits} visitas este año — ¡nivel máximo!",
+  "profileStreakWeeks": "{weeks} sem. en racha",
+  "profileTopInCity": "Top {percent}% en tu ciudad",
+  "profileWelcomeToTeam": "¡Bienvenido al equipo!",
+  "profileJoinATeam": "Unirse a un equipo",
+  "profileContinue": "Continuar",
+  "profileCancel": "Cancelar",
+  "profileJoinMe": "Unirme",
+  "profileCodeSixChars": "El código debe tener 6 caracteres.",
+  "profileCodeInvalidOrExpired": "Código inválido o expirado.",
+  "profileConnectionErrorRetry": "Error de conexión. Intenta de nuevo.",
+  "profileEnterSixCharCode": "Ingresa el código de 6 caracteres que te compartió el administrador.",
+  "profileWillUpdateOnContinue": "Tu perfil se actualizará al continuar.",
+  "settingsName": "Nombre",
+  "settingsNameHint": "Tu nombre completo",
+  "settingsNameEmpty": "El nombre no puede estar vacío.",
+  "settingsSearchRadius": "Radio de búsqueda",
+  "settingsPreferredTypes": "Tipos de lugar preferidos",
+  "settingsFavoriteFood": "Comida favorita",
+  "settingsLoadingCategories": "Cargando categorías…",
+  "settingsSaveButton": "Guardar configuración",
+  "settingsSaved": "Configuración guardada.",
+  "settingsSaveError": "Error al guardar. Intenta de nuevo.",
+  "settingsAccountSecurity": "Cuenta y seguridad",
+  "settingsChangePassword": "Cambiar contraseña",
+  "settingsNewPassword": "Nueva contraseña",
+  "settingsConfirmPassword": "Confirmar contraseña",
+  "settingsPasswordMin": "Mínimo 6 caracteres",
+  "settingsPasswordMismatch": "No coinciden",
+  "settingsPasswordUpdated": "Contraseña actualizada.",
+  "settingsPasswordError": "No se pudo cambiar la contraseña. Intenta de nuevo.",
+  "settingsCancel": "Cancelar",
+  "settingsSave": "Guardar",
+  "settingsDeleteAccount": "Eliminar cuenta",
+  "settingsDeleteConfirmTitle": "¿Estás seguro?",
+  "settingsDeleteConfirmBody": "Perderás toda tu información: tu perfil, favoritos, sellos de lealtad, historial y, si tienes un negocio, sus datos asociados.\n\nEsta acción es permanente y no se puede deshacer.",
+  "settingsDeleteError": "No se pudo eliminar la cuenta. Escríbenos a {email}",
+  "bizMyBusiness": "Mi negocio",
+  "bizEditInfo": "Editar información",
+  "bizPromoLimitReached": "Llegaste a tu límite de {max} promociones. Compra espacio extra o sube de plan para agregar más.",
+  "bizEstablishmentLimitReached": "Tu plan \"{plan}\" permite hasta {max} establecimientos. Actualiza tu plan para agregar más.",
+  "bizStatsTitle": "Estadísticas de tu negocio",
+  "bizStatsGateDesc": "Activa un plan para ver impresiones, favoritos y demografía de tu audiencia.",
+  "bizViewPlans": "Ver planes",
+  "bizUsageBusinesses": "neg.",
+  "bizUsagePromos": "promos",
+  "bizUpgrade": "Upgrade ↗",
+  "bizAdd": "Agregar",
+  "bizBusinessInfo": "Información del negocio",
+  "bizNoExtraInfo": "Sin información adicional.",
+  "bizTypeLocal": "Local",
+  "bizTypeUrbanMobile": "Urbano / Móvil",
+  "bizPaymentCard": "Tarjeta crédito/débito",
+  "bizPaymentCash": "Efectivo",
+  "bizPaymentOther": "Otro",
+  "bizAdultPromotions": "Tiene promociones para adultos",
+  "bizDayMonday": "Lunes",
+  "bizDayTuesday": "Martes",
+  "bizDayWednesday": "Miércoles",
+  "bizDayThursday": "Jueves",
+  "bizDayFriday": "Viernes",
+  "bizDaySaturday": "Sábado",
+  "bizDaySunday": "Domingo",
+  "bizScheduleTitle": "Horario de atención",
+  "bizClosed": "Cerrado",
+  "bizMyPromos": "Mis promociones",
+  "bizFeaturedHint": "Activa \"Destacada\" para que tu promo aparezca primero en la búsqueda.",
+  "bizNoPromosYet": "Aún no tienes promociones en este negocio.",
+  "bizPlanLimitTitle": "Llegaste al límite de tu plan",
+  "bizBuyExtraSpaceDesc": "Compra espacio extra y sigue publicando sin cambiar de plan.",
+  "bizBuyPromoSpace": "Comprar espacio de promoción",
+  "bizEditAvailableOn": "Edición disponible el {date}",
+  "bizPromoNotEditableYet": "Esta promoción aún no puede editarse.",
+  "bizEditableOn": "Editable el {date}",
+  "bizLocked": "Bloqueada",
+  "bizFeatured": "Destacada",
+  "bizFlash": "Flash",
+  "bizMyTeam": "Mi equipo",
+  "bizInvite": "Invitar",
+  "bizRemoveFromTeamTitle": "Eliminar del equipo",
+  "bizRemoveFromTeamConfirm": "¿Quitar a {name} del equipo?",
+  "bizCancel": "Cancelar",
+  "bizRemove": "Quitar",
+  "bizRemoveTeamError": "Error al quitar del equipo: {error}",
+  "bizNoStaffYet": "Sin empleados aún.\nToca \"Invitar\" para generar un código.",
+  "bizRemoveFromTeamTooltip": "Quitar del equipo",
+  "bizGenerateCodeError": "Error al generar código: {error}",
+  "bizInviteStaff": "Invitar empleado",
+  "bizCodeAvailable48h": "El código estará disponible por 48 horas.",
+  "bizRoleLabel": "ROL",
+  "bizRoleCashier": "Cajero / Mesero",
+  "bizRoleCashierDesc": "Solo puede escanear el QR de lealtad",
+  "bizRoleManager": "Gerente",
+  "bizRoleManagerDesc": "Estadísticas, promos y QR de lealtad",
+  "bizRoleCustom": "Personalizado",
+  "bizRoleCustomDesc": "Elige los permisos manualmente",
+  "bizPermissionsLabel": "PERMISOS",
+  "bizPermScanQr": "Escanear QR de lealtad",
+  "bizPermViewStats": "Ver estadísticas",
+  "bizPermManagePromos": "Gestionar promociones",
+  "bizPermManagePayments": "Gestionar pagos",
+  "bizGenerating": "Generando…",
+  "bizGenerateCode": "Generar código",
+  "bizCodeGenerated": "Código generado",
+  "bizCodeRole": "Rol: {role}",
+  "bizCodeValid48h": "Válido por 48 horas.\nCompartir con el empleado para que lo ingrese en la app.",
+  "bizCodeCopied": "Código copiado",
+  "bizCopyCode": "Copiar código",
+  "bizDone": "Listo",
+  "bizPushNotifications": "Notificaciones push",
+  "bizNoNotifications": "Sin notificaciones en este período.\nSe generan automáticamente al crear una promo flash.",
+  "bizKpiSent": "Envíos",
+  "bizKpiReached": "Alcanzados",
+  "bizKpiOpenRate": "Tasa apertura",
+  "bizRecentHistory": "HISTORIAL RECIENTE",
+  "bizNotifSentLine": "{date} · {count} enviadas",
+  "bizOpenRateShort": "{pct}% apert.",
+  "bizBoostBusiness": "Impulsa tu negocio",
+  "bizPlanIncludes": "Tu plan \"{plan}\" incluye hasta {establishments} negocios y {promotions} promociones normales.",
+  "bizEmptyTagline": "Publica promociones y llega a miles de clientes en tu ciudad.",
+  "bizRegisterMyBusiness": "Registrar mi negocio",
+  "bizAdvertising": "Publicidad",
+  "bizNewCampaign": "Nueva campaña",
+  "bizAvailableCredit": "Crédito disponible",
+  "bizReachableBanner": "≈ {count} personas alcanzables (banner)",
+  "bizTopUp": "Recargar",
+  "bizNoActiveCampaigns": "Sin campañas activas",
+  "bizOngoingCampaigns": "Campañas en curso",
+  "bizSpent": "Gastado: {amount}",
+  "bizBudget": "Presupuesto: {amount}",
+  "bizPause": "Pausar",
+  "bizResume": "Reanudar",
+  "bizTransactionHistory": "Historial de movimientos",
+  "bizRetry": "Reintentar",
+  "bizGeoBoth": "Física + búsqueda",
+  "bizGeoPhysical": "Solo ubicación física",
+  "bizGeoSearchArea": "Solo área de búsqueda",
+  "bizErrorNameRequired": "El nombre es obligatorio",
+  "bizErrorBudgetInvalid": "Ingresa un presupuesto válido",
+  "bizErrorMinBudget": "Presupuesto mínimo para este formato: {amount}",
+  "bizErrorInsufficientBalance": "Saldo insuficiente. Disponible: {amount}",
+  "bizErrorSelectPromo": "Selecciona la promoción que quieres publicitar",
+  "bizCampaignName": "Nombre de la campaña",
+  "bizWhatToAdvertise": "¿Qué publicitarás?",
+  "bizYourBusiness": "Tu negocio",
+  "bizOnePromotion": "Una promoción",
+  "bizWhereToShow": "¿Dónde quieres mostrarlo?",
+  "bizPlacementSplash": "Splash al abrir la app",
+  "bizPlacementFeed": "En el feed de promos",
+  "bizPlacementBanner": "Banner en el inicio",
+  "bizSpecialFormats": "Formatos especiales",
+  "bizFormatPush": "Notif. push",
+  "bizFormatFlash": "Promo Relámpago",
+  "bizBudgetMxn": "Presupuesto (MXN)",
+  "bizMinimum": "Mínimo {amount}",
+  "bizEstimatedReach": "Alcance estimado: {count} personas",
+  "bizRadius": "Radio:",
+  "bizGeoSegmentation": "Segmentación geográfica",
+  "bizAge": "Edad:",
+  "bizAgeRange": "{min} – {max} años",
+  "bizYearsOld": "{age} años",
+  "bizGender": "Sexo",
+  "bizGenderAll": "Todos",
+  "bizGenderMale": "Hombres",
+  "bizGenderFemale": "Mujeres",
+  "bizAudienceWithFilters": "Audiencia con estos filtros: {count} personas",
+  "bizCalculatingAudience": "Calculando audiencia...",
+  "bizPromoToAdvertise": "Promoción a publicitar",
+  "bizCreatePromoFirst": "Crea al menos una promoción activa antes de lanzar una campaña.",
+  "bizLaunchCampaign": "Lanzar campaña",
+  "bizRefresh": "Actualizar",
+  "bizNoAssignedEstablishments": "Sin establecimientos asignados",
+  "bizAskOwnerToInvite": "Pide al dueño del negocio que te invite con un código.",
+  "bizPermManagePromosShort": "Gestionar promos",
+  "bizScanStamps": "Escanear sellos",
+  "bizPromoTypeFlash": "Flash",
+  "bizPromoTypeDaily": "Diaria",
+  "bizPromoTypeWeekly": "Semanal",
+  "bizPromoTypePermanent": "Permanente",
+  "bizActive": "Activa",
+  "bizInactive": "Inactiva",
+  "bizMinAmount50": "Ingresa un monto mínimo de $50 MXN",
+  "bizCannotOpenMercadoPago": "No se pudo abrir MercadoPago",
+  "bizRedirectedToMercadoPago": "Redirigido a MercadoPago. El saldo se actualizará en minutos tras el pago.",
+  "bizTopUpAdCredit": "Recargar crédito publicitario",
+  "bizTopUpDesc": "Cada impresión deduce crédito según el formato de la campaña. El pago es procesado por MercadoPago.",
+  "bizAmountToTopUp": "MONTO A RECARGAR",
+  "bizOtherAmount": "Otro monto",
+  "bizMin50Mxn": "Mínimo $50 MXN",
+  "bizTotalToPay": "Total a pagar: {amount} MXN",
+  "bizPreparingPayment": "Preparando pago…",
+  "bizPayWithMercadoPago": "Pagar con MercadoPago",
+  "bizWillRedirectMercadoPago": "Serás redirigido al sitio de MercadoPago.",
+  "regBizCreateTitle": "Registrar negocio",
+  "regBizEditTitle": "Editar negocio",
+  "regBizBack": "Atrás",
+  "regBizNext": "Siguiente",
+  "regBizSaveChanges": "Guardar cambios",
+  "regBizStepOf": "Paso {step} de {total}",
+  "regBizStepBasic": "Datos básicos",
+  "regBizStepType": "Tipo y categoría",
+  "regBizStepSchedule": "Horario y extras",
+  "regBizUpdatedOk": "Negocio actualizado correctamente.",
+  "regBizCreatedOk": "¡Negocio registrado! Ya apareces en Promofy.",
+  "regBizSelectAddressHint": "Selecciona una dirección del buscador para obtener la ubicación.",
+  "regBizSelectType": "Selecciona el tipo de establecimiento.",
+  "regBizSelectCategory": "Selecciona al menos una categoría.",
+  "regBizSelectCharacteristic": "Selecciona al menos una característica.",
+  "regBizSelectPayment": "Selecciona al menos un método de pago.",
+  "regBizSelectDay": "Agrega al menos un día de atención.",
+  "regBizSectionMain": "Información principal",
+  "regBizNameLabel": "Nombre del negocio *",
+  "regBizNameHint": "Ej. Tacos El Gordo",
+  "regBizNameRequired": "El nombre es obligatorio",
+  "regBizDescLabel": "Descripción",
+  "regBizDescHint": "Describe brevemente tu negocio…",
+  "regBizSectionLocation": "Ubicación",
+  "regBizAddressLabel": "Dirección",
+  "regBizAddressLabelRequired": "Dirección *",
+  "regBizAddressHint": "Toca para buscar la dirección…",
+  "regBizAddressHelper": "Selecciona la dirección de las sugerencias para obtener coordenadas.",
+  "regBizSectionContact": "Contacto",
+  "regBizPhoneLabel": "Teléfono / WhatsApp",
+  "regBizPhoneHint": "Ej. 4491234567",
+  "regBizSectionSocial": "Redes sociales",
+  "regBizWebsiteLabel": "Sitio web",
+  "regBizTypeSection": "Tipo de establecimiento *",
+  "regBizTypeLocal": "Local",
+  "regBizTypeLocalSub": "Dirección fija",
+  "regBizTypeMobile": "Urbano / Móvil",
+  "regBizTypeMobileSub": "Ubicación variable",
+  "regBizCategorySection": "Categoría *",
+  "regBizCategoryHelper": "Puedes seleccionar una o varias. La subcategoría es opcional.",
+  "regBizSubcategoryLabel": "↳ Subcategoría (opcional)",
+  "regBizSpecialtyLabel": "↳ Especialidad (opcional)",
+  "regBizExtraSection": "Información adicional",
+  "regBizAdultPromos": "¿Tiene promociones para mayores de edad?",
+  "regBizScheduleSection": "Horario de atención *",
+  "regBizScheduleHelper": "Activa los días que atiendes y ajusta los horarios.",
+  "regBizCharSection": "Características *",
+  "regBizCharHelper": "Selecciona las que apliquen a tu negocio.",
+  "regBizPaymentSection": "Métodos de pago *",
+  "regBizPaymentCard": "Tarjeta crédito/débito",
+  "regBizPaymentCash": "Efectivo",
+  "regBizPaymentOther": "Otro",
+  "regBizClosed": "Cerrado",
+  "regBizDayMonday": "Lunes",
+  "regBizDayTuesday": "Martes",
+  "regBizDayWednesday": "Miércoles",
+  "regBizDayThursday": "Jueves",
+  "regBizDayFriday": "Viernes",
+  "regBizDaySaturday": "Sábado",
+  "regBizDaySunday": "Domingo",
+  "regBizSearchAddressTitle": "Buscar dirección",
+  "regBizSearchAddressHint": "Escribe la dirección de tu negocio…",
+  "regBizNoResults": "Sin resultados. Intenta con otra búsqueda.",
+  "regBizSearchError": "Error al buscar. Intenta de nuevo.",
+  "regBizLocationError": "No se pudo obtener la ubicación.",
+  "promoFormEditTitle": "Editar promoción",
+  "promoFormNewTitle": "Nueva promoción",
+  "promoFormDelete": "Eliminar",
+  "promoFormCancel": "Cancelar",
+  "promoFormClear": "Limpiar",
+  "promoFormSelectThis": "Seleccionar esta",
+  "promoFormCategorySheetTitle": "Categoría de la promoción",
+  "promoFormCategoryLevel1": "Categoría",
+  "promoFormSubcategory": "Subcategoría",
+  "promoFormSpecialty": "Especialidad",
+  "promoFormOptionalTag": "opcional",
+  "promoFormStartDate": "Fecha de inicio",
+  "promoFormEndDate": "Fecha de fin",
+  "promoFormStartTime": "Hora de inicio",
+  "promoFormEndTime": "Hora de fin",
+  "promoFormEndTimeSameDay": "Hora de fin (mismo día)",
+  "promoFormErrorNameRequired": "El nombre es obligatorio.",
+  "promoFormErrorSelectDay": "Selecciona al menos un día.",
+  "promoFormErrorStartDateTime": "Indica la fecha y hora de inicio.",
+  "promoFormErrorEndTime": "Indica la hora de fin.",
+  "promoFormErrorEndAfterStart": "La hora de fin debe ser posterior al inicio.",
+  "promoFormErrorSameDay": "La promo flash debe iniciar y terminar el mismo día.",
+  "promoFormConfirmTitle": "¿Todo está correcto?",
+  "promoFormConfirmName": "\"{name}\"",
+  "promoFormConfirmIntro": "Una vez creada, ",
+  "promoFormConfirmLockWarning": "no podrás editar esta promoción durante 15 días.",
+  "promoFormConfirmReview": "\n\nRevisa con detalle el nombre, descripción, horarios y días activos antes de continuar.",
+  "promoFormReviewMore": "Revisar más",
+  "promoFormConfirmCreate": "Sí, crear promoción",
+  "promoFormSaveError": "Error al guardar: {error}",
+  "promoFormDeleteTitle": "Eliminar promoción",
+  "promoFormDeleteConfirm": "¿Eliminar esta promoción? Esta acción no se puede deshacer.",
+  "promoFormDeleteError": "Error al eliminar: {error}",
+  "promoFormTypeLabel": "Tipo de promoción",
+  "promoFormTypeNormal": "Normal",
+  "promoFormTypeFlash": "Flash ⚡",
+  "promoFormTypeBirthday": "Cumpleañero 🎂",
+  "promoFormTypeNormalDesc": "Se repite cada semana en los días y horario elegidos.",
+  "promoFormTypeFlashDesc": "Evento único, válido un solo día. Máximo 1 flash por mes.",
+  "promoFormTypeBirthdayDesc": "Disponible todos los días del año para clientes que cumplan años.",
+  "promoFormNameLabel": "Nombre *",
+  "promoFormNameHint": "Ej: 2x1 en micheladas",
+  "promoFormDescriptionLabel": "Descripción",
+  "promoFormDescriptionHint": "Cuéntale a tus clientes los detalles",
+  "promoFormBirthdayGiftLabel": "Regalo de cumpleaños *",
+  "promoFormBirthdayGiftHint": "Ej: Postre gratis, copa de cortesía…",
+  "promoFormBirthdayTermsLabel": "Condiciones (opcional)",
+  "promoFormBirthdayTermsHint": "Ej: Presentar ID el día de tu cumpleaños",
+  "promoFormPhotoLabel": "Foto (opcional)",
+  "promoFormPhotoTapToAdd": "Toca para agregar foto",
+  "promoFormCategoryLabel": "Categoría (opcional)",
+  "promoFormCategorySelected": "Categoría seleccionada",
+  "promoFormCategoryLoading": "Cargando categorías...",
+  "promoFormCategoryNone": "Sin categoría",
+  "promoFormAdultTitle": "Contenido para adultos",
+  "promoFormAdultSubtitle": "Solo visible para usuarios +18",
+  "promoFormSaveChanges": "Guardar cambios",
+  "promoFormCreate": "Crear promoción",
+  "promoFormActiveDaysLabel": "Días activos *",
+  "promoFormScheduleLabel": "Horario",
+  "promoFormStartLabel": "Inicio",
+  "promoFormEndLabel": "Fin",
+  "promoFormEventStartLabel": "Inicio del evento *",
+  "promoFormEventEndLabel": "Fin del evento *",
+  "promoFormEndTimeSameDayLabel": "Hora de fin * (mismo día)",
+  "promoFormPickDateTime": "Seleccionar fecha y hora",
+  "promoFormPickEndTime": "Seleccionar hora de fin",
+  "promoFormFlashInfo": "La promo flash debe comenzar y terminar el mismo día. Solo se permite una por mes por negocio.",
+  "adminPlacesTitle": "Admin Lugares",
+  "adminPlacesRefresh": "Actualizar",
+  "adminPlacesTabEstablishments": "Establecimientos",
+  "adminPlacesTabPromos": "Promociones",
+  "adminPlacesAddPlace": "Agregar lugar",
+  "adminPlacesSearchHint": "Buscar…",
+  "adminPlacesCount": "{count, plural, =1{1 lugar} other{{count} lugares}}",
+  "adminPlacesEmpty": "Aún no hay lugares. Toca + para agregar uno.",
+  "adminPlacesNoResults": "Sin resultados.",
+  "adminPlacesEditInfo": "Editar info",
+  "adminPlacesManagePhotos": "Gestionar fotos",
+  "adminPlacesDelete": "Eliminar",
+  "adminPlacesManagePromos": "Gestionar promociones",
+  "adminPlacesPhotosTitle": "Fotos — {name}",
+  "adminPlacesDeleteTitle": "Eliminar lugar",
+  "adminPlacesDeleteConfirm": "¿Eliminar \"{name}\"?\nTambién eliminará sus promociones.",
+  "adminPlacesCancel": "Cancelar",
+  "adminPlacesError": "Error: {error}",
+  "adminPlacesNoPlacesYet": "Primero crea un lugar en la pestaña Establecimientos.",
+  "adminPlacesSelectPlace": "Selecciona un lugar",
+  "adminPlacesNewPromo": "Nueva promoción",
+  "adminPlacesChoosePlace": "Elige un lugar para ver sus promociones.",
+  "adminPlacesNoPromos": "Sin promociones. Toca \"Nueva promoción\".",
+  "adminPlacesPromoActive": "Activa",
+  "adminPlacesPromoInactive": "Inactiva",
+  "adminPlacesEdit": "Editar",
+  "adminMetricsTitle": "Panel Admin",
+  "adminMetricsManageRestaurants": "Gestionar restaurantes",
+  "adminMetricsRefresh": "Actualizar métricas",
+  "adminMetricsRetry": "Reintentar",
+  "adminMetricsAdminPlaces": "Admin Lugares",
+  "adminMetricsAdminPlacesSubtitle": "Gestionar establecimientos y promociones del admin",
+  "adminMetricsSectionUsers": "Usuarios",
+  "adminMetricsNewUsers": "Nuevos usuarios",
+  "adminMetricsActiveUsers": "Usuarios activos",
+  "adminMetricsPeriodToday": "Hoy",
+  "adminMetricsPeriod7d": "7 días",
+  "adminMetricsPeriod15d": "15 días",
+  "adminMetricsPeriod30d": "30 días",
+  "adminMetricsPeriodTotal": "Total",
+  "adminMetricsSectionPlatform": "Plataforma",
+  "adminMetricsEstablishments": "Establecimientos",
+  "adminMetricsNewThisMonth": "{count} este mes",
+  "adminMetricsActivePromos": "Promos activas",
+  "adminMetricsTotalCount": "{count} total",
+  "adminMetricsSectionLoyaltyQr": "Lealtad & QR",
+  "adminMetricsTotalScans": "Escaneos totales",
+  "adminMetricsLast30dValue": "{count} últimos 30d",
+  "adminMetricsAvgTicket": "Ticket promedio",
+  "adminMetricsWaiterUploadedAmount": "Monto subido por meseros",
+  "adminMetricsSectionCampaigns": "Campañas Publicitarias",
+  "adminMetricsActiveCampaigns": "Campañas activas",
+  "adminMetricsCreditsSold": "Créditos vendidos",
+  "adminMetricsLast30days": "últimos 30 días",
+  "adminMetricsCampaignSpend": "Gasto en campañas",
+  "adminMetricsSectionSubscriptions": "Suscripciones",
+  "adminMetricsActiveSubscriptions": "Suscripciones activas",
+  "adminMetricsMonthlyIncome": "ingresos mensuales",
+  "adminMetricsSectionPerformance": "Rendimiento",
+  "adminMetricsRegisteredUsers": "usuarios registrados",
+  "adminMetricsRoleUsers": "Usuarios",
+  "adminMetricsRoleStaff": "Staff",
+  "adminMetricsRoleBusiness": "Negocios",
+  "adminMetricsRoleAdmin": "Admin",
+  "adminMetricsPlatformRevenue30d": "Ingresos plataforma (30 días)",
+  "adminMetricsRevenueSubscriptions": "Suscripciones\n(MRR)",
+  "adminMetricsRevenueAdCredits": "Créditos ad\n(30d)",
+  "adminMetricsRevenueRoas": "ROAS\n(ingresos/gasto ad)",
+  "adminMetricsNotAvailable": "N/A",
+  "adminEstTitle": "Restaurantes Admin",
+  "adminEstRefresh": "Actualizar",
+  "adminEstAdd": "Agregar restaurante",
+  "adminEstSearchHint": "Buscar por nombre o dirección…",
+  "adminEstLoading": "Cargando…",
+  "adminEstCount": "{count, plural, =1{1 establecimiento} other{{count} establecimientos}}",
+  "adminEstRetry": "Reintentar",
+  "adminEstEmpty": "Aún no hay restaurantes gestionados por Admin.",
+  "adminEstNoResults": "Sin resultados para \"{query}\".",
+  "adminEstAddFirst": "Agregar primero",
+  "adminEstDeleteTitle": "Eliminar restaurante",
+  "adminEstDeleteConfirm": "¿Eliminar \"{name}\"?\nEsto también eliminará sus promociones y datos asociados.",
+  "adminEstCancel": "Cancelar",
+  "adminEstDelete": "Eliminar",
+  "adminEstDeleted": "\"{name}\" eliminado.",
+  "adminEstDeleteError": "Error al eliminar: {error}",
+  "adminEstEdit": "Editar",
+  "statsTitle": "Estadísticas",
+  "statsRetry": "Reintentar",
+  "statsBusinessViews": "Vistas negocio",
+  "statsPromoViews": "Vistas promos",
+  "statsNewFavs": "Nuevos favs",
+  "statsContacts": "Contactos",
+  "statsQrVisits": "Visitas QR",
+  "statsTotalFavs": "Favs totales",
+  "statsAvgTicket": "Ticket prom.",
+  "statsRevenue": "Ingresos generados",
+  "statsPromoBreakdown": "DETALLE POR PROMO",
+  "statsColPromo": "Promo",
+  "statsColViews": "Vistas",
+  "statsColViewsTooltip": "Veces que abrieron el detalle",
+  "statsColNewFavs": "Favs +",
+  "statsColNewFavsTooltip": "Nuevos favoritos en el período",
+  "statsColTotalFavs": "Favs Σ",
+  "statsColTotalFavsTooltip": "Total de favoritos acumulados",
+  "statsContactChannels": "CANALES DE CONTACTO",
+  "statsChannelPhone": "Llamada",
+  "statsChannelWebsite": "Sitio web",
+  "statsChannelMaps": "Mapa",
+  "statsAudienceHeader": "AUDIENCIA ({total} favoriteadores)",
+  "statsGender": "Sexo",
+  "statsAge": "Edad",
+  "statsByPromo": "Por promoción",
+  "statsGenderMale": "Hombres",
+  "statsGenderFemale": "Mujeres",
+  "statsGenderUnknown": "N/E",
+  "photosSectionTitle": "Logo y fotos",
+  "photosLogoTitle": "Logo del negocio",
+  "photosLogoHint": "Imagen cuadrada, mínimo 400×400 px.",
+  "photosChangeLogo": "Cambiar logo",
+  "photosUploadLogo": "Subir logo",
+  "photosCategoryEstablishment": "Fotos del establecimiento",
+  "photosCategoryChildrenArea": "Área infantil",
+  "photosCategoryMenu": "Menú",
+  "photosEmpty": "Sin fotos",
+  "photosDeleteTitle": "Eliminar foto",
+  "photosDeleteConfirm": "¿Seguro que quieres eliminar esta foto?",
+  "photosCancel": "Cancelar",
+  "photosDelete": "Eliminar",
+  "photosErrorUploadLogo": "No se pudo subir el logo. Intenta de nuevo.",
+  "photosErrorUploadPhoto": "No se pudo subir la foto. Intenta de nuevo.",
+  "photosErrorDeletePhoto": "No se pudo eliminar la foto. Intenta de nuevo.",
+  "adminPanelTitle": "Panel Superadmin",
+  "adminReload": "Recargar",
+  "adminLoadError": "Error al cargar",
+  "adminRetry": "Reintentar",
+  "adminSectionTitle": "Administración",
+  "adminTilePlans": "Planes de membresía",
+  "adminTilePlansSubtitle": "{count} planes configurados",
+  "adminTileOwners": "Dueños de negocio",
+  "adminTileOwnersSubtitle": "{count} propietarios registrados",
+  "adminTileCategories": "Categorías",
+  "adminTileCategoriesSubtitle": "{count} categorías · árbol de tipos",
+  "adminTileCharacteristics": "Características",
+  "adminTileCharacteristicsSubtitle": "{count} características",
+  "adminTileNotifications": "Notificaciones push",
+  "adminTileNotificationsSubtitle": "{devices} dispositivos · {sends} envíos registrados",
+  "adminTileAllUsers": "Todos los usuarios",
+  "adminTileAllUsersSubtitle": "Gestionar cuentas · activar / desactivar",
+  "adminTileAds": "Publicidad",
+  "adminTileAdsSubtitle": "Precios por formato · gestión de campañas",
+  "adminTileCredits": "Créditos publicitarios",
+  "adminTileCreditsSubtitle": "Asignar saldo a cuentas de establecimientos",
+  "adminTileBulk": "Carga masiva de promos",
+  "adminTileBulkSubtitle": "Crear promociones para negocios · no cuenta contra el plan",
+  "adminRoleFilterAll": "Todos",
+  "adminRoleFilterUsers": "Usuarios",
+  "adminRoleFilterStaff": "Staff",
+  "adminRoleFilterOwners": "Dueños",
+  "adminRoleFilterAdmin": "Admin",
+  "adminErrorWithMsg": "Error: {msg}",
+  "adminAllUsersTitle": "Todos los usuarios",
+  "adminSearchNameEmail": "Buscar por nombre o correo…",
+  "adminUserCount": "{count} usuario(s)",
+  "adminNoResults": "Sin resultados",
+  "adminAccountDeactivated": "Cuenta desactivada",
+  "adminActivate": "Activar",
+  "adminDeactivate": "Desactivar",
+  "adminActivateAccount": "Activar cuenta",
+  "adminDeactivateAccount": "Desactivar cuenta",
+  "adminActivateAccountConfirm": "¿Reactivar la cuenta de {name}? Podrá volver a iniciar sesión.",
+  "adminDeactivateAccountConfirm": "¿Desactivar la cuenta de {name}? No podrá iniciar sesión ni aparecerá su contenido.",
+  "adminCancel": "Cancelar",
+  "adminPlansTitle": "Planes de membresía",
+  "adminAddons": "Add-ons",
+  "adminAddonsDesc": "Precios por unidad/mes que se cobran por encima del límite del plan.",
+  "adminAddonTableMissing": "Tabla addon_pricing no encontrada.",
+  "adminAddonRunSql": "Ejecuta el SQL de add-ons en Supabase primero.",
+  "adminOwnersTitle": "Dueños de negocio",
+  "adminResultCount": "{count} resultado(s)",
+  "adminCategoriesTitle": "Categorías",
+  "adminNewRootType": "Nuevo tipo raíz",
+  "adminNoCategories": "Sin categorías",
+  "adminLevelType": "Tipo",
+  "adminLevelSubtype": "Subtipo",
+  "adminLevelSubSubtype": "Sub-subtipo",
+  "adminAddSubcategory": "Agregar subcategoría",
+  "adminDeleteCategory": "Eliminar categoría",
+  "adminDeleteCategoryWithChildren": "¿Eliminar \"{name}\"? También se eliminarán sus {count} subcategoría(s).",
+  "adminDeleteCategorySimple": "¿Eliminar \"{name}\"?",
+  "adminDelete": "Eliminar",
+  "adminCharacteristicsTitle": "Características",
+  "adminNewCharacteristic": "Nueva característica",
+  "adminNoCharacteristics": "Sin características",
+  "adminDeleteCharacteristic": "Eliminar característica",
+  "adminDeleteCharacteristicConfirm": "¿Eliminar \"{name}\"? Se quitará de todos los establecimientos.",
+  "adminFree": "Gratis",
+  "adminPricePerMonth": "${price} MXN/mes",
+  "adminBusinessCount": "{count} negocio(s)",
+  "adminPromoCount": "{count} promo(s)",
+  "adminEditPlan": "Editar plan",
+  "adminFreeNoCharge": "Gratis / sin cargo",
+  "adminEditPrice": "Editar precio",
+  "adminEditLabel": "Editar: {label}",
+  "adminInvalidPriceMin": "Ingresa un precio válido (0 o mayor).",
+  "adminMonthlyPricePerUnit": "Precio mensual por unidad (MXN)",
+  "adminNoAdditionalCharge": "0 = sin cargo adicional",
+  "adminAddonZeroHint": "Escribe 0 si el add-on es gratuito o aún no está activo.",
+  "adminSavePrice": "Guardar precio",
+  "adminEditPlanLabel": "Editar plan: {name}",
+  "adminPriceMxnMonth": "Precio (MXN/mes)",
+  "adminZeroForFree": "0 para plan gratuito",
+  "adminMaxEstablishments": "Máx. establecimientos",
+  "adminMaxActivePromos": "Máx. promociones activas",
+  "adminSaveChanges": "Guardar cambios",
+  "adminPlanPickerSubtitle": "${price} MXN/mes · {est} neg. · {promos} promos",
+  "adminEdit": "Editar",
+  "adminNameEmpty": "El nombre no puede estar vacío.",
+  "adminNewCategory": "Nueva categoría",
+  "adminEditCategory": "Editar categoría",
+  "adminNameRequired": "Nombre *",
+  "adminEmojiIcon": "Emoji / ícono",
+  "adminBelongsToParent": "Pertenece a (padre)",
+  "adminNoParentRoot": "— Sin padre (Tipo raíz) —",
+  "adminCreateCategory": "Crear categoría",
+  "adminEditCharacteristic": "Editar característica",
+  "adminCreateCharacteristic": "Crear característica",
+  "adminNotificationsTitle": "Notificaciones push",
+  "adminTabSend": "Enviar",
+  "adminTabScheduled": "Programadas",
+  "adminTabHistory": "Historial",
+  "adminTabMetrics": "Métricas",
+  "adminCompleteTitleBody": "Completa título y mensaje",
+  "adminCompleteTitleBodyBeforeSchedule": "Completa título y mensaje antes de programar",
+  "adminSentResult": "✅ Enviada a {count} dispositivos",
+  "adminSentResultWithFailed": "✅ Enviada a {count} dispositivos · {failed} fallidos",
+  "adminSendErrorResult": "❌ Error: {msg}",
+  "adminScheduledOk": "📅 Notificación programada correctamente",
+  "adminTotalDevices": "Total: {count} dispositivos",
+  "adminTitleRequired": "Título *",
+  "adminTitleHint": "Ej. Nueva función disponible",
+  "adminMessageRequired": "Mensaje *",
+  "adminBodyHint": "Escribe el cuerpo…",
+  "adminSegmentRecipients": "Segmentar destinatarios",
+  "adminGender": "Género",
+  "adminAllGenders": "Todos los géneros",
+  "adminAll": "Todos",
+  "adminMen": "Hombres",
+  "adminWomen": "Mujeres",
+  "adminPreferNotToSay": "Prefieren no decir",
+  "adminAgeRange": "Rango de edad",
+  "adminMin": "Mín",
+  "adminMax": "Máx",
+  "adminInactiveUsersSince": "Usuarios inactivos desde hace",
+  "adminNoFilter": "No filtrar",
+  "adminDays7": "7 días",
+  "adminDays15": "15 días",
+  "adminDays30": "30 días",
+  "adminDays60": "60 días",
+  "adminDays90Plus": "90 días o más",
+  "adminPlatform": "Plataforma",
+  "adminAllFem": "Todas",
+  "adminCalculating": "Calculando…",
+  "adminRecipientsApprox": "~{count} destinatarios",
+  "adminEstimateRecipients": "Estimar destinatarios",
+  "adminSchedule": "Programar",
+  "adminSending": "Enviando…",
+  "adminSendNow": "Enviar ahora",
+  "adminNoScheduled": "Sin notificaciones programadas",
+  "adminNoScheduledHint": "Usa la pestaña Enviar → Programar",
+  "adminNextSend": "Próximo: {date}",
+  "adminRunCount": "{count} ejecución(es)",
+  "adminNoSends": "Sin envíos registrados.",
+  "adminTotalSent": "Total enviados",
+  "adminAvgDelivery": "Entrega prom.",
+  "adminAvgOpen": "Apertura prom.",
+  "adminDailySends30": "Envíos diarios — últimos 30 días",
+  "adminLegendSent": "Enviados",
+  "adminLegendOpens": "Aperturas",
+  "adminNoSendData": "Sin datos de envíos todavía.",
+  "adminDevicesByPlatform": "Dispositivos por plataforma",
+  "adminLatestNotifications": "Últimas notificaciones",
+  "adminColNotification": "Notificación",
+  "adminColDelivery": "Entrega",
+  "adminColOpen": "Apertura",
+  "adminPickDateTime": "Elige la fecha y hora de envío",
+  "adminScheduleNotification": "Programar notificación",
+  "adminSendDateTime": "Fecha y hora de envío *",
+  "adminSelect": "Seleccionar…",
+  "adminRepetition": "Repetición",
+  "adminOnceOnly": "Una sola vez",
+  "adminDaily": "Diariamente",
+  "adminWeekly": "Semanalmente",
+  "adminMonthly": "Mensualmente",
+  "adminDelivered": "entregados",
+  "adminFailed": "fallidos",
+  "adminOpenStat": "apertura",
+  "adminDeliveryStat": "entrega",
+  "adminAdsPricesTitle": "Publicidad · Precios",
+  "adminNoPriceData": "Sin datos de precios",
+  "adminRunAdsSql": "Ejecuta el SQL de publicidad en Supabase primero.",
+  "adminPricesByFormat": "Precios por formato",
+  "adminUsersCount": "{count} usuarios",
+  "adminBillingUnitInfo": "La unidad de cobro (impresiones por precio) se calcula automáticamente según los usuarios activos: crece con la plataforma.",
+  "adminMinCampaign": "Mín. campaña",
+  "adminInvalidPrice": "Precio inválido",
+  "adminInvalidMinBudget": "Presupuesto mínimo inválido",
+  "adminPricePerThousand": "Precio por 1 000 impresiones (MXN)",
+  "adminPricePerSend": "Precio por envío (MXN)",
+  "adminFixedRate": "Tarifa fija (MXN)",
+  "adminMinCampaignBudget": "Presupuesto mínimo de campaña (MXN)",
+  "adminSave": "Guardar",
+  "adminCreditsTitle": "Créditos publicitarios",
+  "adminSearchEstOwner": "Buscar establecimiento o dueño…",
+  "adminBalance": "saldo",
+  "adminEnterValidAmount": "Ingresa un monto válido",
+  "adminEnterDescription": "Escribe una descripción",
+  "adminCreditAdded": "Crédito agregado correctamente. Nuevo saldo: {balance}",
+  "adminCurrentBalance": "Saldo actual: {balance}",
+  "adminAmountToAdd": "Monto a agregar (MXN)",
+  "adminDescriptionReason": "Descripción / motivo",
+  "adminSaving": "Guardando…",
+  "adminAddCredit": "Agregar crédito",
+  "adminBulkTitle": "Carga masiva superadmin",
+  "adminTabEstablishments": "Establecimientos",
+  "adminTabPromotions": "Promociones",
+  "adminCsvEmpty": "El archivo CSV está vacío.",
+  "adminSelectOwner": "Selecciona un dueño antes de continuar.",
+  "adminUploadCsvRow": "Sube un CSV con al menos una fila de datos.",
+  "adminRowEmptyName": "Fila {row}: nombre vacío",
+  "adminRowInvalidDays": "Fila {row}: días inválidos (usa 1-7)",
+  "adminRowError": "Fila {row}: {msg}",
+  "adminEstCreated": "{count} establecimiento(s) creado(s)",
+  "adminPromosCreated": "{count} promoción(es) creada(s) · no cuentan contra el plan",
+  "adminBulkEstBanner": "Crea establecimientos para cualquier dueño.\nEsta sesión: {count} creado(s).",
+  "adminBulkPromoBanner": "Crea promociones para cualquier negocio. No cuentan contra el límite del plan.\nEsta sesión: {count} creada(s).",
+  "adminTemplateEstSubject": "Plantilla establecimientos Promofy",
+  "adminTemplatePromoSubject": "Plantilla promociones Promofy",
+  "adminDownloadCsvTemplate": "Descargar plantilla CSV",
+  "adminOwnerRequired": "Dueño *",
+  "adminSelectOwnerHint": "Selecciona un dueño…",
+  "adminSelectCsvFile": "Seleccionar archivo CSV",
+  "adminPreviewRows": "Vista previa ({count} fila(s)):",
+  "adminCreatingEsts": "Creando establecimientos…",
+  "adminCreateEstsBtn": "Crear {count} establecimiento(s)",
+  "adminSelectEst": "Selecciona un establecimiento.",
+  "adminEstRequired": "Establecimiento *",
+  "adminSelectBusinessHint": "Selecciona un negocio…",
+  "adminCreatingPromos": "Creando promociones…",
+  "adminCreatePromosBtn": "Crear {count} promoción(es)",
+  "logrosTitle": "Mis Logros",
+  "logrosLoadError": "No se pudieron cargar tus logros.",
+  "logrosRetry": "Reintentar",
+  "logrosSectionVisits": "Insignias de visitas",
+  "logrosSectionStreaks": "Rachas semanales",
+  "logrosNextLevel": "Próximo nivel: {label}",
+  "logrosAnnualVisits": "{count} visitas anuales",
+  "logrosConsecutiveWeeks": "{count} semanas consecutivas",
+  "logrosVisitsToGo": "{count} visitas más para alcanzarlo",
+  "logrosStreakDescEnRacha": "Visitaste negocios 3 semanas seguidas",
+  "logrosStreakDescImparable": "8 semanas sin parar — eres imparable",
+  "logrosStreakDescLeyenda": "26 semanas (medio año) de racha perfecta",
+  "filterSheetTitle": "Filtros",
+  "filterSheetClearAll": "Limpiar todo",
+  "filterSheetSectionPlaceFeatures": "Características del lugar",
+  "filterSheetSectionCategory": "Categoría",
+  "filterSheetSectionFoodType": "Tipo de comida",
+  "filterSheetSectionDay": "Día",
+  "filterSheetSectionPaymentMethod": "Método de pago",
+  "filterSheetApply": "Aplicar filtros",
+  "filterSheetApplyWithCount": "Aplicar ({count} {count, plural, one {filtro} other {filtros}})",
+  "filterChipsActiveNow": "Activas ahora",
+  "filterChipsFlash": "⚡ Relámpago",
+  "filterChipsFavorites": "⭐ Mis favoritas",
+  "filterChipsBirthday": "🎂 Cumpleañero",
+  "filterChipsAdvancedMore": "Más filtros",
+  "filterChipsAdvancedCount": "Filtros ({count})",
+  "adSplashAdLabel": "Publicidad",
+  "adSplashPromoSpecial": "Promoción especial de {name}",
+  "adSplashDiscoverMsg": "Toca para descubrir sus promociones exclusivas",
+  "adSplashViewPromos": "Ver promociones",
+  "sponsoredCardBadge": "Patrocinado",
+  "sponsoredCardSeePromotions": "Ver sus promociones",
+  "sponsoredCardAd": "Anuncio",
+  "adBannerSeePromotions": "Ver sus promociones",
+  "adBannerAdLabel": "Publicidad",
+  "paymentResultGoHome": "Ir al inicio",
+  "paymentResultTryAgain": "Intentar de nuevo",
+  "paymentResultSuccessTitle": "¡Pago exitoso!",
+  "paymentResultSuccessSubtitle": "Tu saldo de créditos publicitarios se verá\nreflejado en tu panel en unos momentos.",
+  "paymentResultFailureTitle": "Pago no completado",
+  "paymentResultFailureSubtitle": "No se realizó ningún cargo. Puedes\nintentar de nuevo cuando quieras.",
+  "paymentResultPendingTitle": "Pago en proceso",
+  "paymentResultPendingSubtitle": "Tu pago está siendo procesado.\nTe notificaremos cuando se confirme.",
+  "paymentResultSubscriptionTitle": "¡Suscripción activada!",
+  "paymentResultSubscriptionSubtitle": "Tu plan Promofy ya está activo.\nDisfruta todas las funciones de tu negocio.",
+  "locationPermTitle": "¡Las promos te esperan\ncerca de ti!",
+  "locationPermSubtitle": "Comparte tu ubicación para ver\nlas mejores promociones ordenadas\npor distancia al instante.",
+  "locationPermAllowButton": "Permitir ubicación",
+  "locationPermSkipButton": "Ahora no",
+  "splashScrTagline": "Descubre promociones cerca de ti",
+  "@homeEmptySearch": {
+    "placeholders": {
+      "query": {}
+    }
+  },
+  "@promoDetailConditions": {
+    "placeholders": {
+      "terms": {}
+    }
+  },
+  "@promoDetailFlashEndsInHours": {
+    "placeholders": {
+      "hours": {},
+      "minutes": {}
+    }
+  },
+  "@promoDetailFlashEndsInMinutes": {
+    "placeholders": {
+      "minutes": {}
+    }
+  },
+  "@restaurantVisitsCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@restaurantValidUntil": {
+    "placeholders": {
+      "date": {},
+      "days": {}
+    }
+  },
+  "@restaurantEnded": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "@lugaresChipFiltersCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@lugaresApplyWithCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "@stampsVisitsCount": {
+    "placeholders": {
+      "visits": {},
+      "required": {}
+    }
+  },
+  "@stampsStampsLeft": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@stampsExpiredOn": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "@stampsExpiresOn": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "@stampsAtEstablishment": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "@stampsCodeLabel": {
+    "placeholders": {
+      "code": {}
+    }
+  },
+  "@loyaltyStatusExpired": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "@loyaltyStatusExpiresIn": {
+    "placeholders": {
+      "days": {
+        "type": "num"
+      }
+    }
+  },
+  "@loyaltyStatusActive": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "@loyaltyClientsParticipants": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "@loyaltyClientsStampsLeft": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@qrRewardWonMessage": {
+    "placeholders": {
+      "visits": {}
+    }
+  },
+  "@qrVisitsLeft": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@qrVisitsCount": {
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  },
+  "@plansPricePerMonth": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "@plansAdCredit": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "@plansFeatureEstablishments": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@plansFeaturePromotions": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@plansFeaturePush": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@plansCancelAddonConfirm": {
+    "placeholders": {
+      "label": {}
+    }
+  },
+  "@plansCancelAddonConfirmWithPromos": {
+    "placeholders": {
+      "count": {},
+      "label": {}
+    }
+  },
+  "@plansDeactivateDialogTitle": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@plansDeactivateDialogBody": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@profileExpired": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "@profileExpiresOn": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "@profileRoleLabel": {
+    "placeholders": {
+      "role": {}
+    }
+  },
+  "@profileReferralShareText": {
+    "placeholders": {
+      "url": {}
+    }
+  },
+  "@profileVisitsToNextBadge": {
+    "placeholders": {
+      "visits": {},
+      "toGo": {},
+      "nextBadge": {}
+    }
+  },
+  "@profileVisitsMaxLevel": {
+    "placeholders": {
+      "visits": {}
+    }
+  },
+  "@profileStreakWeeks": {
+    "placeholders": {
+      "weeks": {}
+    }
+  },
+  "@profileTopInCity": {
+    "placeholders": {
+      "percent": {}
+    }
+  },
+  "@settingsDeleteError": {
+    "placeholders": {
+      "email": {}
+    }
+  },
+  "@bizPromoLimitReached": {
+    "placeholders": {
+      "max": {}
+    }
+  },
+  "@bizEstablishmentLimitReached": {
+    "placeholders": {
+      "plan": {},
+      "max": {}
+    }
+  },
+  "@bizEditAvailableOn": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "@bizEditableOn": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "@bizRemoveFromTeamConfirm": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "@bizRemoveTeamError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "@bizGenerateCodeError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "@bizCodeRole": {
+    "placeholders": {
+      "role": {}
+    }
+  },
+  "@bizNotifSentLine": {
+    "placeholders": {
+      "date": {},
+      "count": {}
+    }
+  },
+  "@bizOpenRateShort": {
+    "placeholders": {
+      "pct": {}
+    }
+  },
+  "@bizPlanIncludes": {
+    "placeholders": {
+      "plan": {},
+      "establishments": {},
+      "promotions": {}
+    }
+  },
+  "@bizReachableBanner": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@bizSpent": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "@bizBudget": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "@bizErrorMinBudget": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "@bizErrorInsufficientBalance": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "@bizMinimum": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "@bizEstimatedReach": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@bizAgeRange": {
+    "placeholders": {
+      "min": {},
+      "max": {}
+    }
+  },
+  "@bizYearsOld": {
+    "placeholders": {
+      "age": {}
+    }
+  },
+  "@bizAudienceWithFilters": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@bizTotalToPay": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "@regBizStepOf": {
+    "placeholders": {
+      "step": {},
+      "total": {}
+    }
+  },
+  "@promoFormConfirmName": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "@promoFormSaveError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "@promoFormDeleteError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "@adminPlacesCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "@adminPlacesPhotosTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "@adminPlacesDeleteConfirm": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "@adminPlacesError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "@adminMetricsNewThisMonth": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@adminMetricsTotalCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@adminMetricsLast30dValue": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@adminEstCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "@adminEstNoResults": {
+    "placeholders": {
+      "query": {}
+    }
+  },
+  "@adminEstDeleteConfirm": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "@adminEstDeleted": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "@adminEstDeleteError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "@statsAudienceHeader": {
+    "placeholders": {
+      "total": {}
+    }
+  },
+  "@adminTilePlansSubtitle": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@adminTileOwnersSubtitle": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@adminTileCategoriesSubtitle": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@adminTileCharacteristicsSubtitle": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@adminTileNotificationsSubtitle": {
+    "placeholders": {
+      "devices": {},
+      "sends": {}
+    }
+  },
+  "@adminErrorWithMsg": {
+    "placeholders": {
+      "msg": {}
+    }
+  },
+  "@adminUserCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@adminActivateAccountConfirm": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "@adminDeactivateAccountConfirm": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "@adminResultCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@adminDeleteCategoryWithChildren": {
+    "placeholders": {
+      "name": {},
+      "count": {}
+    }
+  },
+  "@adminDeleteCategorySimple": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "@adminDeleteCharacteristicConfirm": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "@adminPricePerMonth": {
+    "placeholders": {
+      "price": {}
+    }
+  },
+  "@adminBusinessCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@adminPromoCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@adminEditLabel": {
+    "placeholders": {
+      "label": {}
+    }
+  },
+  "@adminEditPlanLabel": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "@adminPlanPickerSubtitle": {
+    "placeholders": {
+      "price": {},
+      "est": {},
+      "promos": {}
+    }
+  },
+  "@adminSentResult": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@adminSentResultWithFailed": {
+    "placeholders": {
+      "count": {},
+      "failed": {}
+    }
+  },
+  "@adminSendErrorResult": {
+    "placeholders": {
+      "msg": {}
+    }
+  },
+  "@adminTotalDevices": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@adminRecipientsApprox": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@adminNextSend": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "@adminRunCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@adminUsersCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@adminCreditAdded": {
+    "placeholders": {
+      "balance": {}
+    }
+  },
+  "@adminCurrentBalance": {
+    "placeholders": {
+      "balance": {}
+    }
+  },
+  "@adminRowEmptyName": {
+    "placeholders": {
+      "row": {}
+    }
+  },
+  "@adminRowInvalidDays": {
+    "placeholders": {
+      "row": {}
+    }
+  },
+  "@adminRowError": {
+    "placeholders": {
+      "row": {},
+      "msg": {}
+    }
+  },
+  "@adminEstCreated": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@adminPromosCreated": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@adminBulkEstBanner": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@adminBulkPromoBanner": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@adminPreviewRows": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@adminCreateEstsBtn": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@adminCreatePromosBtn": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@logrosNextLevel": {
+    "placeholders": {
+      "label": {}
+    }
+  },
+  "@logrosAnnualVisits": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@logrosConsecutiveWeeks": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@logrosVisitsToGo": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@filterSheetApplyWithCount": {
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "@filterChipsAdvancedCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@adSplashPromoSpecial": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "settingsMyFavs": "Mis favs"
+}

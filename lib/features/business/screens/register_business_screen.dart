@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
+import 'package:promofy/l10n/app_localizations.dart';
 import '../../../core/constants/api_keys.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/category_model.dart';
@@ -13,6 +14,40 @@ import '../../../data/repositories/categories_repository.dart';
 import '../../../main.dart' show supabase;
 import '../cubit/business_cubit.dart';
 import '../cubit/business_state.dart';
+
+// ─── Helpers de localización ─────────────────────────────────────────────────
+
+String _localizedStepLabel(BuildContext context, int index) {
+  final l = AppLocalizations.of(context);
+  switch (index) {
+    case 0:
+      return l.regBizStepBasic;
+    case 1:
+      return l.regBizStepType;
+    default:
+      return l.regBizStepSchedule;
+  }
+}
+
+String _localizedDayLabel(BuildContext context, String dayKey) {
+  final l = AppLocalizations.of(context);
+  switch (dayKey) {
+    case 'monday':
+      return l.regBizDayMonday;
+    case 'tuesday':
+      return l.regBizDayTuesday;
+    case 'wednesday':
+      return l.regBizDayWednesday;
+    case 'thursday':
+      return l.regBizDayThursday;
+    case 'friday':
+      return l.regBizDayFriday;
+    case 'saturday':
+      return l.regBizDaySaturday;
+    default:
+      return l.regBizDaySunday;
+  }
+}
 
 // ─── Modelos internos ────────────────────────────────────────────────────────
 
@@ -247,31 +282,31 @@ class _RegisterBusinessScreenState extends State<RegisterBusinessScreen> {
     if (_currentStep == 0) {
       if (!(_formKey1.currentState?.validate() ?? false)) return;
       if (!_isEditing && _selectedAddress == null) {
-        _snack('Selecciona una dirección del buscador para obtener la ubicación.');
+        _snack(AppLocalizations.of(context).regBizSelectAddressHint);
         return;
       }
     }
     if (_currentStep == 1) {
       if (_estType == null) {
-        _snack('Selecciona el tipo de establecimiento.');
+        _snack(AppLocalizations.of(context).regBizSelectType);
         return;
       }
       if (_selectedCatIds.isEmpty) {
-        _snack('Selecciona al menos una categoría.');
+        _snack(AppLocalizations.of(context).regBizSelectCategory);
         return;
       }
     }
     if (_currentStep == 2) {
       if (_selectedCharIds.isEmpty) {
-        _snack('Selecciona al menos una característica.');
+        _snack(AppLocalizations.of(context).regBizSelectCharacteristic);
         return;
       }
       if (_selectedPayments.isEmpty) {
-        _snack('Selecciona al menos un método de pago.');
+        _snack(AppLocalizations.of(context).regBizSelectPayment);
         return;
       }
       if (_schedule.values.every((d) => d.closed)) {
-        _snack('Agrega al menos un día de atención.');
+        _snack(AppLocalizations.of(context).regBizSelectDay);
         return;
       }
       _save();
@@ -391,8 +426,8 @@ class _RegisterBusinessScreenState extends State<RegisterBusinessScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(_isEditing
-                  ? 'Negocio actualizado correctamente.'
-                  : '¡Negocio registrado! Ya apareces en Promofy.'),
+                  ? AppLocalizations.of(context).regBizUpdatedOk
+                  : AppLocalizations.of(context).regBizCreatedOk),
               backgroundColor: Colors.green.shade700,
               behavior: SnackBarBehavior.floating,
             ),
@@ -414,7 +449,9 @@ class _RegisterBusinessScreenState extends State<RegisterBusinessScreen> {
               onPressed: isSaving ? null : _back,
             ),
             title: Text(
-              _isEditing ? 'Editar negocio' : 'Registrar negocio',
+              _isEditing
+                  ? AppLocalizations.of(context).regBizEditTitle
+                  : AppLocalizations.of(context).regBizCreateTitle,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             bottom: PreferredSize(
@@ -501,7 +538,7 @@ class _RegisterBusinessScreenState extends State<RegisterBusinessScreen> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12)),
                         ),
-                        child: const Text('Atrás'),
+                        child: Text(AppLocalizations.of(context).regBizBack),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -519,9 +556,9 @@ class _RegisterBusinessScreenState extends State<RegisterBusinessScreen> {
                           : Text(
                               _currentStep == _totalSteps - 1
                                   ? (_isEditing
-                                      ? 'Guardar cambios'
-                                      : 'Registrar negocio')
-                                  : 'Siguiente',
+                                      ? AppLocalizations.of(context).regBizSaveChanges
+                                      : AppLocalizations.of(context).regBizCreateTitle)
+                                  : AppLocalizations.of(context).regBizNext,
                               style: const TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600),
                             ),
@@ -567,11 +604,11 @@ class _StepIndicator extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Paso ${current + 1} de $total',
+                AppLocalizations.of(context).regBizStepOf(current + 1, total),
                 style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
               ),
               Text(
-                labels[current],
+                _localizedStepLabel(context, current),
                 style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -619,34 +656,34 @@ class _Step1BasicData extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // ── Información principal ──────────────────────────────────
-            const _SectionHeader(title: 'Información principal'),
+            _SectionHeader(title: AppLocalizations.of(context).regBizSectionMain),
             const SizedBox(height: 12),
 
-            const _FieldLabel(text: 'Nombre del negocio *'),
+            _FieldLabel(text: AppLocalizations.of(context).regBizNameLabel),
             const SizedBox(height: 6),
             TextFormField(
               controller:          nameCtrl,
               textCapitalization:  TextCapitalization.words,
-              decoration: const InputDecoration(
-                hintText:   'Ej. Tacos El Gordo',
-                prefixIcon: Icon(Icons.store_outlined),
+              decoration: InputDecoration(
+                hintText:   AppLocalizations.of(context).regBizNameHint,
+                prefixIcon: const Icon(Icons.store_outlined),
               ),
               validator: (v) => (v == null || v.trim().isEmpty)
-                  ? 'El nombre es obligatorio'
+                  ? AppLocalizations.of(context).regBizNameRequired
                   : null,
             ),
             const SizedBox(height: 16),
 
-            const _FieldLabel(text: 'Descripción'),
+            _FieldLabel(text: AppLocalizations.of(context).regBizDescLabel),
             const SizedBox(height: 6),
             TextFormField(
               controller:         descCtrl,
               textCapitalization: TextCapitalization.sentences,
               maxLines:  3,
               maxLength: 200,
-              decoration: const InputDecoration(
-                hintText:  'Describe brevemente tu negocio…',
-                prefixIcon: Padding(
+              decoration: InputDecoration(
+                hintText:  AppLocalizations.of(context).regBizDescHint,
+                prefixIcon: const Padding(
                   padding: EdgeInsets.only(bottom: 48),
                   child:   Icon(Icons.notes_outlined),
                 ),
@@ -656,10 +693,12 @@ class _Step1BasicData extends StatelessWidget {
             const SizedBox(height: 8),
 
             // ── Ubicación ──────────────────────────────────────────────
-            const _SectionHeader(title: 'Ubicación'),
+            _SectionHeader(title: AppLocalizations.of(context).regBizSectionLocation),
             const SizedBox(height: 12),
 
-            _FieldLabel(text: isEditing ? 'Dirección' : 'Dirección *'),
+            _FieldLabel(text: isEditing
+                ? AppLocalizations.of(context).regBizAddressLabel
+                : AppLocalizations.of(context).regBizAddressLabelRequired),
             const SizedBox(height: 6),
             Stack(
               alignment: Alignment.centerRight,
@@ -670,7 +709,7 @@ class _Step1BasicData extends StatelessWidget {
                     child: TextFormField(
                       controller: addressCtrl,
                       decoration: InputDecoration(
-                        hintText:   'Toca para buscar la dirección…',
+                        hintText:   AppLocalizations.of(context).regBizAddressHint,
                         prefixIcon: const Icon(Icons.location_on_outlined),
                         suffixIcon: addressCtrl.text.isNotEmpty
                             ? const SizedBox(width: 48)
@@ -693,30 +732,30 @@ class _Step1BasicData extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 6),
                 child: Text(
-                  'Selecciona la dirección de las sugerencias para obtener coordenadas.',
+                  AppLocalizations.of(context).regBizAddressHelper,
                   style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                 ),
               ),
             const SizedBox(height: 24),
 
             // ── Contacto ───────────────────────────────────────────────
-            const _SectionHeader(title: 'Contacto'),
+            _SectionHeader(title: AppLocalizations.of(context).regBizSectionContact),
             const SizedBox(height: 12),
 
-            const _FieldLabel(text: 'Teléfono / WhatsApp'),
+            _FieldLabel(text: AppLocalizations.of(context).regBizPhoneLabel),
             const SizedBox(height: 6),
             TextFormField(
               controller:   phoneCtrl,
               keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(
-                hintText:   'Ej. 4491234567',
-                prefixIcon: Icon(Icons.phone_outlined),
+              decoration: InputDecoration(
+                hintText:   AppLocalizations.of(context).regBizPhoneHint,
+                prefixIcon: const Icon(Icons.phone_outlined),
               ),
             ),
             const SizedBox(height: 24),
 
             // ── Redes sociales ─────────────────────────────────────────
-            const _SectionHeader(title: 'Redes sociales'),
+            _SectionHeader(title: AppLocalizations.of(context).regBizSectionSocial),
             const SizedBox(height: 12),
 
             const _FieldLabel(text: 'Facebook'),
@@ -743,7 +782,7 @@ class _Step1BasicData extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            const _FieldLabel(text: 'Sitio web'),
+            _FieldLabel(text: AppLocalizations.of(context).regBizWebsiteLabel),
             const SizedBox(height: 6),
             TextFormField(
               controller:   websiteCtrl,
@@ -801,15 +840,15 @@ class _Step2TypeCategory extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // ── Tipo de establecimiento ────────────────────────────────
-          const _SectionHeader(title: 'Tipo de establecimiento *'),
+          _SectionHeader(title: AppLocalizations.of(context).regBizTypeSection),
           const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
                 child: _TypeCard(
                   icon:     Icons.storefront_outlined,
-                  label:    'Local',
-                  subtitle: 'Dirección fija',
+                  label:    AppLocalizations.of(context).regBizTypeLocal,
+                  subtitle: AppLocalizations.of(context).regBizTypeLocalSub,
                   selected: estType == 'local',
                   onTap:    () => onTypeChanged('local'),
                 ),
@@ -818,8 +857,8 @@ class _Step2TypeCategory extends StatelessWidget {
               Expanded(
                 child: _TypeCard(
                   icon:     Icons.directions_car_outlined,
-                  label:    'Urbano / Móvil',
-                  subtitle: 'Ubicación variable',
+                  label:    AppLocalizations.of(context).regBizTypeMobile,
+                  subtitle: AppLocalizations.of(context).regBizTypeMobileSub,
                   selected: estType == 'urban_mobile',
                   onTap:    () => onTypeChanged('urban_mobile'),
                 ),
@@ -829,10 +868,10 @@ class _Step2TypeCategory extends StatelessWidget {
           const SizedBox(height: 24),
 
           // ── Categoría ──────────────────────────────────────────────
-          const _SectionHeader(title: 'Categoría *'),
+          _SectionHeader(title: AppLocalizations.of(context).regBizCategorySection),
           const SizedBox(height: 4),
           Text(
-            'Puedes seleccionar una o varias. La subcategoría es opcional.',
+            AppLocalizations.of(context).regBizCategoryHelper,
             style: TextStyle(fontSize: 12, color: Colors.grey.shade600, height: 1.4),
           ),
           const SizedBox(height: 12),
@@ -850,7 +889,7 @@ class _Step2TypeCategory extends StatelessWidget {
           if (l2Cats.isNotEmpty) ...[
             const SizedBox(height: 12),
             _ChipGroup(
-              label:       '↳ Subcategoría (opcional)',
+              label:       AppLocalizations.of(context).regBizSubcategoryLabel,
               items:       l2Cats,
               selectedIds: selectedCatIds,
               color:       AppColors.secondary,
@@ -862,7 +901,7 @@ class _Step2TypeCategory extends StatelessWidget {
           if (l3Cats.isNotEmpty) ...[
             const SizedBox(height: 12),
             _ChipGroup(
-              label:       '↳ Especialidad (opcional)',
+              label:       AppLocalizations.of(context).regBizSpecialtyLabel,
               items:       l3Cats,
               selectedIds: selectedCatIds,
               color:       AppColors.primary,
@@ -873,15 +912,15 @@ class _Step2TypeCategory extends StatelessWidget {
           const SizedBox(height: 24),
 
           // ── Información adicional ──────────────────────────────────
-          const _SectionHeader(title: 'Información adicional'),
+          _SectionHeader(title: AppLocalizations.of(context).regBizExtraSection),
           const SizedBox(height: 4),
           SwitchListTile.adaptive(
             value:       adultPromos,
             onChanged:   onAdultPromoChanged,
             activeColor: AppColors.primary,
-            title: const Text(
-              '¿Tiene promociones para mayores de edad?',
-              style: TextStyle(fontSize: 14),
+            title: Text(
+              AppLocalizations.of(context).regBizAdultPromos,
+              style: const TextStyle(fontSize: 14),
             ),
             contentPadding: EdgeInsets.zero,
           ),
@@ -926,10 +965,10 @@ class _Step3ScheduleExtras extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // ── Horario ────────────────────────────────────────────────
-          const _SectionHeader(title: 'Horario de atención *'),
+          _SectionHeader(title: AppLocalizations.of(context).regBizScheduleSection),
           const SizedBox(height: 4),
           Text(
-            'Activa los días que atiendes y ajusta los horarios.',
+            AppLocalizations.of(context).regBizScheduleHelper,
             style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
           ),
           const SizedBox(height: 12),
@@ -950,7 +989,7 @@ class _Step3ScheduleExtras extends StatelessWidget {
               children: [
                 for (int i = 0; i < dayKeys.length; i++)
                   _DayRow(
-                    label:    dayLabels[i],
+                    label:    _localizedDayLabel(context, dayKeys[i]),
                     schedule: schedule[dayKeys[i]]!,
                     onChanged: (s) => onScheduleChanged(dayKeys[i], s),
                   ),
@@ -960,10 +999,10 @@ class _Step3ScheduleExtras extends StatelessWidget {
           const SizedBox(height: 24),
 
           // ── Características ────────────────────────────────────────
-          const _SectionHeader(title: 'Características *'),
+          _SectionHeader(title: AppLocalizations.of(context).regBizCharSection),
           const SizedBox(height: 4),
           Text(
-            'Selecciona las que apliquen a tu negocio.',
+            AppLocalizations.of(context).regBizCharHelper,
             style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
           ),
           const SizedBox(height: 12),
@@ -972,7 +1011,7 @@ class _Step3ScheduleExtras extends StatelessWidget {
             children: characteristics.map((c) {
               final selected = selectedCharIds.contains(c.id);
               return FilterChip(
-                label:          Text(c.name),
+                label:          Text(c.localizedName(Localizations.localeOf(context).languageCode)),
                 selected:       selected,
                 selectedColor:  AppColors.primary.withAlpha(30),
                 checkmarkColor: AppColors.primary,
@@ -991,13 +1030,18 @@ class _Step3ScheduleExtras extends StatelessWidget {
           const SizedBox(height: 24),
 
           // ── Métodos de pago ────────────────────────────────────────
-          const _SectionHeader(title: 'Métodos de pago *'),
+          _SectionHeader(title: AppLocalizations.of(context).regBizPaymentSection),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8, runSpacing: 8,
             children: paymentOptions.map(((String, String) opt) {
-              final (key, label) = opt;
+              final (key, _) = opt;
               final selected     = selectedPayments.contains(key);
+              final label = key == 'card'
+                  ? AppLocalizations.of(context).regBizPaymentCard
+                  : key == 'cash'
+                      ? AppLocalizations.of(context).regBizPaymentCash
+                      : AppLocalizations.of(context).regBizPaymentOther;
               return FilterChip(
                 label:          Text(label),
                 selected:       selected,
@@ -1087,7 +1131,7 @@ class _DayRow extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: 8),
               child: Text(
-                'Cerrado',
+                AppLocalizations.of(context).regBizClosed,
                 style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
               ),
             ),
@@ -1227,7 +1271,7 @@ class _ChipGroup extends StatelessWidget {
             final id       = int.tryParse(cat.id);
             final selected = id != null && selectedIds.contains(id);
             return FilterChip(
-              label: Text(cat.name),
+              label: Text(cat.localizedName(Localizations.localeOf(context).languageCode)),
               selected:       selected,
               selectedColor:  color.withAlpha(30),
               checkmarkColor: color,
@@ -1350,10 +1394,10 @@ class _AddressSearchSheetState extends State<_AddressSearchSheet> {
       } else if (body['status'] == 'ZERO_RESULTS') {
         setState(() => _predictions = []);
       } else {
-        setState(() => _errorText = 'Sin resultados. Intenta con otra búsqueda.');
+        setState(() => _errorText = AppLocalizations.of(context).regBizNoResults);
       }
     } catch (_) {
-      setState(() => _errorText = 'Error al buscar. Intenta de nuevo.');
+      setState(() => _errorText = AppLocalizations.of(context).regBizSearchError);
     } finally {
       setState(() => _isLoading = false);
     }
@@ -1385,10 +1429,10 @@ class _AddressSearchSheetState extends State<_AddressSearchSheet> {
         widget.onSelected(_AddressResult(formattedAddress: address, lat: lat, lng: lng));
         if (mounted) Navigator.of(context).pop();
       } else {
-        setState(() { _errorText = 'No se pudo obtener la ubicación.'; _isLoading = false; });
+        setState(() { _errorText = AppLocalizations.of(context).regBizLocationError; _isLoading = false; });
       }
     } catch (_) {
-      setState(() { _errorText = 'Error al buscar. Intenta de nuevo.'; _isLoading = false; });
+      setState(() { _errorText = AppLocalizations.of(context).regBizSearchError; _isLoading = false; });
     }
   }
 
@@ -1405,8 +1449,8 @@ class _AddressSearchSheetState extends State<_AddressSearchSheet> {
         children: [
           Row(
             children: [
-              const Text('Buscar dirección',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,
+              Text(AppLocalizations.of(context).regBizSearchAddressTitle,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold,
                     color: AppColors.textDark)),
               const Spacer(),
               IconButton(
@@ -1421,7 +1465,7 @@ class _AddressSearchSheetState extends State<_AddressSearchSheet> {
             autofocus:  true,
             onChanged:  _onChanged,
             decoration: InputDecoration(
-              hintText:   'Escribe la dirección de tu negocio…',
+              hintText:   AppLocalizations.of(context).regBizSearchAddressHint,
               prefixIcon: const Icon(Icons.search),
               suffixIcon: _isLoading
                   ? const Padding(

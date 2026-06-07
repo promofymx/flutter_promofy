@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/datasources/supabase/business_datasource.dart';
 import '../../../data/models/characteristic_model.dart';
@@ -137,7 +138,7 @@ class _AdminLugaresScreenState extends State<AdminLugaresScreen>
         backgroundColor: AppColors.background,
         appBar: AppBar(
           backgroundColor: Colors.white,
-          title: Text('Fotos — ${est.name}',
+          title: Text(AppLocalizations.of(context).adminPlacesPhotosTitle(est.name),
               style: const TextStyle(fontWeight: FontWeight.bold)),
         ),
         body: SingleChildScrollView(
@@ -167,18 +168,18 @@ class _AdminLugaresScreenState extends State<AdminLugaresScreen>
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Eliminar lugar'),
+        title: Text(AppLocalizations.of(context).adminPlacesDeleteTitle),
         content: Text(
-            '¿Eliminar "${est.name}"?\nTambién eliminará sus promociones.'),
+            AppLocalizations.of(context).adminPlacesDeleteConfirm(est.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancelar'),
+            child: Text(AppLocalizations.of(context).adminPlacesCancel),
           ),
           TextButton(
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Eliminar'),
+            child: Text(AppLocalizations.of(context).adminPlacesDelete),
           ),
         ],
       ),
@@ -197,7 +198,7 @@ class _AdminLugaresScreenState extends State<AdminLugaresScreen>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Error: $e'),
+          content: Text(AppLocalizations.of(context).adminPlacesError(e.toString())),
           backgroundColor: Colors.red.shade700,
           behavior: SnackBarBehavior.floating,
         ));
@@ -213,12 +214,12 @@ class _AdminLugaresScreenState extends State<AdminLugaresScreen>
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text('Admin Lugares',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(AppLocalizations.of(context).adminPlacesTitle,
+            style: const TextStyle(fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
             icon:    const Icon(Icons.refresh_rounded),
-            tooltip: 'Actualizar',
+            tooltip: AppLocalizations.of(context).adminPlacesRefresh,
             onPressed: _loadEstablishments,
           ),
         ],
@@ -229,9 +230,9 @@ class _AdminLugaresScreenState extends State<AdminLugaresScreen>
           indicatorColor:       AppColors.primary,
           labelStyle:
               const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-          tabs: const [
-            Tab(icon: Icon(Icons.store_outlined, size: 18), text: 'Establecimientos'),
-            Tab(icon: Icon(Icons.local_offer_outlined, size: 18), text: 'Promociones'),
+          tabs: [
+            Tab(icon: const Icon(Icons.store_outlined, size: 18), text: AppLocalizations.of(context).adminPlacesTabEstablishments),
+            Tab(icon: const Icon(Icons.local_offer_outlined, size: 18), text: AppLocalizations.of(context).adminPlacesTabPromos),
           ],
         ),
       ),
@@ -279,7 +280,7 @@ class _AdminLugaresScreenState extends State<AdminLugaresScreen>
             ? FloatingActionButton.extended(
                 onPressed:       _openCreate,
                 icon:            const Icon(Icons.add_business_rounded),
-                label:           const Text('Agregar lugar'),
+                label:           Text(AppLocalizations.of(context).adminPlacesAddPlace),
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
               )
@@ -339,7 +340,7 @@ class _EstablishmentsTab extends StatelessWidget {
           child: TextField(
             onChanged: onQueryChanged,
             decoration: InputDecoration(
-              hintText:   'Buscar…',
+              hintText:   AppLocalizations.of(context).adminPlacesSearchHint,
               prefixIcon: const Icon(Icons.search, size: 20),
               suffixIcon: query.isNotEmpty
                   ? IconButton(
@@ -365,18 +366,18 @@ class _EstablishmentsTab extends StatelessWidget {
           child: Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              '${filtered.length} lugar${filtered.length != 1 ? "es" : ""}',
+              AppLocalizations.of(context).adminPlacesCount(filtered.length),
               style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
             ),
           ),
         ),
         // Lista
-        Expanded(child: _buildBody(filtered)),
+        Expanded(child: _buildBody(context, filtered)),
       ],
     );
   }
 
-  Widget _buildBody(List<EstablishmentModel> filtered) {
+  Widget _buildBody(BuildContext context, List<EstablishmentModel> filtered) {
     if (loading) {
       return const Center(
           child: CircularProgressIndicator(color: AppColors.primary));
@@ -394,8 +395,8 @@ class _EstablishmentsTab extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               query.isEmpty
-                  ? 'Aún no hay lugares. Toca + para agregar uno.'
-                  : 'Sin resultados.',
+                  ? AppLocalizations.of(context).adminPlacesEmpty
+                  : AppLocalizations.of(context).adminPlacesNoResults,
               style: TextStyle(color: Colors.grey.shade500),
               textAlign: TextAlign.center,
             ),
@@ -509,26 +510,26 @@ class _EstRow extends StatelessWidget {
                     if (val == 'photos') onPhotos();
                     if (val == 'delete') onDelete();
                   },
-                  itemBuilder: (_) => const [
+                  itemBuilder: (_) => [
                     PopupMenuItem(value: 'edit',
                         child: Row(children: [
-                          Icon(Icons.edit_outlined, size: 18),
-                          SizedBox(width: 10),
-                          Text('Editar info'),
+                          const Icon(Icons.edit_outlined, size: 18),
+                          const SizedBox(width: 10),
+                          Text(AppLocalizations.of(context).adminPlacesEditInfo),
                         ])),
                     PopupMenuItem(value: 'photos',
                         child: Row(children: [
-                          Icon(Icons.photo_library_outlined, size: 18),
-                          SizedBox(width: 10),
-                          Text('Gestionar fotos'),
+                          const Icon(Icons.photo_library_outlined, size: 18),
+                          const SizedBox(width: 10),
+                          Text(AppLocalizations.of(context).adminPlacesManagePhotos),
                         ])),
                     PopupMenuItem(value: 'delete',
                         child: Row(children: [
-                          Icon(Icons.delete_outline, size: 18,
+                          const Icon(Icons.delete_outline, size: 18,
                               color: Colors.red),
-                          SizedBox(width: 10),
-                          Text('Eliminar',
-                              style: TextStyle(color: Colors.red)),
+                          const SizedBox(width: 10),
+                          Text(AppLocalizations.of(context).adminPlacesDelete,
+                              style: const TextStyle(color: Colors.red)),
                         ])),
                   ],
                 ),
@@ -554,8 +555,8 @@ class _EstRow extends StatelessWidget {
                   Icon(Icons.local_offer_outlined,
                       size: 14, color: AppColors.primary),
                   const SizedBox(width: 6),
-                  const Text('Gestionar promociones',
-                      style: TextStyle(
+                  Text(AppLocalizations.of(context).adminPlacesManagePromos,
+                      style: const TextStyle(
                           fontSize:   12,
                           color:      AppColors.primary,
                           fontWeight: FontWeight.w600)),
@@ -614,14 +615,14 @@ class _PromosTab extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
           child: establishments.isEmpty
-              ? Text('Primero crea un lugar en la pestaña Establecimientos.',
+              ? Text(AppLocalizations.of(context).adminPlacesNoPlacesYet,
                   style: TextStyle(
                       fontSize: 13, color: Colors.grey.shade500))
               : DropdownButtonFormField<EstablishmentModel>(
                   value:      selectedEst,
                   isExpanded: true,
                   decoration: InputDecoration(
-                    labelText:      'Selecciona un lugar',
+                    labelText:      AppLocalizations.of(context).adminPlacesSelectPlace,
                     prefixIcon:     const Icon(Icons.store_outlined, size: 20),
                     filled:         true,
                     fillColor:      Colors.white,
@@ -655,7 +656,7 @@ class _PromosTab extends StatelessWidget {
               child: OutlinedButton.icon(
                 onPressed: onCreate,
                 icon:  const Icon(Icons.add_rounded, size: 18),
-                label: const Text('Nueva promoción'),
+                label: Text(AppLocalizations.of(context).adminPlacesNewPromo),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.primary,
                   side: const BorderSide(color: AppColors.primary),
@@ -670,12 +671,12 @@ class _PromosTab extends StatelessWidget {
         ],
 
         // Lista de promos
-        Expanded(child: _buildPromoList()),
+        Expanded(child: _buildPromoList(context)),
       ],
     );
   }
 
-  Widget _buildPromoList() {
+  Widget _buildPromoList(BuildContext context) {
     if (selectedEst == null) {
       return Center(
         child: Column(
@@ -684,7 +685,7 @@ class _PromosTab extends StatelessWidget {
             Icon(Icons.local_offer_outlined,
                 size: 56, color: Colors.grey.shade200),
             const SizedBox(height: 12),
-            Text('Elige un lugar para ver sus promociones.',
+            Text(AppLocalizations.of(context).adminPlacesChoosePlace,
                 style: TextStyle(color: Colors.grey.shade400)),
           ],
         ),
@@ -702,7 +703,7 @@ class _PromosTab extends StatelessWidget {
             Icon(Icons.local_offer_outlined,
                 size: 48, color: Colors.grey.shade200),
             const SizedBox(height: 10),
-            Text('Sin promociones. Toca "Nueva promoción".',
+            Text(AppLocalizations.of(context).adminPlacesNoPromos,
                 style: TextStyle(color: Colors.grey.shade400),
                 textAlign: TextAlign.center),
           ],
@@ -766,7 +767,9 @@ class _PromoRow extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                         color:      AppColors.textDark)),
                 Text(
-                  promo.isCurrentlyActive ? 'Activa' : 'Inactiva',
+                  promo.isCurrentlyActive
+                      ? AppLocalizations.of(context).adminPlacesPromoActive
+                      : AppLocalizations.of(context).adminPlacesPromoInactive,
                   style: TextStyle(
                       fontSize: 11,
                       color: promo.isCurrentlyActive
@@ -779,7 +782,7 @@ class _PromoRow extends StatelessWidget {
           IconButton(
             icon:      const Icon(Icons.edit_outlined, size: 18),
             color:     AppColors.primary,
-            tooltip:   'Editar',
+            tooltip:   AppLocalizations.of(context).adminPlacesEdit,
             onPressed: onEdit,
           ),
         ],

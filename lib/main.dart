@@ -22,8 +22,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Inicializa datos de localización para DateFormat con español México
+  // Inicializa datos de localización para DateFormat en los idiomas soportados.
   await initializeDateFormatting('es_MX', null);
+  await initializeDateFormatting('en_US', null);
+  await initializeDateFormatting('de_DE', null);
 
   // Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);

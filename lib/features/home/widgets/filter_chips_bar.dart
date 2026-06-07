@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import '../bloc/home_bloc.dart';
 import '../bloc/home_event.dart';
 import '../../../core/theme/app_theme.dart';
@@ -37,7 +38,7 @@ class FilterChipsBar extends StatelessWidget {
         children: [
           // Chip rápido: Activas ahora
           _QuickChip(
-            label: 'Activas ahora',
+            label: AppLocalizations.of(context).filterChipsActiveNow,
             isActive: filters.activeNow,
             onTap: () => context.read<HomeBloc>().add(
                   HomeFiltersChanged(
@@ -49,7 +50,7 @@ class FilterChipsBar extends StatelessWidget {
 
           // Chip rápido: Relámpago
           _QuickChip(
-            label: '⚡ Relámpago',
+            label: AppLocalizations.of(context).filterChipsFlash,
             isActive: filters.flashOnly,
             onTap: () => context.read<HomeBloc>().add(
                   HomeFiltersChanged(
@@ -62,7 +63,7 @@ class FilterChipsBar extends StatelessWidget {
           // Chip rápido: Mis favoritas (solo para usuarios autenticados)
           if (userId != null) ...[
             _QuickChip(
-              label: '⭐ Mis favoritas',
+              label: AppLocalizations.of(context).filterChipsFavorites,
               isActive: filters.favoritesOnly,
               onTap: () => context.read<HomeBloc>().add(
                     HomeFiltersChanged(
@@ -76,7 +77,7 @@ class FilterChipsBar extends StatelessWidget {
 
           // Chip rápido: Cumpleañero
           _QuickChip(
-            label: '🎂 Cumpleañero',
+            label: AppLocalizations.of(context).filterChipsBirthday,
             isActive: filters.birthdayOnly,
             onTap: () => context.read<HomeBloc>().add(
                   HomeFiltersChanged(
@@ -179,7 +180,9 @@ class _AdvancedChip extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             Text(
-              hasActive ? 'Filtros ($count)' : 'Más filtros',
+              hasActive
+                  ? AppLocalizations.of(context).filterChipsAdvancedCount(count)
+                  : AppLocalizations.of(context).filterChipsAdvancedMore,
               style: TextStyle(
                 color: hasActive ? Colors.white : AppColors.textDark,
                 fontSize: 13,

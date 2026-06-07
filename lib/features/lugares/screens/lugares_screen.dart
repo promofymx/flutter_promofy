@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import '../cubit/lugares_cubit.dart';
 import '../cubit/lugares_state.dart';
 import '../../../core/theme/app_theme.dart';
@@ -93,7 +94,7 @@ class _LugaresScreenState extends State<LugaresScreen> {
           onChanged:       _onSearchChanged,
           textInputAction: TextInputAction.search,
           decoration: InputDecoration(
-            hintText:  'Buscar negocio...',
+            hintText:  AppLocalizations.of(context).lugaresSearchHint,
             hintStyle: TextStyle(fontSize: 13, color: Colors.grey.shade400),
             prefixIcon: Icon(Icons.search,
                 color: Colors.grey.shade400, size: 18),
@@ -162,7 +163,7 @@ class _LugaresScreenState extends State<LugaresScreen> {
                   children: [
                     // Chip: Abiertos ahora
                     _QuickChip(
-                      label:    'Abiertos ahora',
+                      label:    AppLocalizations.of(context).lugaresChipOpenNow,
                       isActive: state.openNow,
                       onTap:    () => context
                           .read<LugaresCubit>()
@@ -172,7 +173,7 @@ class _LugaresScreenState extends State<LugaresScreen> {
 
                     // Chip: Relámpago
                     _QuickChip(
-                      label:    '⚡ Relámpago',
+                      label:    AppLocalizations.of(context).lugaresChipFlash,
                       isActive: state.flashOnly,
                       onTap:    () => context
                           .read<LugaresCubit>()
@@ -183,7 +184,7 @@ class _LugaresScreenState extends State<LugaresScreen> {
                     // Chip: Mis favoritos (solo si autenticado)
                     if (userId != null) ...[
                       _QuickChip(
-                        label:    '⭐ Mis favoritos',
+                        label:    AppLocalizations.of(context).lugaresChipFavorites,
                         isActive: state.favoritesOnly,
                         onTap:    () => context
                             .read<LugaresCubit>()
@@ -345,6 +346,31 @@ class _LugaresFilterSheetState extends State<_LugaresFilterSheet> {
         _paymentMethod = null;
       });
 
+  String _dayLabel(BuildContext context, int day) {
+    final l = AppLocalizations.of(context);
+    switch (day) {
+      case 1: return l.lugaresDayMon;
+      case 2: return l.lugaresDayTue;
+      case 3: return l.lugaresDayWed;
+      case 4: return l.lugaresDayThu;
+      case 5: return l.lugaresDayFri;
+      case 6: return l.lugaresDaySat;
+      case 7: return l.lugaresDaySun;
+      default: return '';
+    }
+  }
+
+  String _paymentLabel(BuildContext context, String key) {
+    final l = AppLocalizations.of(context);
+    switch (key) {
+      case 'efectivo':      return l.lugaresPaymentCash;
+      case 'tarjeta':       return l.lugaresPaymentCard;
+      case 'transferencia': return l.lugaresPaymentTransfer;
+      case 'mercadopago':   return l.lugaresPaymentMercadopago;
+      default:              return key;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final maxH         = MediaQuery.of(context).size.height * 0.85;
@@ -376,9 +402,9 @@ class _LugaresFilterSheetState extends State<_LugaresFilterSheet> {
               padding: const EdgeInsets.fromLTRB(20, 14, 8, 8),
               child: Row(
                 children: [
-                  const Text(
-                    'Filtros',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context).lugaresFiltersTitle,
+                    style: const TextStyle(
                       fontSize:   18,
                       fontWeight: FontWeight.bold,
                       color:      AppColors.textDark,
@@ -388,9 +414,9 @@ class _LugaresFilterSheetState extends State<_LugaresFilterSheet> {
                   if (_advancedCount > 0)
                     TextButton(
                       onPressed: _clearAll,
-                      child: const Text(
-                        'Limpiar todo',
-                        style: TextStyle(color: AppColors.primary, fontSize: 13),
+                      child: Text(
+                        AppLocalizations.of(context).lugaresClearAll,
+                        style: const TextStyle(color: AppColors.primary, fontSize: 13),
                       ),
                     ),
                 ],
@@ -408,14 +434,14 @@ class _LugaresFilterSheetState extends State<_LugaresFilterSheet> {
 
                     // ── Características ────────────────────────────────────
                     if (s.characteristics.isNotEmpty) ...[
-                      _SectionTitle('Características del lugar'),
+                      _SectionTitle(AppLocalizations.of(context).lugaresSectionCharacteristics),
                       const SizedBox(height: 10),
                       Wrap(
                         spacing: 8, runSpacing: 8,
                         children: s.characteristics.map((c) {
                           final active = _charIds.contains(c.id);
                           return _SelectableChip(
-                            label:    c.name,
+                            label:    c.localizedName(Localizations.localeOf(context).languageCode),
                             isActive: active,
                             onTap: () {
                               final ids = List<String>.from(_charIds);
@@ -430,7 +456,7 @@ class _LugaresFilterSheetState extends State<_LugaresFilterSheet> {
 
                     // ── Categoría ─────────────────────────────────────────
                     if (s.categories.isNotEmpty) ...[
-                      _SectionTitle('Categoría'),
+                      _SectionTitle(AppLocalizations.of(context).lugaresSectionCategory),
                       const SizedBox(height: 10),
                       Wrap(
                         spacing: 8, runSpacing: 8,
@@ -439,7 +465,7 @@ class _LugaresFilterSheetState extends State<_LugaresFilterSheet> {
                             .map((c) {
                           final active = _categoryId == c.id;
                           return _SelectableChip(
-                            label:    c.name,
+                            label:    c.localizedName(Localizations.localeOf(context).languageCode),
                             isActive: active,
                             onTap: () => setState(() =>
                                 _categoryId = active ? null : c.id),
@@ -450,14 +476,14 @@ class _LugaresFilterSheetState extends State<_LugaresFilterSheet> {
                     ],
 
                     // ── Día de la semana ──────────────────────────────────
-                    _SectionTitle('Día'),
+                    _SectionTitle(AppLocalizations.of(context).lugaresSectionDay),
                     const SizedBox(height: 10),
                     Wrap(
                       spacing: 8, runSpacing: 8,
                       children: _days.entries.map((e) {
                         final active = _dayOfWeek == e.key;
                         return _SelectableChip(
-                          label:    e.value,
+                          label:    _dayLabel(context, e.key),
                           isActive: active,
                           onTap: () => setState(() =>
                               _dayOfWeek = active ? null : e.key),
@@ -467,14 +493,14 @@ class _LugaresFilterSheetState extends State<_LugaresFilterSheet> {
                     const SizedBox(height: 20),
 
                     // ── Método de pago ────────────────────────────────────
-                    _SectionTitle('Método de pago'),
+                    _SectionTitle(AppLocalizations.of(context).lugaresSectionPayment),
                     const SizedBox(height: 10),
                     Wrap(
                       spacing: 8, runSpacing: 8,
                       children: _paymentMethods.entries.map((e) {
                         final active = _paymentMethod == e.key;
                         return _SelectableChip(
-                          label:    e.value,
+                          label:    _paymentLabel(context, e.key),
                           isActive: active,
                           onTap: () => setState(() =>
                               _paymentMethod = active ? null : e.key),
@@ -512,8 +538,8 @@ class _LugaresFilterSheetState extends State<_LugaresFilterSheet> {
                   },
                   child: Text(
                     _advancedCount > 0
-                        ? 'Aplicar ($_advancedCount ${_advancedCount == 1 ? "filtro" : "filtros"})'
-                        : 'Aplicar filtros',
+                        ? AppLocalizations.of(context).lugaresApplyWithCount(_advancedCount)
+                        : AppLocalizations.of(context).lugaresApplyFilters,
                     style: const TextStyle(
                       color:      Colors.white,
                       fontWeight: FontWeight.bold,
@@ -601,7 +627,9 @@ class _AdvancedChip extends StatelessWidget {
                 color: active ? Colors.white : AppColors.textDark),
             const SizedBox(width: 4),
             Text(
-              active ? 'Filtros ($count)' : 'Más filtros',
+              active
+                  ? AppLocalizations.of(context).lugaresChipFiltersCount(count)
+                  : AppLocalizations.of(context).lugaresChipMoreFilters,
               style: TextStyle(
                 color:      active ? Colors.white : AppColors.textDark,
                 fontSize:   13,
@@ -812,8 +840,8 @@ class _EmptyView extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             hasFilters
-                ? 'Sin resultados para los filtros aplicados'
-                : 'No hay negocios cerca por ahora',
+                ? AppLocalizations.of(context).lugaresEmptyFiltered
+                : AppLocalizations.of(context).lugaresEmptyNoNearby,
             textAlign: TextAlign.center,
             style: const TextStyle(color: Colors.grey, fontSize: 15),
           ),
@@ -821,9 +849,9 @@ class _EmptyView extends StatelessWidget {
             const SizedBox(height: 12),
             TextButton(
               onPressed: onClear,
-              child: const Text(
-                'Limpiar filtros',
-                style: TextStyle(color: AppColors.primary),
+              child: Text(
+                AppLocalizations.of(context).lugaresClearFilters,
+                style: const TextStyle(color: AppColors.primary),
               ),
             ),
           ],
@@ -852,7 +880,7 @@ class _ErrorView extends StatelessWidget {
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: onRetry,
-            child: const Text('Reintentar'),
+            child: Text(AppLocalizations.of(context).lugaresRetry),
           ),
         ],
       ),

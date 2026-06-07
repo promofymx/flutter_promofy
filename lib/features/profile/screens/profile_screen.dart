@@ -16,6 +16,7 @@ import '../../../features/business/cubit/business_state.dart';
 import '../../../features/home/bloc/home_bloc.dart';
 import '../../../features/plans/screens/plans_screen.dart';
 import '../../../main.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import '../cubit/achievements_cubit.dart';
 import '../cubit/achievements_state.dart';
 import '../../../data/models/user_stats_model.dart';
@@ -107,8 +108,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           backgroundColor: AppColors.background,
           appBar: AppBar(
             backgroundColor: Colors.white,
-            title: const Text('Mi perfil',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            title: Text(AppLocalizations.of(context).profileTitle,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
           ),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
@@ -207,8 +208,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   onPressed: () =>
                       context.read<AuthBloc>().add(AuthSignOutRequested()),
                   icon:  const Icon(Icons.logout, color: Colors.red),
-                  label: const Text('Cerrar sesión',
-                      style: TextStyle(color: Colors.red)),
+                  label: Text(AppLocalizations.of(context).profileSignOut,
+                      style: const TextStyle(color: Colors.red)),
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 52),
                     side: const BorderSide(color: Colors.red),
@@ -284,7 +285,7 @@ class _ProfileHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  profile.fullName ?? 'Sin nombre',
+                  profile.fullName ?? AppLocalizations.of(context).profileNoName,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -306,7 +307,7 @@ class _ProfileHeader extends StatelessWidget {
                     if (profile.isBusinessOwner)
                       _Chip(
                         icon:  Icons.store_outlined,
-                        label: 'Dueño de negocio',
+                        label: AppLocalizations.of(context).profileBusinessOwnerChip,
                         color: AppColors.primary,
                       ),
                   ],
@@ -328,19 +329,19 @@ class _LevelBadge extends StatelessWidget {
   const _LevelBadge({required this.profile, this.badgeTier});
 
   // Nivel visual: negocio/staff por rol, consumidor por insignia de visitas.
-  _LevelData get _level {
+  _LevelData _levelOf(BuildContext context) {
     if (profile.isBusinessOwner) {
-      return const _LevelData(
-        label:  'Negocio activo',
+      return _LevelData(
+        label:  AppLocalizations.of(context).profileLevelBusinessActive,
         icon:   Icons.verified_outlined,
-        color:  Color(0xFF00897B),
+        color:  const Color(0xFF00897B),
       );
     }
     if (profile.isStaff) {
-      return const _LevelData(
-        label:  'Empleado',
+      return _LevelData(
+        label:  AppLocalizations.of(context).profileLevelStaff,
         icon:   Icons.badge_outlined,
-        color:  Color(0xFF3949AB),
+        color:  const Color(0xFF3949AB),
       );
     }
     final badge = badgeTier ?? BadgeTier.none;
@@ -355,7 +356,7 @@ class _LevelBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lv = _level;
+    final lv = _levelOf(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
@@ -438,23 +439,25 @@ class _AccountCard extends StatelessWidget {
         '${date.year}';
   }
 
-  String _formatGender(String? g) {
+  String _formatGender(BuildContext context, String? g) {
+    final l10n = AppLocalizations.of(context);
     switch (g) {
-      case 'male':   return 'Hombre';
-      case 'female': return 'Mujer';
-      case 'other':  return 'Otro';
+      case 'male':   return l10n.profileGenderMale;
+      case 'female': return l10n.profileGenderFemale;
+      case 'other':  return l10n.profileGenderOther;
       default:       return '—';
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return _Card(
-      title: 'Información de la cuenta',
+      title: l10n.profileAccountInfoTitle,
       children: [
-        _Row(label: 'Nombre',             value: profile.fullName ?? '—'),
-        _Row(label: 'Fecha de nacimiento',value: _formatDate(profile.birthDate)),
-        _Row(label: 'Género',             value: _formatGender(profile.gender)),
+        _Row(label: l10n.profileFieldName,      value: profile.fullName ?? '—'),
+        _Row(label: l10n.profileFieldBirthDate, value: _formatDate(profile.birthDate)),
+        _Row(label: l10n.profileFieldGender,    value: _formatGender(context, profile.gender)),
       ],
     );
   }
@@ -473,14 +476,14 @@ class _BusinessOwnerCard extends StatelessWidget {
         final plan = _extractPlan(bizState);
 
         return _Card(
-          title: 'Membresía de negocio',
+          title: AppLocalizations.of(context).profileBusinessMembershipTitle,
           children: [
             _PlanRow(plan: plan, expiresAt: profile.planExpiresAt),
             const SizedBox(height: 12),
             OutlinedButton.icon(
               onPressed: () => context.go('/business'),
               icon:  const Icon(Icons.store_outlined),
-              label: const Text('Ir a Mi negocio'),
+              label: Text(AppLocalizations.of(context).profileGoToMyBusiness),
               style: OutlinedButton.styleFrom(
                 minimumSize:     const Size(double.infinity, 48),
                 side:            const BorderSide(color: AppColors.primary),
@@ -495,8 +498,8 @@ class _BusinessOwnerCard extends StatelessWidget {
                 MaterialPageRoute(builder: (_) => const PlansScreen()),
               ),
               icon:  const Icon(Icons.workspace_premium_rounded, size: 16),
-              label: const Text('Ver planes y pagos',
-                  style: TextStyle(fontWeight: FontWeight.w600)),
+              label: Text(AppLocalizations.of(context).profileViewPlansAndPayments,
+                  style: const TextStyle(fontWeight: FontWeight.w600)),
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 48),
                 shape: RoundedRectangleBorder(
@@ -525,14 +528,15 @@ class _PlanRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final planName = plan?.name ?? 'Plan básico';
+    final l10n = AppLocalizations.of(context);
+    final planName = plan?.name ?? l10n.profileBasicPlan;
 
     // Estado del vencimiento
     final String expiryLabel;
     final Color  expiryColor;
 
     if (expiresAt == null) {
-      expiryLabel = 'Sin vencimiento';
+      expiryLabel = l10n.profileNoExpiry;
       expiryColor = Colors.grey.shade500;
     } else {
       final now      = DateTime.now();
@@ -541,13 +545,13 @@ class _PlanRow extends StatelessWidget {
                        '${expiresAt!.month.toString().padLeft(2, '0')}/'
                        '${expiresAt!.year}';
       if (expiresAt!.isBefore(now)) {
-        expiryLabel = 'Vencido ($dateStr)';
+        expiryLabel = l10n.profileExpired(dateStr);
         expiryColor = Colors.red.shade600;
       } else if (diff <= 7) {
-        expiryLabel = 'Vence el $dateStr';
+        expiryLabel = l10n.profileExpiresOn(dateStr);
         expiryColor = Colors.orange.shade700;
       } else {
-        expiryLabel = 'Vence el $dateStr';
+        expiryLabel = l10n.profileExpiresOn(dateStr);
         expiryColor = Colors.grey.shade500;
       }
     }
@@ -622,9 +626,9 @@ class _RegisterBusinessBanner extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  '¿Tienes un negocio?',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context).profileHaveBusinessTitle,
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: AppColors.textDark,
@@ -632,7 +636,7 @@ class _RegisterBusinessBanner extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Regístralo y llega a más clientes',
+                  AppLocalizations.of(context).profileHaveBusinessSubtitle,
                   style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                 ),
               ],
@@ -652,8 +656,8 @@ class _RegisterBusinessBanner extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10)),
               elevation: 0,
             ),
-            child: const Text('Regístralo',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+            child: Text(AppLocalizations.of(context).profileRegisterIt,
+                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
           ),
         ],
       ),
@@ -728,9 +732,10 @@ class _BusinessRegistrationSheetState
   Future<void> _validateCode() async {
     final code = _codeCtrl.text.trim().toUpperCase();
     if (code.isEmpty) {
-      setState(() => _error = 'Ingresa tu código de invitación.');
+      setState(() => _error = AppLocalizations.of(context).profileEnterInvitationCode);
       return;
     }
+    final l10n = AppLocalizations.of(context);
     setState(() { _isLoading = true; _error = null; });
     try {
       final result = await supabase.rpc(
@@ -747,12 +752,12 @@ class _BusinessRegistrationSheetState
         });
       } else {
         setState(() {
-          _error     = result['error'] as String? ?? 'Código inválido.';
+          _error     = result['error'] as String? ?? l10n.profileInvalidCode;
           _isLoading = false;
         });
       }
     } catch (_) {
-      if (mounted) setState(() { _error = 'Error de conexión.'; _isLoading = false; });
+      if (mounted) setState(() { _error = l10n.profileConnectionError; _isLoading = false; });
     }
   }
 
@@ -773,8 +778,9 @@ class _BusinessRegistrationSheetState
   Future<void> _searchEstablishments() async {
     final name    = _nameCtrl.text.trim();
     final address = _addressCtrl.text.trim();
+    final l10n    = AppLocalizations.of(context);
     if (name.isEmpty) {
-      setState(() => _error = 'Ingresa el nombre de tu negocio.');
+      setState(() => _error = l10n.profileEnterBusinessName);
       return;
     }
     setState(() { _isLoading = true; _error = null; _hasSearched = false; });
@@ -797,7 +803,7 @@ class _BusinessRegistrationSheetState
         _isLoading   = false;
       });
     } catch (_) {
-      if (mounted) setState(() { _error = 'Error al buscar. Intenta de nuevo.'; _isLoading = false; });
+      if (mounted) setState(() { _error = l10n.profileSearchError; _isLoading = false; });
     }
   }
 
@@ -824,12 +830,13 @@ class _BusinessRegistrationSheetState
 
   // ── UI ────────────────────────────────────────────────────────────────────
 
-  String get _title {
+  String _titleOf(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     switch (_step) {
-      case 'loaded':   return 'Ya está en Promofy';
-      case 'code':     return 'Ingresa tu código';
-      case 'no_code':  return 'Encuentra tu negocio';
-      default:         return 'Registra tu negocio';
+      case 'loaded':   return l10n.profileSheetTitleLoaded;
+      case 'code':     return l10n.profileSheetTitleCode;
+      case 'no_code':  return l10n.profileSheetTitleNoCode;
+      default:         return l10n.profileSheetTitleInitial;
     }
   }
 
@@ -861,7 +868,7 @@ class _BusinessRegistrationSheetState
             const SizedBox(height: 20),
 
             Text(
-              _title,
+              _titleOf(context),
               style: const TextStyle(
                 fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textDark,
               ),
@@ -872,15 +879,15 @@ class _BusinessRegistrationSheetState
             if (_step == 'initial') ...[
               _SheetOption(
                 icon:     Icons.fiber_new_outlined,
-                title:    'Es nuevo',
-                subtitle: 'Quiero registrar mi negocio en Promofy',
+                title:    AppLocalizations.of(context).profileOptionNewTitle,
+                subtitle: AppLocalizations.of(context).profileOptionNewSubtitle,
                 onTap:    _goNewBusiness,
               ),
               const SizedBox(height: 10),
               _SheetOption(
                 icon:     Icons.store_outlined,
-                title:    'Ya está cargado',
-                subtitle: 'Mi negocio ya existe en Promofy',
+                title:    AppLocalizations.of(context).profileOptionLoadedTitle,
+                subtitle: AppLocalizations.of(context).profileOptionLoadedSubtitle,
                 onTap:    () => setState(() => _step = 'loaded'),
               ),
             ],
@@ -889,15 +896,15 @@ class _BusinessRegistrationSheetState
             if (_step == 'loaded') ...[
               _SheetOption(
                 icon:     Icons.vpn_key_outlined,
-                title:    'Tengo código',
-                subtitle: 'Ingresar mi código de invitación',
+                title:    AppLocalizations.of(context).profileOptionHaveCodeTitle,
+                subtitle: AppLocalizations.of(context).profileOptionHaveCodeSubtitle,
                 onTap:    () => setState(() { _step = 'code'; _error = null; }),
               ),
               const SizedBox(height: 10),
               _SheetOption(
                 icon:     Icons.search_rounded,
-                title:    'No tengo código',
-                subtitle: 'Buscar mi negocio por nombre y dirección',
+                title:    AppLocalizations.of(context).profileOptionNoCodeTitle,
+                subtitle: AppLocalizations.of(context).profileOptionNoCodeSubtitle,
                 onTap:    () => setState(() { _step = 'no_code'; _error = null; }),
               ),
               const SizedBox(height: 10),
@@ -912,7 +919,7 @@ class _BusinessRegistrationSheetState
                   textCapitalization: TextCapitalization.characters,
                   onSubmitted:        (_) => _validateCode(),
                   decoration: InputDecoration(
-                    hintText:   'CÓDIGO DE INVITACIÓN',
+                    hintText:   AppLocalizations.of(context).profileInvitationCodeHint,
                     errorText:  _error,
                     prefixIcon: const Icon(Icons.confirmation_number_outlined),
                     suffixIcon: _isLoading
@@ -929,16 +936,16 @@ class _BusinessRegistrationSheetState
                   width: double.infinity, height: 48,
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _validateCode,
-                    child: const Text('Verificar código',
-                        style: TextStyle(fontWeight: FontWeight.w600)),
+                    child: Text(AppLocalizations.of(context).profileVerifyCode,
+                        style: const TextStyle(fontWeight: FontWeight.w600)),
                   ),
                 ),
               ] else ...[
                 // ✓ Código válido
                 _SuccessCard(
                   icon:     Icons.check_circle_outline_rounded,
-                  title:    '¡Código válido!',
-                  subtitle: _validatedEstName ?? 'Establecimiento encontrado',
+                  title:    AppLocalizations.of(context).profileValidCode,
+                  subtitle: _validatedEstName ?? AppLocalizations.of(context).profileEstablishmentFound,
                 ),
                 const SizedBox(height: 14),
                 SizedBox(
@@ -946,8 +953,8 @@ class _BusinessRegistrationSheetState
                   child: ElevatedButton.icon(
                     onPressed: _goWithCode,
                     icon:  const Icon(Icons.workspace_premium_rounded, size: 18),
-                    label: const Text('Elegir mi plan',
-                        style: TextStyle(fontWeight: FontWeight.w600)),
+                    label: Text(AppLocalizations.of(context).profileChooseMyPlan,
+                        style: const TextStyle(fontWeight: FontWeight.w600)),
                   ),
                 ),
               ],
@@ -965,18 +972,18 @@ class _BusinessRegistrationSheetState
                 TextField(
                   controller:         _nameCtrl,
                   textCapitalization: TextCapitalization.words,
-                  decoration: const InputDecoration(
-                    hintText:   'Nombre de tu negocio',
-                    prefixIcon: Icon(Icons.store_outlined),
+                  decoration: InputDecoration(
+                    hintText:   AppLocalizations.of(context).profileBusinessNameHint,
+                    prefixIcon: const Icon(Icons.store_outlined),
                   ),
                 ),
                 const SizedBox(height: 10),
                 TextField(
                   controller:         _addressCtrl,
                   textCapitalization: TextCapitalization.sentences,
-                  decoration: const InputDecoration(
-                    hintText:   'Dirección (calle, número, colonia…)',
-                    prefixIcon: Icon(Icons.location_on_outlined),
+                  decoration: InputDecoration(
+                    hintText:   AppLocalizations.of(context).profileAddressHint,
+                    prefixIcon: const Icon(Icons.location_on_outlined),
                   ),
                 ),
                 if (_error != null) ...[
@@ -992,8 +999,8 @@ class _BusinessRegistrationSheetState
                         ? const SizedBox(width: 16, height: 16,
                             child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                         : const Icon(Icons.search_rounded, size: 18),
-                    label: const Text('Buscar mi negocio',
-                        style: TextStyle(fontWeight: FontWeight.w600)),
+                    label: Text(AppLocalizations.of(context).profileSearchMyBusiness,
+                        style: const TextStyle(fontWeight: FontWeight.w600)),
                   ),
                 ),
                 // Resultados de búsqueda
@@ -1007,7 +1014,7 @@ class _BusinessRegistrationSheetState
                               size: 40, color: Colors.grey.shade300),
                           const SizedBox(height: 8),
                           Text(
-                            'No encontramos coincidencias.\nRevisa el nombre o la dirección.',
+                            AppLocalizations.of(context).profileNoMatches,
                             textAlign: TextAlign.center,
                             style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
                           ),
@@ -1018,8 +1025,8 @@ class _BusinessRegistrationSheetState
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Selecciona tu negocio:',
-                            style: TextStyle(
+                        Text(AppLocalizations.of(context).profileSelectYourBusiness,
+                            style: const TextStyle(
                                 fontSize: 13, fontWeight: FontWeight.w600,
                                 color: AppColors.textDark)),
                         const SizedBox(height: 8),
@@ -1039,12 +1046,12 @@ class _BusinessRegistrationSheetState
                 // ✓ Establecimiento seleccionado
                 _SuccessCard(
                   icon:     Icons.store_rounded,
-                  title:    _selectedEstName ?? 'Tu negocio',
+                  title:    _selectedEstName ?? AppLocalizations.of(context).profileYourBusiness,
                   subtitle: _selectedEstAddress ?? '',
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Verificamos que la dirección coincide. ¿Es tu negocio?',
+                  AppLocalizations.of(context).profileAddressMatchQuestion,
                   style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                 ),
                 const SizedBox(height: 14),
@@ -1053,8 +1060,8 @@ class _BusinessRegistrationSheetState
                   child: ElevatedButton.icon(
                     onPressed: _goWithEstablishment,
                     icon:  const Icon(Icons.workspace_premium_rounded, size: 18),
-                    label: const Text('Sí, es mío — Elegir plan',
-                        style: TextStyle(fontWeight: FontWeight.w600)),
+                    label: Text(AppLocalizations.of(context).profileYesItsMineChoosePlan,
+                        style: const TextStyle(fontWeight: FontWeight.w600)),
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -1064,7 +1071,7 @@ class _BusinessRegistrationSheetState
                       _selectedEstId = null; _selectedEstName = null;
                       _selectedEstAddress = null;
                     }),
-                    child: Text('No es este negocio',
+                    child: Text(AppLocalizations.of(context).profileNotThisBusiness,
                         style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
                   ),
                 ),
@@ -1194,7 +1201,8 @@ class _BackButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
       onPressed: onTap,
-      child: const Text('← Volver', style: TextStyle(color: AppColors.primary)),
+      child: Text('← ${AppLocalizations.of(context).profileBack}',
+          style: const TextStyle(color: AppColors.primary)),
     );
   }
 }
@@ -1239,9 +1247,9 @@ class _FavoritesCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Mis favoritos',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context).profileFavoritesTitle,
+                    style: const TextStyle(
                       fontSize:   14,
                       fontWeight: FontWeight.w700,
                       color:      AppColors.textDark,
@@ -1249,7 +1257,7 @@ class _FavoritesCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Promos y negocios que guardaste',
+                    AppLocalizations.of(context).profileFavoritesSubtitle,
                     style: TextStyle(
                         fontSize: 12, color: Colors.grey.shade600),
                   ),
@@ -1394,13 +1402,13 @@ class _SettingsEntryCard extends StatelessWidget {
               child: const Icon(Icons.settings_outlined, color: AppColors.primary, size: 22),
             ),
             const SizedBox(width: 12),
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Configuración', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textDark)),
-                  SizedBox(height: 2),
-                  Text('Nombre, radio, gustos, contraseña y cuenta', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                  Text(AppLocalizations.of(context).profileSettingsTitle, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+                  const SizedBox(height: 2),
+                  Text(AppLocalizations.of(context).profileSettingsSubtitle, style: const TextStyle(fontSize: 12, color: Colors.grey)),
                 ],
               ),
             ),
@@ -1468,18 +1476,19 @@ class _StaffWorkplacesCardState extends State<_StaffWorkplacesCard> {
     }
   }
 
-  String _roleLabel(String? role) {
+  String _roleLabel(BuildContext context, String? role) {
+    final l10n = AppLocalizations.of(context);
     switch (role) {
-      case 'manager': return 'Gerente';
-      case 'cashier': return 'Cajero / Mesero';
-      default:        return 'Personalizado';
+      case 'manager': return l10n.profileRoleManager;
+      case 'cashier': return l10n.profileRoleCashierWaiter;
+      default:        return l10n.profileRoleCustom;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return _Card(
-      title: 'Mis lugares de trabajo',
+      title: AppLocalizations.of(context).profileWorkplacesTitle,
       children: [
         if (_loading)
           const Padding(
@@ -1490,14 +1499,14 @@ class _StaffWorkplacesCardState extends State<_StaffWorkplacesCard> {
           )
         else if (_memberships.isEmpty)
           Text(
-            'No se encontraron establecimientos asociados.',
+            AppLocalizations.of(context).profileNoWorkplaces,
             style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
           )
         else
           ..._memberships.map((m) {
             final est     = m['establishments'] as Map<String, dynamic>?;
             final name    = est?['name'] as String? ?? '—';
-            final role    = _roleLabel(m['role'] as String?);
+            final role    = _roleLabel(context, m['role'] as String?);
             final perms   = (m['permissions'] as Map<String, dynamic>?) ?? {};
             final canScan    = perms['scan_qr']       == true;
             final canStats   = perms['view_stats']    == true;
@@ -1533,16 +1542,16 @@ class _StaffWorkplacesCardState extends State<_StaffWorkplacesCard> {
                                 fontSize: 14, fontWeight: FontWeight.w600,
                                 color: AppColors.textDark)),
                         const SizedBox(height: 2),
-                        Text('Rol: $role',
+                        Text(AppLocalizations.of(context).profileRoleLabel(role),
                             style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
                         if (canScan || canStats || canManage) ...[
                           const SizedBox(height: 6),
                           Wrap(
                             spacing: 4, runSpacing: 4,
                             children: [
-                              if (canScan)   _StaffPermChip('QR lealtad'),
-                              if (canStats)  _StaffPermChip('Estadísticas'),
-                              if (canManage) _StaffPermChip('Promos'),
+                              if (canScan)   _StaffPermChip(AppLocalizations.of(context).profilePermLoyaltyQr),
+                              if (canStats)  _StaffPermChip(AppLocalizations.of(context).profilePermStats),
+                              if (canManage) _StaffPermChip(AppLocalizations.of(context).profilePermPromos),
                             ],
                           ),
                         ],
@@ -1621,9 +1630,9 @@ class _JoinTeamCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  '¿Trabajas en un negocio?',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context).profileWorkAtBusinessTitle,
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: AppColors.textDark,
@@ -1631,7 +1640,7 @@ class _JoinTeamCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Ingresa tu código de invitación',
+                  AppLocalizations.of(context).profileWorkAtBusinessSubtitle,
                   style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                 ),
               ],
@@ -1650,8 +1659,8 @@ class _JoinTeamCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10)),
               elevation: 0,
             ),
-            child: const Text('Unirse',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+            child: Text(AppLocalizations.of(context).profileJoin,
+                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
           ),
         ],
       ),
@@ -1677,20 +1686,18 @@ class _ReferralCardState extends State<_ReferralCard> {
     return 'https://promofy.fun/r/$code';
   }
 
-  String get _shareText =>
-      '¡Únete a Promofy y atrae más clientes a tu negocio!\n'
-      'Crea tu cuenta con mi link y ambos ganamos:\n$_shareUrl';
-
   Future<void> _copyLink() async {
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context);
     await Clipboard.setData(ClipboardData(text: _shareUrl));
     if (!mounted) return;
     setState(() => _copied = true);
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) setState(() => _copied = false);
     });
-    ScaffoldMessenger.of(context).showSnackBar(
+    messenger.showSnackBar(
       SnackBar(
-        content: const Text('¡Link copiado al portapapeles!'),
+        content: Text(l10n.profileLinkCopied),
         backgroundColor: Colors.green.shade700,
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 2),
@@ -1699,7 +1706,9 @@ class _ReferralCardState extends State<_ReferralCard> {
   }
 
   Future<void> _shareLink() async {
-    await Share.share(_shareText, subject: 'Únete a Promofy');
+    final l10n = AppLocalizations.of(context);
+    await Share.share(l10n.profileReferralShareText(_shareUrl),
+        subject: l10n.profileReferralShareSubject);
   }
 
   @override
@@ -1708,11 +1717,11 @@ class _ReferralCardState extends State<_ReferralCard> {
     final credits = widget.profile.adCreditsMxn;
 
     return _Card(
-      title: '🎁 Programa de referidos',
+      title: '🎁 ${AppLocalizations.of(context).profileReferralTitle}',
       children: [
         // Descripción
         Text(
-          'Invita a otros negocios con tu link. Cuando activen una membresía de pago, recibes \$300 MXN en créditos de publicidad.',
+          AppLocalizations.of(context).profileReferralDescription,
           style: TextStyle(fontSize: 13, color: Colors.grey.shade600, height: 1.4),
         ),
         const SizedBox(height: 14),
@@ -1733,7 +1742,7 @@ class _ReferralCardState extends State<_ReferralCard> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Créditos ganados',
+                    AppLocalizations.of(context).profileCreditsEarned,
                     style: TextStyle(fontSize: 12, color: Colors.green.shade700),
                   ),
                 ),
@@ -1808,7 +1817,9 @@ class _ReferralCardState extends State<_ReferralCard> {
                     color: _copied ? Colors.green : AppColors.primary,
                   ),
                   label: Text(
-                    _copied ? 'Copiado' : 'Copiar link',
+                    _copied
+                        ? AppLocalizations.of(context).profileCopied
+                        : AppLocalizations.of(context).profileCopyLink,
                     style: TextStyle(
                       color: _copied ? Colors.green : AppColors.primary,
                       fontWeight: FontWeight.w600,
@@ -1830,9 +1841,9 @@ class _ReferralCardState extends State<_ReferralCard> {
                 child: ElevatedButton.icon(
                   onPressed: _shareLink,
                   icon: const Icon(Icons.share_outlined, size: 16),
-                  label: const Text(
-                    'Compartir',
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                  label: Text(
+                    AppLocalizations.of(context).profileShare,
+                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
                   ),
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(0, 44),
@@ -1852,7 +1863,7 @@ class _ReferralCardState extends State<_ReferralCard> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
-              'Tu link de referido estará disponible en breve.',
+              AppLocalizations.of(context).profileReferralLinkSoon,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
             ),
@@ -1898,9 +1909,9 @@ class _AchievementsCard extends StatelessWidget {
           // ── Encabezado ──────────────────────────────────────────────────
           Row(
             children: [
-              const Text(
-                'Mis Logros',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context).profileAchievementsTitle,
+                style: const TextStyle(
                   fontSize:   15,
                   fontWeight: FontWeight.bold,
                   color:      AppColors.textDark,
@@ -1912,7 +1923,7 @@ class _AchievementsCard extends StatelessWidget {
                 child: Row(
                   children: [
                     Text(
-                      'Ver todos',
+                      AppLocalizations.of(context).profileSeeAll,
                       style: TextStyle(
                         fontSize:   13,
                         color:      AppColors.primary,
@@ -1970,15 +1981,17 @@ class _AchievementsCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${stats.annualVisits} visitas · faltan '
-                        '${stats.visitsToNextBadge} para ${stats.nextBadge!.label}',
+                        AppLocalizations.of(context).profileVisitsToNextBadge(
+                            stats.annualVisits,
+                            stats.visitsToNextBadge,
+                            stats.nextBadge!.label),
                         style: TextStyle(
                             fontSize: 11,
                             color:    Colors.grey.shade500),
                       ),
                     ] else ...[
                       Text(
-                        '${stats.annualVisits} visitas este año — ¡nivel máximo!',
+                        AppLocalizations.of(context).profileVisitsMaxLevel(stats.annualVisits),
                         style: TextStyle(
                             fontSize: 12,
                             color:    badge.color),
@@ -2003,7 +2016,7 @@ class _AchievementsCard extends StatelessWidget {
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
-                      '${stats.currentStreakWeeks} sem. en racha',
+                      AppLocalizations.of(context).profileStreakWeeks(stats.currentStreakWeeks),
                       style: TextStyle(
                         fontSize:   13,
                         fontWeight: FontWeight.w600,
@@ -2017,7 +2030,7 @@ class _AchievementsCard extends StatelessWidget {
                       style: TextStyle(fontSize: 18)),
                   const SizedBox(width: 6),
                   Text(
-                    'Top ${topPct.toStringAsFixed(0)}% en tu ciudad',
+                    AppLocalizations.of(context).profileTopInCity(topPct.toStringAsFixed(0)),
                     style: const TextStyle(
                       fontSize:   13,
                       fontWeight: FontWeight.w600,
@@ -2117,18 +2130,20 @@ class _JoinTeamDialogState extends State<_JoinTeamDialog> {
     super.dispose();
   }
 
-  String _mapRole(String? role) {
+  String _mapRole(BuildContext context, String? role) {
+    final l10n = AppLocalizations.of(context);
     switch (role) {
-      case 'manager': return 'Gerente';
-      case 'cashier': return 'Cajero';
-      default:        return 'Personalizado';
+      case 'manager': return l10n.profileRoleManager;
+      case 'cashier': return l10n.profileRoleCashier;
+      default:        return l10n.profileRoleCustom;
     }
   }
 
   Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context);
     final code = _codeCtrl.text.trim().toUpperCase();
     if (code.length < 6) {
-      setState(() => _error = 'El código debe tener 6 caracteres.');
+      setState(() => _error = l10n.profileCodeSixChars);
       return;
     }
     setState(() { _isLoading = true; _error = null; });
@@ -2139,18 +2154,18 @@ class _JoinTeamDialogState extends State<_JoinTeamDialog> {
         setState(() {
           _accepted          = true;
           _establishmentName = result['establishment_name'] as String?;
-          _roleLabel         = _mapRole(result['role'] as String?);
+          _roleLabel         = _mapRole(context, result['role'] as String?);
           _isLoading         = false;
         });
       } else {
         setState(() {
-          _error     = result['error'] as String? ?? 'Código inválido o expirado.';
+          _error     = result['error'] as String? ?? l10n.profileCodeInvalidOrExpired;
           _isLoading = false;
         });
       }
     } catch (_) {
       if (mounted) {
-        setState(() { _error = 'Error de conexión. Intenta de nuevo.'; _isLoading = false; });
+        setState(() { _error = l10n.profileConnectionErrorRetry; _isLoading = false; });
       }
     }
   }
@@ -2162,11 +2177,13 @@ class _JoinTeamDialogState extends State<_JoinTeamDialog> {
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       title: Text(
-        _accepted ? '¡Bienvenido al equipo!' : 'Unirse a un equipo',
+        _accepted
+            ? AppLocalizations.of(context).profileWelcomeToTeam
+            : AppLocalizations.of(context).profileJoinATeam,
         style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold,
             color: AppColors.textDark),
       ),
-      content: _accepted ? _buildSuccess() : _buildInput(),
+      content: _accepted ? _buildSuccess(context) : _buildInput(context),
       actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
       actions: _accepted
           ? [
@@ -2180,8 +2197,8 @@ class _JoinTeamDialogState extends State<_JoinTeamDialog> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                 ),
-                child: const Text('Continuar',
-                    style: TextStyle(fontWeight: FontWeight.w600)),
+                child: Text(AppLocalizations.of(context).profileContinue,
+                    style: const TextStyle(fontWeight: FontWeight.w600)),
               ),
             ]
           : [
@@ -2196,7 +2213,7 @@ class _JoinTeamDialogState extends State<_JoinTeamDialog> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12)),
                       ),
-                      child: const Text('Cancelar'),
+                      child: Text(AppLocalizations.of(context).profileCancel),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -2215,8 +2232,8 @@ class _JoinTeamDialogState extends State<_JoinTeamDialog> {
                               child: CircularProgressIndicator(
                                   strokeWidth: 2.5, color: Colors.white),
                             )
-                          : const Text('Unirme',
-                              style: TextStyle(fontWeight: FontWeight.w600)),
+                          : Text(AppLocalizations.of(context).profileJoinMe,
+                              style: const TextStyle(fontWeight: FontWeight.w600)),
                     ),
                   ),
                 ],
@@ -2225,13 +2242,13 @@ class _JoinTeamDialogState extends State<_JoinTeamDialog> {
     );
   }
 
-  Widget _buildInput() {
+  Widget _buildInput(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Ingresa el código de 6 caracteres que te compartió el administrador.',
+          AppLocalizations.of(context).profileEnterSixCharCode,
           style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
         ),
         const SizedBox(height: 16),
@@ -2281,7 +2298,7 @@ class _JoinTeamDialogState extends State<_JoinTeamDialog> {
     );
   }
 
-  Widget _buildSuccess() {
+  Widget _buildSuccess(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -2312,7 +2329,7 @@ class _JoinTeamDialogState extends State<_JoinTeamDialog> {
               ],
               if (_roleLabel != null)
                 Text(
-                  'Rol: $_roleLabel',
+                  AppLocalizations.of(context).profileRoleLabel(_roleLabel!),
                   style: TextStyle(
                       fontSize: 13, color: Colors.green.shade700),
                 ),
@@ -2321,7 +2338,7 @@ class _JoinTeamDialogState extends State<_JoinTeamDialog> {
         ),
         const SizedBox(height: 10),
         Text(
-          'Tu perfil se actualizará al continuar.',
+          AppLocalizations.of(context).profileWillUpdateOnContinue,
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
         ),

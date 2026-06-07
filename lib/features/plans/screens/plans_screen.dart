@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/membership_plan_model.dart';
 import '../../../data/repositories/plans_repository.dart';
@@ -43,8 +44,8 @@ class _PlansBody extends StatelessWidget {
               builder: (_) => PaymentWebViewScreen(
                 checkoutUrl: state.checkoutUrl,
                 title: state.type == 'subscription'
-                    ? 'Suscripción Promofy'
-                    : 'Comprar add-on',
+                    ? AppLocalizations.of(context).plansWebviewSubscriptionTitle
+                    : AppLocalizations.of(context).plansWebviewAddonTitle,
               ),
             ),
           );
@@ -75,9 +76,9 @@ class _PlansBody extends StatelessWidget {
       child: Scaffold(
         backgroundColor: const Color(0xFFF8F8F8),
         appBar: AppBar(
-          title: const Text(
-            'Planes y pagos',
-            style: TextStyle(fontWeight: FontWeight.bold),
+          title: Text(
+            AppLocalizations.of(context).plansAppBarTitle,
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           centerTitle: false,
           elevation: 0,
@@ -106,7 +107,7 @@ class _PlansBody extends StatelessWidget {
                       TextButton(
                         onPressed: () =>
                             context.read<PlansCubit>().load(),
-                        child: const Text('Reintentar'),
+                        child: Text(AppLocalizations.of(context).plansRetry),
                       ),
                     ],
                   ),
@@ -176,20 +177,20 @@ class _PlansBody extends StatelessWidget {
               color: success ? Colors.green : Colors.orange,
             ),
             const SizedBox(width: 8),
-            Text(success ? '¡Pago aprobado!' : 'Pago en proceso'),
+            Text(success
+                ? AppLocalizations.of(context).plansPaymentApprovedTitle
+                : AppLocalizations.of(context).plansPaymentPendingTitle),
           ],
         ),
         content: Text(
           success
-              ? 'Tu suscripción fue activada correctamente. '
-                  'Ya puedes disfrutar de todos los beneficios de tu plan.'
-              : 'Tu pago está siendo procesado. En cuanto se confirme, '
-                  'tu plan se actualizará automáticamente.',
+              ? AppLocalizations.of(context).plansPaymentApprovedBody
+              : AppLocalizations.of(context).plansPaymentPendingBody,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Entendido'),
+            child: Text(AppLocalizations.of(context).plansGotIt),
           ),
         ],
       ),
@@ -236,9 +237,9 @@ class _LaunchPromoBanner extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Promoción de Lanzamiento',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context).plansLaunchPromoTitle,
+                  style: const TextStyle(
                     fontSize:   14,
                     fontWeight: FontWeight.bold,
                     color:      Colors.white,
@@ -246,7 +247,7 @@ class _LaunchPromoBanner extends StatelessWidget {
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  'Desde \$99 MXN. Lo que vale el plan lo recibes en créditos de publicidad.',
+                  AppLocalizations.of(context).plansLaunchPromoSubtitle,
                   style: TextStyle(
                     fontSize: 12,
                     color:    Colors.white.withAlpha(220),
@@ -255,7 +256,7 @@ class _LaunchPromoBanner extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Válido hasta el 18 de julio de 2026',
+                  AppLocalizations.of(context).plansLaunchPromoValidUntil,
                   style: TextStyle(
                     fontSize:   11,
                     color:      Colors.white.withAlpha(180),
@@ -283,8 +284,9 @@ class _CurrentPlanBadge extends StatelessWidget {
     // Si sólo hay un plan_id por defecto en profiles (sin fila de suscripción),
     // se muestra "Sin plan activo" para no confundir al usuario.
     final planName = subscription.hasActivePlan
-        ? (subscription.plan?.name ?? 'Plan activo')
-        : 'Sin plan activo';
+        ? (subscription.plan?.name ??
+            AppLocalizations.of(context).plansActivePlanFallback)
+        : AppLocalizations.of(context).plansNoActivePlan;
     final isActive = subscription.hasActivePlan as bool;
 
     return Container(
@@ -316,7 +318,7 @@ class _CurrentPlanBadge extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Tu plan actual',
+                  AppLocalizations.of(context).plansCurrentPlanLabel,
                   style: TextStyle(
                       fontSize: 11,
                       color:    Colors.white.withAlpha(200),
@@ -340,9 +342,9 @@ class _CurrentPlanBadge extends StatelessWidget {
                 color:        Colors.white.withAlpha(40),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: const Text(
-                'Activo',
-                style: TextStyle(
+              child: Text(
+                AppLocalizations.of(context).plansActiveBadge,
+                style: const TextStyle(
                     fontSize:   11,
                     color:      Colors.white,
                     fontWeight: FontWeight.w600),
@@ -428,9 +430,9 @@ class _PlanCard extends StatelessWidget {
                                 color:        AppColors.primary,
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              child: const Text(
-                                'Actual',
-                                style: TextStyle(
+                              child: Text(
+                                AppLocalizations.of(context).plansCurrentBadge,
+                                style: const TextStyle(
                                     fontSize: 10,
                                     color:    Colors.white,
                                     fontWeight: FontWeight.w600),
@@ -443,7 +445,8 @@ class _PlanCard extends StatelessWidget {
                       if (plan.hasLaunchPromo) ...[
                         // Precio tachado (original)
                         Text(
-                          '\$${plan.originalPriceMxn!.toStringAsFixed(0)} MXN/mes',
+                          AppLocalizations.of(context).plansPricePerMonth(
+                              plan.originalPriceMxn!.toStringAsFixed(0)),
                           style: TextStyle(
                             fontSize:      13,
                             color:         Colors.grey.shade400,
@@ -458,7 +461,7 @@ class _PlanCard extends StatelessWidget {
                           children: [
                             TextSpan(
                               text: isFree
-                                  ? 'Gratis'
+                                  ? AppLocalizations.of(context).plansFree
                                   : '\$${plan.priceMxn.toStringAsFixed(0)}',
                               style: TextStyle(
                                 fontSize:   22,
@@ -470,7 +473,8 @@ class _PlanCard extends StatelessWidget {
                             ),
                             if (!isFree)
                               TextSpan(
-                                text: ' MXN/mes',
+                                text: AppLocalizations.of(context)
+                                    .plansMxnPerMonthSuffix,
                                 style: TextStyle(
                                     fontSize: 12,
                                     color:    Colors.grey.shade500),
@@ -495,7 +499,8 @@ class _PlanCard extends StatelessWidget {
                               const Text('🎁', style: TextStyle(fontSize: 11)),
                               const SizedBox(width: 4),
                               Text(
-                                '+\$${plan.originalPriceMxn!.toStringAsFixed(0)} en publicidad',
+                                AppLocalizations.of(context).plansAdCredit(
+                                    plan.originalPriceMxn!.toStringAsFixed(0)),
                                 style: TextStyle(
                                   fontSize:   11,
                                   fontWeight: FontWeight.w600,
@@ -529,40 +534,41 @@ class _PlanCard extends StatelessWidget {
               children: [
                 _FeatureRow(
                   icon:  Icons.store_outlined,
-                  label: '${plan.maxEstablishments} '
-                      'establecimiento${plan.maxEstablishments != 1 ? "s" : ""}',
+                  label: AppLocalizations.of(context)
+                      .plansFeatureEstablishments(plan.maxEstablishments),
                 ),
                 _FeatureRow(
                   icon:  Icons.local_offer_outlined,
-                  label: '${plan.maxPromotions} promociones normales activas',
+                  label: AppLocalizations.of(context)
+                      .plansFeaturePromotions(plan.maxPromotions),
                 ),
                 _FeatureRow(
                   icon:  Icons.flash_on_outlined,
                   label: plan.maxEstablishments == 1
-                      ? '1 promo flash al mes'
-                      : '1 promo flash/mes por establecimiento',
+                      ? AppLocalizations.of(context).plansFeatureFlashSingle
+                      : AppLocalizations.of(context).plansFeatureFlashMulti,
                 ),
                 _FeatureRow(
                   icon:  Icons.cake_outlined,
                   label: plan.maxEstablishments == 1
-                      ? 'Promo cumpleañero'
-                      : 'Promo cumpleañero por establecimiento',
+                      ? AppLocalizations.of(context).plansFeatureBirthdaySingle
+                      : AppLocalizations.of(context).plansFeatureBirthdayMulti,
                 ),
                 _FeatureRow(
                   icon:  Icons.loyalty_outlined,
                   label: plan.maxEstablishments == 1
-                      ? 'Programa de fidelización'
-                      : 'Programa de fidelización por establecimiento',
+                      ? AppLocalizations.of(context).plansFeatureLoyaltySingle
+                      : AppLocalizations.of(context).plansFeatureLoyaltyMulti,
                 ),
                 _FeatureRow(
                   icon:  Icons.bar_chart_rounded,
-                  label: 'Estadísticas en tiempo real',
+                  label: AppLocalizations.of(context).plansFeatureStats,
                 ),
                 if (plan.maxPushNotifications > 0)
                   _FeatureRow(
                     icon:  Icons.notifications_outlined,
-                    label:
-                        '${plan.maxPushNotifications} notificaciones push/mes',
+                    label: AppLocalizations.of(context)
+                        .plansFeaturePush(plan.maxPushNotifications),
                   ),
               ],
             ),
@@ -624,8 +630,8 @@ class _PlanCTA extends StatelessWidget {
       return OutlinedButton.icon(
         onPressed: null,
         icon:  const Icon(Icons.check_circle_outline, size: 16),
-        label: const Text('Plan activo',
-            style: TextStyle(fontSize: 13)),
+        label: Text(AppLocalizations.of(context).plansActivePlanButton,
+            style: const TextStyle(fontSize: 13)),
         style: OutlinedButton.styleFrom(
           minimumSize:    const Size(double.infinity, 40),
           shape: RoundedRectangleBorder(
@@ -645,7 +651,9 @@ class _PlanCTA extends StatelessWidget {
                   strokeWidth: 2, color: Colors.white))
           : const Icon(Icons.credit_card_outlined, size: 16),
       label: Text(
-        isProcessing ? 'Procesando...' : 'Suscribirme',
+        isProcessing
+            ? AppLocalizations.of(context).plansProcessing
+            : AppLocalizations.of(context).plansSubscribe,
         style: const TextStyle(
             fontSize: 13, fontWeight: FontWeight.w600),
       ),
@@ -690,15 +698,15 @@ class _AddOnsSection extends StatelessWidget {
                 color:        AppColors.secondary.withAlpha(20),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.add_shopping_cart_outlined,
+                  const Icon(Icons.add_shopping_cart_outlined,
                       size: 13, color: AppColors.secondary),
-                  SizedBox(width: 4),
+                  const SizedBox(width: 4),
                   Text(
-                    'ADD-ONS',
-                    style: TextStyle(
+                    AppLocalizations.of(context).plansAddonsLabel,
+                    style: const TextStyle(
                       fontSize:    10,
                       fontWeight:  FontWeight.w700,
                       color:       AppColors.secondary,
@@ -712,7 +720,7 @@ class _AddOnsSection extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         Text(
-          'Amplía tu plan con complementos mensuales. Se cobran cada mes y los cancelas cuando quieras.',
+          AppLocalizations.of(context).plansAddonsDescription,
           style: TextStyle(
               fontSize: 12,
               color:    Colors.grey.shade500,
@@ -721,16 +729,16 @@ class _AddOnsSection extends StatelessWidget {
         const SizedBox(height: 12),
         _AddOnTile(
           icon:        Icons.store_outlined,
-          title:       '1 establecimiento adicional',
-          description: 'Un local extra en tu cuenta. Se cobra cada mes hasta que lo canceles.',
-          price:       '\$199 MXN/mes',
+          title:       AppLocalizations.of(context).plansAddonEstablishmentTitle,
+          description: AppLocalizations.of(context).plansAddonEstablishmentDesc,
+          price:       AppLocalizations.of(context).plansAddonEstablishmentPrice,
           addOnType:   'extra_establishment',
         ),
         _AddOnTile(
           icon:        Icons.local_offer_outlined,
-          title:       '1 promoción adicional',
-          description: 'Una promoción extra en cualquier local. Se cobra cada mes hasta que la canceles.',
-          price:       '\$49 MXN/mes',
+          title:       AppLocalizations.of(context).plansAddonPromotionTitle,
+          description: AppLocalizations.of(context).plansAddonPromotionDesc,
+          price:       AppLocalizations.of(context).plansAddonPromotionPrice,
           addOnType:   'extra_promotion',
         ),
       ],
@@ -826,7 +834,7 @@ class _AddOnTile extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8)),
                       ),
-                      child: const Text('Comprar'),
+                      child: Text(AppLocalizations.of(context).plansBuy),
                     ),
                   ),
                 ],
@@ -863,11 +871,11 @@ class _ActiveAddonsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Mis complementos activos',
-            style: TextStyle(
+        Text(AppLocalizations.of(context).plansActiveAddonsTitle,
+            style: const TextStyle(
                 fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.textDark)),
         const SizedBox(height: 4),
-        Text('Se renuevan cada mes. Cancélalos cuando quieras.',
+        Text(AppLocalizations.of(context).plansActiveAddonsSubtitle,
             style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
         const SizedBox(height: 12),
         ...items.map((a) => _ActiveAddonRow(addon: a)),
@@ -881,9 +889,11 @@ class _ActiveAddonRow extends StatelessWidget {
   const _ActiveAddonRow({required this.addon});
 
   String get _type => addon['add_on_type'] as String? ?? '';
-  String get _label => _type == 'extra_promotion'
-      ? 'Promoción adicional'
-      : (_type == 'extra_establishment' ? 'Establecimiento adicional' : _type);
+  String _labelOf(BuildContext context) => _type == 'extra_promotion'
+      ? AppLocalizations.of(context).plansAddonPromotionLabel
+      : (_type == 'extra_establishment'
+          ? AppLocalizations.of(context).plansAddonEstablishmentLabel
+          : _type);
 
   @override
   Widget build(BuildContext context) {
@@ -902,10 +912,10 @@ class _ActiveAddonRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(_label,
+                Text(_labelOf(context),
                     style: const TextStyle(
                         fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textDark)),
-                Text('\$$price MXN/mes',
+                Text(AppLocalizations.of(context).plansPricePerMonth(price),
                     style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
               ],
             ),
@@ -913,7 +923,7 @@ class _ActiveAddonRow extends StatelessWidget {
           TextButton(
             onPressed: () => _onCancel(context),
             style: TextButton.styleFrom(foregroundColor: Colors.red.shade600),
-            child: const Text('Cancelar'),
+            child: Text(AppLocalizations.of(context).plansCancel),
           ),
         ],
       ),
@@ -952,16 +962,20 @@ class _ActiveAddonRow extends StatelessWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Cancelar complemento'),
+        title: Text(AppLocalizations.of(context).plansCancelAddonTitle),
         content: Text(toDeactivate.isEmpty
-            ? '¿Cancelar "$_label"? Dejará de cobrarse el próximo mes.'
-            : 'Se desactivarán ${toDeactivate.length} promoción(es) y se cancelará "$_label". ¿Continuar?'),
+            ? AppLocalizations.of(context)
+                .plansCancelAddonConfirm(_labelOf(context))
+            : AppLocalizations.of(context).plansCancelAddonConfirmWithPromos(
+                toDeactivate.length, _labelOf(context))),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('No')),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(AppLocalizations.of(context).plansNo)),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Sí, cancelar'),
+            child: Text(AppLocalizations.of(context).plansYesCancel),
           ),
         ],
       ),
@@ -972,15 +986,15 @@ class _ActiveAddonRow extends StatelessWidget {
       await cubit.cancelAddon(id, deactivatePromoIds: toDeactivate);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content:         const Text('Complemento cancelado.'),
+          content:         Text(AppLocalizations.of(context).plansAddonCancelled),
           backgroundColor: Colors.green.shade700,
           behavior:        SnackBarBehavior.floating,
         ));
       }
     } catch (_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content:  Text('No se pudo cancelar. Intenta de nuevo.'),
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content:  Text(AppLocalizations.of(context).plansCancelError),
           behavior: SnackBarBehavior.floating,
         ));
       }
@@ -995,15 +1009,16 @@ class _ActiveAddonRow extends StatelessWidget {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSt) => AlertDialog(
-          title: Text('Desactiva $need promoción(es)'),
+          title: Text(
+              AppLocalizations.of(context).plansDeactivateDialogTitle(need)),
           content: SizedBox(
             width: double.maxFinite,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Al cancelar este complemento superas tu límite. '
-                  'Elige $need para desactivar:',
+                  AppLocalizations.of(context)
+                      .plansDeactivateDialogBody(need),
                   style: const TextStyle(fontSize: 12),
                 ),
                 const SizedBox(height: 8),
@@ -1017,7 +1032,9 @@ class _ActiveAddonRow extends StatelessWidget {
                       return CheckboxListTile(
                         value:    checked,
                         dense:    true,
-                        title:    Text(p['name'] as String? ?? 'Promo',
+                        title:    Text(
+                            p['name'] as String? ??
+                                AppLocalizations.of(context).plansPromoFallback,
                             style: const TextStyle(fontSize: 13)),
                         onChanged: disabled ? null : (v) => setSt(() {
                           (v == true) ? selected.add(pid) : selected.remove(pid);
@@ -1030,12 +1047,14 @@ class _ActiveAddonRow extends StatelessWidget {
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancelar')),
+            TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: Text(AppLocalizations.of(context).plansCancel)),
             TextButton(
               onPressed: selected.length == need
                   ? () => Navigator.pop(ctx, selected.toList())
                   : null,
-              child: const Text('Continuar'),
+              child: Text(AppLocalizations.of(context).plansContinue),
             ),
           ],
         ),

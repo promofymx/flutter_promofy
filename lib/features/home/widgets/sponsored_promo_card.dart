@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/ad_display_model.dart';
 import '../cubit/ads_display_cubit.dart';
@@ -100,14 +101,15 @@ class _SponsoredImageSection extends StatelessWidget {
                   color: AppColors.secondary,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.star_outline, color: Colors.white, size: 11),
-                    SizedBox(width: 3),
+                    const Icon(Icons.star_outline,
+                        color: Colors.white, size: 11),
+                    const SizedBox(width: 3),
                     Text(
-                      'Patrocinado',
-                      style: TextStyle(
+                      AppLocalizations.of(context).sponsoredCardBadge,
+                      style: const TextStyle(
                         color:      Colors.white,
                         fontSize:   10,
                         fontWeight: FontWeight.bold,
@@ -149,7 +151,9 @@ class _SponsoredInfoSection extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            ad.isPromotionAd ? ad.establishmentName : 'Ver sus promociones',
+            ad.isPromotionAd
+                ? ad.establishmentName
+                : AppLocalizations.of(context).sponsoredCardSeePromotions,
             style: const TextStyle(
               fontSize:   12,
               color:      AppColors.secondary,
@@ -165,9 +169,9 @@ class _SponsoredInfoSection extends StatelessWidget {
               color:        AppColors.secondary.withAlpha(20),
               borderRadius: BorderRadius.circular(4),
             ),
-            child: const Text(
-              'Anuncio',
-              style: TextStyle(
+            child: Text(
+              AppLocalizations.of(context).sponsoredCardAd,
+              style: const TextStyle(
                 fontSize:   9,
                 color:      AppColors.secondary,
                 fontWeight: FontWeight.w600,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -6,19 +7,19 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Color(0xFFF26522),
+    return Scaffold(
+      backgroundColor: const Color(0xFFF26522),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image(
+            const Image(
               image: AssetImage('assets/images/logo_white.png'),
               width: 140,
               height: 140,
             ),
-              SizedBox(height: 24),
-              Text(
+              const SizedBox(height: 24),
+              const Text(
                 'Promofy',
                 style: TextStyle(
                   color: Colors.white,
@@ -27,13 +28,13 @@ class SplashScreen extends StatelessWidget {
                   letterSpacing: 2,
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(
-                'Descubre promociones cerca de ti',
-                style: TextStyle(color: Colors.white70, fontSize: 16),
+                AppLocalizations.of(context).splashScrTagline,
+                style: const TextStyle(color: Colors.white70, fontSize: 16),
               ),
-              SizedBox(height: 56),
-              CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+              const SizedBox(height: 56),
+              const CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
             ],
           ),
         ),

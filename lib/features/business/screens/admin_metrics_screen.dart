@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/admin_platform_metrics_model.dart';
 import '../../../data/repositories/stats_repository.dart';
@@ -32,14 +33,14 @@ class _AdminMetricsView extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation:       0,
-        title: const Text(
-          'Panel Admin',
-          style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.textDark),
+        title: Text(
+          AppLocalizations.of(context).adminMetricsTitle,
+          style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.textDark),
         ),
         actions: [
           IconButton(
             icon:    const Icon(Icons.add_business_rounded, color: AppColors.primary),
-            tooltip: 'Gestionar restaurantes',
+            tooltip: AppLocalizations.of(context).adminMetricsManageRestaurants,
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (_) => const AdminLugaresScreen(),
@@ -48,7 +49,7 @@ class _AdminMetricsView extends StatelessWidget {
           ),
           IconButton(
             icon:      const Icon(Icons.refresh_rounded, color: AppColors.textDark),
-            tooltip:   'Actualizar métricas',
+            tooltip:   AppLocalizations.of(context).adminMetricsRefresh,
             onPressed: () => context.read<AdminMetricsCubit>().refresh(),
           ),
         ],
@@ -73,7 +74,7 @@ class _AdminMetricsView extends StatelessWidget {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => context.read<AdminMetricsCubit>().refresh(),
-                    child: const Text('Reintentar'),
+                    child: Text(AppLocalizations.of(context).adminMetricsRetry),
                   ),
                 ],
               ),
@@ -112,8 +113,8 @@ class _MetricsBody extends StatelessWidget {
         _QuickAccessTile(
           icon:     Icons.add_business_rounded,
           color:    const Color(0xFF00897B),
-          title:    'Admin Lugares',
-          subtitle: 'Gestionar establecimientos y promociones del admin',
+          title:    AppLocalizations.of(context).adminMetricsAdminPlaces,
+          subtitle: AppLocalizations.of(context).adminMetricsAdminPlacesSubtitle,
           onTap:    () => Navigator.of(context).push(
             MaterialPageRoute(
               builder: (_) => const AdminLugaresScreen(),
@@ -123,7 +124,7 @@ class _MetricsBody extends StatelessWidget {
         const SizedBox(height: 20),
 
         // ── Usuarios ──────────────────────────────────────────────────────────
-        _SectionHeader(icon: Icons.people_rounded, title: 'Usuarios', color: Colors.blue),
+        _SectionHeader(icon: Icons.people_rounded, title: AppLocalizations.of(context).adminMetricsSectionUsers, color: Colors.blue),
         const SizedBox(height: 10),
 
         // Totales por rol
@@ -132,41 +133,41 @@ class _MetricsBody extends StatelessWidget {
 
         // Nuevos usuarios
         _PeriodCard(
-          title: 'Nuevos usuarios',
+          title: AppLocalizations.of(context).adminMetricsNewUsers,
           icon:  Icons.person_add_rounded,
           color: Colors.green,
           items: [
-            _PeriodItem('Hoy',     num.format(m.newToday)),
-            _PeriodItem('7 días',  num.format(m.new7d)),
-            _PeriodItem('15 días', num.format(m.new15d)),
-            _PeriodItem('30 días', num.format(m.new30d)),
+            _PeriodItem(AppLocalizations.of(context).adminMetricsPeriodToday,  num.format(m.newToday)),
+            _PeriodItem(AppLocalizations.of(context).adminMetricsPeriod7d,     num.format(m.new7d)),
+            _PeriodItem(AppLocalizations.of(context).adminMetricsPeriod15d,    num.format(m.new15d)),
+            _PeriodItem(AppLocalizations.of(context).adminMetricsPeriod30d,    num.format(m.new30d)),
           ],
         ),
         const SizedBox(height: 10),
 
         // Usuarios activos
         _PeriodCard(
-          title: 'Usuarios activos',
+          title: AppLocalizations.of(context).adminMetricsActiveUsers,
           icon:  Icons.online_prediction_rounded,
           color: Colors.orange,
           items: [
-            _PeriodItem('7 días',  num.format(m.active7d)),
-            _PeriodItem('15 días', num.format(m.active15d)),
-            _PeriodItem('30 días', num.format(m.active30d)),
+            _PeriodItem(AppLocalizations.of(context).adminMetricsPeriod7d,  num.format(m.active7d)),
+            _PeriodItem(AppLocalizations.of(context).adminMetricsPeriod15d, num.format(m.active15d)),
+            _PeriodItem(AppLocalizations.of(context).adminMetricsPeriod30d, num.format(m.active30d)),
           ],
         ),
         const SizedBox(height: 20),
 
         // ── Plataforma ────────────────────────────────────────────────────────
-        _SectionHeader(icon: Icons.store_rounded, title: 'Plataforma', color: Colors.purple),
+        _SectionHeader(icon: Icons.store_rounded, title: AppLocalizations.of(context).adminMetricsSectionPlatform, color: Colors.purple),
         const SizedBox(height: 10),
 
         Row(children: [
           Expanded(
             child: _SimpleMetricCard(
-              label:   'Establecimientos',
+              label:   AppLocalizations.of(context).adminMetricsEstablishments,
               value:   num.format(m.totalEstablishments),
-              sub:     '+${m.newEstablishments30d} este mes',
+              sub:     AppLocalizations.of(context).adminMetricsNewThisMonth('+${m.newEstablishments30d}'),
               icon:    Icons.storefront_rounded,
               color:   Colors.purple,
             ),
@@ -174,9 +175,9 @@ class _MetricsBody extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: _SimpleMetricCard(
-              label:   'Promos activas',
+              label:   AppLocalizations.of(context).adminMetricsActivePromos,
               value:   num.format(m.activePromotions),
-              sub:     '${num.format(m.totalPromotions)} total',
+              sub:     AppLocalizations.of(context).adminMetricsTotalCount(num.format(m.totalPromotions)),
               icon:    Icons.local_offer_rounded,
               color:   Colors.deepOrange,
             ),
@@ -185,15 +186,15 @@ class _MetricsBody extends StatelessWidget {
         const SizedBox(height: 20),
 
         // ── Lealtad / QR ──────────────────────────────────────────────────────
-        _SectionHeader(icon: Icons.qr_code_scanner_rounded, title: 'Lealtad & QR', color: Colors.teal),
+        _SectionHeader(icon: Icons.qr_code_scanner_rounded, title: AppLocalizations.of(context).adminMetricsSectionLoyaltyQr, color: Colors.teal),
         const SizedBox(height: 10),
 
         Row(children: [
           Expanded(
             child: _SimpleMetricCard(
-              label:  'Escaneos totales',
+              label:  AppLocalizations.of(context).adminMetricsTotalScans,
               value:  num.format(m.totalQrScans),
-              sub:    '${num.format(m.qrScans30d)} últimos 30d',
+              sub:    AppLocalizations.of(context).adminMetricsLast30dValue(num.format(m.qrScans30d)),
               icon:   Icons.qr_code_rounded,
               color:  Colors.teal,
             ),
@@ -201,7 +202,7 @@ class _MetricsBody extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: _SimpleMetricCard(
-              label:  'Ticket promedio',
+              label:  AppLocalizations.of(context).adminMetricsAvgTicket,
               value:  mxn.format(m.avgTicket),
               sub:    '',
               icon:   Icons.receipt_rounded,
@@ -212,26 +213,26 @@ class _MetricsBody extends StatelessWidget {
         const SizedBox(height: 10),
 
         _PeriodCard(
-          title: 'Monto subido por meseros',
+          title: AppLocalizations.of(context).adminMetricsWaiterUploadedAmount,
           icon:  Icons.attach_money_rounded,
           color: Colors.teal,
           items: [
-            _PeriodItem('30 días',  mxn.format(m.ticketRevenue30d)),
-            _PeriodItem('Total',    mxn.format(m.totalTicketRevenue)),
+            _PeriodItem(AppLocalizations.of(context).adminMetricsPeriod30d,    mxn.format(m.ticketRevenue30d)),
+            _PeriodItem(AppLocalizations.of(context).adminMetricsPeriodTotal,  mxn.format(m.totalTicketRevenue)),
           ],
         ),
         const SizedBox(height: 20),
 
         // ── Campañas ──────────────────────────────────────────────────────────
-        _SectionHeader(icon: Icons.campaign_rounded, title: 'Campañas Publicitarias', color: Colors.amber.shade700),
+        _SectionHeader(icon: Icons.campaign_rounded, title: AppLocalizations.of(context).adminMetricsSectionCampaigns, color: Colors.amber.shade700),
         const SizedBox(height: 10),
 
         Row(children: [
           Expanded(
             child: _SimpleMetricCard(
-              label:  'Campañas activas',
+              label:  AppLocalizations.of(context).adminMetricsActiveCampaigns,
               value:  num.format(m.activeCampaigns),
-              sub:    '${num.format(m.totalCampaigns)} total',
+              sub:    AppLocalizations.of(context).adminMetricsTotalCount(num.format(m.totalCampaigns)),
               icon:   Icons.play_circle_rounded,
               color:  Colors.amber.shade700,
             ),
@@ -239,9 +240,9 @@ class _MetricsBody extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: _SimpleMetricCard(
-              label:  'Créditos vendidos',
+              label:  AppLocalizations.of(context).adminMetricsCreditsSold,
               value:  mxn.format(m.creditsSold30d),
-              sub:    'últimos 30 días',
+              sub:    AppLocalizations.of(context).adminMetricsLast30days,
               icon:   Icons.monetization_on_rounded,
               color:  Colors.amber.shade700,
             ),
@@ -250,27 +251,27 @@ class _MetricsBody extends StatelessWidget {
         const SizedBox(height: 10),
 
         _PeriodCard(
-          title: 'Gasto en campañas',
+          title: AppLocalizations.of(context).adminMetricsCampaignSpend,
           icon:  Icons.bar_chart_rounded,
           color: Colors.amber.shade700,
           items: [
-            _PeriodItem('Hoy',    mxn.format(m.campaignSpendToday)),
-            _PeriodItem('7 días', mxn.format(m.campaignSpend7d)),
-            _PeriodItem('30 días',mxn.format(m.campaignSpend30d)),
+            _PeriodItem(AppLocalizations.of(context).adminMetricsPeriodToday, mxn.format(m.campaignSpendToday)),
+            _PeriodItem(AppLocalizations.of(context).adminMetricsPeriod7d,    mxn.format(m.campaignSpend7d)),
+            _PeriodItem(AppLocalizations.of(context).adminMetricsPeriod30d,   mxn.format(m.campaignSpend30d)),
           ],
         ),
         const SizedBox(height: 20),
 
         // ── Suscripciones ────────────────────────────────────────────────────
-        _SectionHeader(icon: Icons.workspace_premium_rounded, title: 'Suscripciones', color: AppColors.primary),
+        _SectionHeader(icon: Icons.workspace_premium_rounded, title: AppLocalizations.of(context).adminMetricsSectionSubscriptions, color: AppColors.primary),
         const SizedBox(height: 10),
 
         Row(children: [
           Expanded(
             child: _SimpleMetricCard(
-              label:  'Suscripciones activas',
+              label:  AppLocalizations.of(context).adminMetricsActiveSubscriptions,
               value:  num.format(m.activeSubscriptions),
-              sub:    '+${m.newSubscriptions30d} este mes',
+              sub:    AppLocalizations.of(context).adminMetricsNewThisMonth('+${m.newSubscriptions30d}'),
               icon:   Icons.verified_rounded,
               color:  AppColors.primary,
             ),
@@ -280,7 +281,7 @@ class _MetricsBody extends StatelessWidget {
             child: _SimpleMetricCard(
               label:  'MRR',
               value:  mxn.format(m.monthlyRevenue),
-              sub:    'ingresos mensuales',
+              sub:    AppLocalizations.of(context).adminMetricsMonthlyIncome,
               icon:   Icons.trending_up_rounded,
               color:  AppColors.primary,
             ),
@@ -289,7 +290,7 @@ class _MetricsBody extends StatelessWidget {
         const SizedBox(height: 20),
 
         // ── Rendimiento plataforma ───────────────────────────────────────────
-        _SectionHeader(icon: Icons.insights_rounded, title: 'Rendimiento', color: Colors.indigo),
+        _SectionHeader(icon: Icons.insights_rounded, title: AppLocalizations.of(context).adminMetricsSectionPerformance, color: Colors.indigo),
         const SizedBox(height: 10),
 
         _RevenueCard(m: m, mxn: mxn),
@@ -352,16 +353,16 @@ class _RoleSummaryCard extends StatelessWidget {
               fontSize: 28, fontWeight: FontWeight.bold, color: Colors.blue,
             ),
           ),
-          const Text('usuarios registrados', style: TextStyle(color: Colors.grey, fontSize: 12)),
+          Text(AppLocalizations.of(context).adminMetricsRegisteredUsers, style: const TextStyle(color: Colors.grey, fontSize: 12)),
           const SizedBox(height: 14),
           Row(children: [
-            _RoleBadge(label: 'Usuarios',    count: m.userCount,  color: Colors.blue.shade300),
+            _RoleBadge(label: AppLocalizations.of(context).adminMetricsRoleUsers,    count: m.userCount,  color: Colors.blue.shade300),
             const SizedBox(width: 8),
-            _RoleBadge(label: 'Staff',       count: m.staffCount, color: Colors.green.shade400),
+            _RoleBadge(label: AppLocalizations.of(context).adminMetricsRoleStaff,    count: m.staffCount, color: Colors.green.shade400),
             const SizedBox(width: 8),
-            _RoleBadge(label: 'Negocios',    count: m.ownerCount, color: AppColors.primary),
+            _RoleBadge(label: AppLocalizations.of(context).adminMetricsRoleBusiness, count: m.ownerCount, color: AppColors.primary),
             const SizedBox(width: 8),
-            _RoleBadge(label: 'Admin',       count: m.adminCount, color: Colors.red.shade400),
+            _RoleBadge(label: AppLocalizations.of(context).adminMetricsRoleAdmin,    count: m.adminCount, color: Colors.red.shade400),
           ]),
         ],
       ),
@@ -508,20 +509,20 @@ class _RevenueCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Ingresos plataforma (30 días)',
-              style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w600)),
+          Text(AppLocalizations.of(context).adminMetricsPlatformRevenue30d,
+              style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w600)),
           const SizedBox(height: 8),
           Text(mxn.format(m.totalRevenue30d),
               style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
           Row(children: [
-            _RevenueItem('Suscripciones\n(MRR)', mxn.format(m.monthlyRevenue)),
+            _RevenueItem(AppLocalizations.of(context).adminMetricsRevenueSubscriptions, mxn.format(m.monthlyRevenue)),
             Container(width: 1, height: 40, color: Colors.white24, margin: const EdgeInsets.symmetric(horizontal: 12)),
-            _RevenueItem('Créditos ad\n(30d)',   mxn.format(m.creditsSold30d)),
+            _RevenueItem(AppLocalizations.of(context).adminMetricsRevenueAdCredits,     mxn.format(m.creditsSold30d)),
             Container(width: 1, height: 40, color: Colors.white24, margin: const EdgeInsets.symmetric(horizontal: 12)),
             _RevenueItem(
-              'ROAS\n(ingresos/gasto ad)',
-              roasVal > 0 ? '${roasVal.toStringAsFixed(1)}x' : 'N/A',
+              AppLocalizations.of(context).adminMetricsRevenueRoas,
+              roasVal > 0 ? '${roasVal.toStringAsFixed(1)}x' : AppLocalizations.of(context).adminMetricsNotAvailable,
             ),
           ]),
         ],

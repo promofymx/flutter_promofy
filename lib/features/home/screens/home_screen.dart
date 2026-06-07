@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import '../bloc/home_bloc.dart';
 import '../bloc/home_event.dart';
 import '../bloc/home_state.dart';
@@ -302,7 +303,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onChanged:       _onSearchTextChanged,
         textInputAction: TextInputAction.search,
         decoration: InputDecoration(
-          hintText:  'Buscar promo o restaurante...',
+          hintText:  AppLocalizations.of(context).homeSearchHint,
           hintStyle: TextStyle(fontSize: 13, color: Colors.grey.shade400),
           prefixIcon: Icon(Icons.search,
               color: Colors.grey.shade400, size: 18),
@@ -430,10 +431,10 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 16),
           Text(
             hasSearch
-                ? 'Sin resultados para "$searchQuery"'
+                ? AppLocalizations.of(context).homeEmptySearch(searchQuery)
                 : hasFilters
-                    ? 'Sin resultados para estos filtros'
-                    : 'No hay promociones por aquí aún',
+                    ? AppLocalizations.of(context).homeEmptyFilters
+                    : AppLocalizations.of(context).homeEmptyNoPromos,
             textAlign: TextAlign.center,
             style: const TextStyle(color: Colors.grey, fontSize: 15),
           ),
@@ -447,9 +448,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           filters: const HomeFilters(activeNow: true)),
                     );
               },
-              child: const Text(
-                'Limpiar búsqueda y filtros',
-                style: TextStyle(color: AppColors.primary),
+              child: Text(
+                AppLocalizations.of(context).homeClearSearchAndFilters,
+                style: const TextStyle(color: AppColors.primary),
               ),
             ),
           ],
@@ -472,7 +473,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ElevatedButton(
             onPressed: () =>
                 context.read<HomeBloc>().add(const HomeStarted()),
-            child: const Text('Reintentar'),
+            child: Text(AppLocalizations.of(context).homeRetry),
           ),
         ],
       ),

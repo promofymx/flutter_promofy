@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../core/cubit/locale_cubit.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../data/models/category_model.dart';
 import '../../../data/models/profile_model.dart';
 import '../../../data/repositories/auth_repository.dart';
@@ -31,16 +33,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   List<CategoryModel> _categories = [];
 
   static const _radiusOptions = [5, 10, 25, 50];
-  static const _typeOptions = <String, String>{
-    'restaurante': 'Restaurante',
-    'bar':         'Bar',
-    'cafeteria':   'Cafetería',
-    'fast_food':   'Fast food',
-    'antojitos':   'Antojitos',
-    'mariscos':    'Mariscos',
-    'pizza':       'Pizza',
-    'sushi':       'Sushi',
-  };
 
   @override
   void initState() {
@@ -68,7 +60,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _save() async {
     final name = _nameCtrl.text.trim();
     if (name.isEmpty) {
-      _snack('El nombre no puede estar vacío.');
+      _snack(AppLocalizations.of(context).settingsNameEmpty);
       return;
     }
     setState(() => _saving = true);
@@ -83,9 +75,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (!mounted) return;
       context.read<HomeBloc>().add(HomeRadiusChanged(radiusKm: _radius));
       context.read<AuthBloc>().add(AuthProfileRefreshRequested());
-      _snack('Configuración guardada.', success: true);
+      _snack(AppLocalizations.of(context).settingsSaved, success: true);
     } catch (_) {
-      _snack('Error al guardar. Intenta de nuevo.');
+      if (mounted) _snack(AppLocalizations.of(context).settingsSaveError);
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -107,28 +99,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Cambiar contraseña'),
+        title: Text(AppLocalizations.of(ctx).settingsChangePassword),
         content: Form(
           key: formKey,
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             TextFormField(
               controller: c1, obscureText: true,
-              decoration: const InputDecoration(labelText: 'Nueva contraseña'),
-              validator: (v) => (v == null || v.length < 6) ? 'Mínimo 6 caracteres' : null,
+              decoration: InputDecoration(labelText: AppLocalizations.of(ctx).settingsNewPassword),
+              validator: (v) => (v == null || v.length < 6) ? AppLocalizations.of(ctx).settingsPasswordMin : null,
             ),
             const SizedBox(height: 8),
             TextFormField(
               controller: c2, obscureText: true,
-              decoration: const InputDecoration(labelText: 'Confirmar contraseña'),
-              validator: (v) => v != c1.text ? 'No coinciden' : null,
+              decoration: InputDecoration(labelText: AppLocalizations.of(ctx).settingsConfirmPassword),
+              validator: (v) => v != c1.text ? AppLocalizations.of(ctx).settingsPasswordMismatch : null,
             ),
           ]),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(AppLocalizations.of(ctx).settingsCancel)),
           ElevatedButton(
             onPressed: () { if (formKey.currentState?.validate() ?? false) Navigator.pop(ctx, true); },
-            child: const Text('Guardar'),
+            child: Text(AppLocalizations.of(ctx).settingsSave),
           ),
         ],
       ),
@@ -136,9 +128,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (ok != true || !mounted) return;
     try {
       await AuthRepository().changePassword(c1.text.trim());
-      _snack('Contraseña actualizada.', success: true);
+      if (mounted) _snack(AppLocalizations.of(context).settingsPasswordUpdated, success: true);
     } catch (_) {
-      _snack('No se pudo cambiar la contraseña. Intenta de nuevo.');
+      if (mounted) _snack(AppLocalizations.of(context).settingsPasswordError);
     }
   }
 
@@ -147,18 +139,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('¿Estás seguro?'),
-        content: const Text(
-          'Perderás toda tu información: tu perfil, favoritos, sellos de lealtad, '
-          'historial y, si tienes un negocio, sus datos asociados.\n\n'
-          'Esta acción es permanente y no se puede deshacer.',
-        ),
+        title: Text(AppLocalizations.of(ctx).settingsDeleteConfirmTitle),
+        content: Text(AppLocalizations.of(ctx).settingsDeleteConfirmBody),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(AppLocalizations.of(ctx).settingsCancel)),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Eliminar cuenta'),
+            child: Text(AppLocalizations.of(ctx).settingsDeleteAccount),
           ),
         ],
       ),
@@ -174,33 +162,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
     } catch (_) {
       if (!mounted) return;
       Navigator.of(context, rootNavigator: true).pop();
-      _snack('No se pudo eliminar la cuenta. Escríbenos a promofymx@gmail.com');
+      _snack(AppLocalizations.of(context).settingsDeleteError('promofymx@gmail.com'));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final rootCats = _categories.where((c) => c.parentId == null).toList();
+    final rootCats = _categories.where((c) => c.parentId == null).toList()
+      ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text('Configuración', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(AppLocalizations.of(context).settingsTitle,
+            style: const TextStyle(fontWeight: FontWeight.bold)),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           _card([
-            const _SectionLabel('Nombre'),
+            _SectionLabel(AppLocalizations.of(context).settingsName),
             const SizedBox(height: 6),
             TextField(
               controller: _nameCtrl,
               textCapitalization: TextCapitalization.words,
-              decoration: _inputDeco('Tu nombre completo'),
+              decoration: _inputDeco(AppLocalizations.of(context).settingsNameHint),
             ),
             const SizedBox(height: 16),
 
-            const _SectionLabel('Radio de búsqueda'),
+            _SectionLabel(AppLocalizations.of(context).settingsSearchRadius),
             const SizedBox(height: 8),
             Wrap(spacing: 8, children: _radiusOptions.map((km) {
               final sel = km == _radius;
@@ -218,49 +208,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
             }).toList()),
             const SizedBox(height: 16),
 
-            const _SectionLabel('Tipos de lugar preferidos'),
+            _SectionLabel(AppLocalizations.of(context).settingsMyFavs),
             const SizedBox(height: 8),
-            Wrap(spacing: 8, runSpacing: 8, children: _typeOptions.entries.map((e) {
-              final sel = _types.contains(e.key);
-              return FilterChip(
-                label: Text(e.value),
-                selected: sel,
-                onSelected: (_) => setState(() =>
-                    sel ? _types.remove(e.key) : _types.add(e.key)),
-                selectedColor: AppColors.primary.withAlpha(25),
-                checkmarkColor: AppColors.primary,
-                labelStyle: TextStyle(
-                  color: sel ? AppColors.primary : Colors.grey.shade700,
-                  fontWeight: sel ? FontWeight.w600 : FontWeight.normal, fontSize: 13),
-                side: BorderSide(color: sel ? AppColors.primary : Colors.grey.shade300),
-                backgroundColor: Colors.grey.shade50,
-              );
-            }).toList()),
-            const SizedBox(height: 16),
-
-            const _SectionLabel('Comida favorita'),
-            const SizedBox(height: 8),
-            if (rootCats.isEmpty)
-              Text('Cargando categorías…',
+            if (_categories.isEmpty)
+              Text(AppLocalizations.of(context).settingsLoadingCategories,
                   style: TextStyle(fontSize: 12, color: Colors.grey.shade400))
             else
-              Wrap(spacing: 8, runSpacing: 8, children: rootCats.map((c) {
-                final id = int.tryParse(c.id) ?? -1;
-                final sel = _catIds.contains(id);
-                return FilterChip(
-                  label: Text(c.name),
-                  selected: sel,
-                  onSelected: (_) => setState(() =>
-                      sel ? _catIds.remove(id) : _catIds.add(id)),
-                  selectedColor: AppColors.primary.withAlpha(25),
-                  checkmarkColor: AppColors.primary,
-                  labelStyle: TextStyle(
-                    color: sel ? AppColors.primary : Colors.grey.shade700,
-                    fontWeight: sel ? FontWeight.w600 : FontWeight.normal, fontSize: 13),
-                  side: BorderSide(color: sel ? AppColors.primary : Colors.grey.shade300),
-                  backgroundColor: Colors.grey.shade50,
+              ...rootCats.map((root) {
+                final lang = Localizations.localeOf(context).languageCode;
+                final subs = _categories
+                    .where((c) => c.parentId == root.id)
+                    .toList()
+                  ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _favChip(root, lang, isHeader: true),
+                      if (subs.isNotEmpty) ...[
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8, runSpacing: 8,
+                          children: subs.map((c) => _favChip(c, lang)).toList(),
+                        ),
+                      ],
+                    ],
+                  ),
                 );
-              }).toList()),
+              }),
             const SizedBox(height: 18),
 
             SizedBox(
@@ -270,20 +246,58 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: _saving
                     ? const SizedBox(width: 20, height: 20,
                         child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white))
-                    : const Text('Guardar configuración',
-                        style: TextStyle(fontWeight: FontWeight.w600)),
+                    : Text(AppLocalizations.of(context).settingsSaveButton,
+                        style: const TextStyle(fontWeight: FontWeight.w600)),
               ),
             ),
           ]),
           const SizedBox(height: 16),
 
+          // ── Idioma ──────────────────────────────────────────────────────────
           _card([
-            const _SectionLabel('Cuenta y seguridad'),
+            _SectionLabel(AppLocalizations.of(context).language),
+            const SizedBox(height: 8),
+            BlocBuilder<LocaleCubit, Locale?>(
+              builder: (context, locale) {
+                final current = locale?.languageCode; // null = automático
+                Widget chip(String label, String? code) {
+                  final sel = current == code;
+                  return ChoiceChip(
+                    label: Text(label),
+                    selected: sel,
+                    onSelected: (_) => context
+                        .read<LocaleCubit>()
+                        .setLocale(code == null ? null : Locale(code)),
+                    selectedColor: AppColors.primary.withAlpha(30),
+                    labelStyle: TextStyle(
+                      color: sel ? AppColors.primary : Colors.grey.shade700,
+                      fontWeight: sel ? FontWeight.w600 : FontWeight.normal,
+                      fontSize: 13,
+                    ),
+                    side: BorderSide(
+                        color: sel ? AppColors.primary : Colors.grey.shade300),
+                    backgroundColor: Colors.grey.shade50,
+                  );
+                }
+
+                return Wrap(spacing: 8, runSpacing: 8, children: [
+                  chip(AppLocalizations.of(context).languageAuto, null),
+                  chip('Español', 'es'),
+                  chip('English', 'en'),
+                  chip('Deutsch', 'de'),
+                ]);
+              },
+            ),
+          ]),
+          const SizedBox(height: 16),
+
+          _card([
+            _SectionLabel(AppLocalizations.of(context).settingsAccountSecurity),
             const SizedBox(height: 10),
             OutlinedButton.icon(
               onPressed: _changePassword,
               icon: const Icon(Icons.lock_outline, size: 18),
-              label: const Text('Cambiar contraseña'),
+              label: Text(AppLocalizations.of(context).settingsChangePassword),
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 46),
                 foregroundColor: AppColors.textDark,
@@ -294,7 +308,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             OutlinedButton.icon(
               onPressed: _confirmDeleteAccount,
               icon: const Icon(Icons.delete_forever_outlined, size: 18, color: Colors.red),
-              label: const Text('Eliminar cuenta', style: TextStyle(color: Colors.red)),
+              label: Text(AppLocalizations.of(context).settingsDeleteAccount, style: const TextStyle(color: Colors.red)),
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 46),
                 side: BorderSide(color: Colors.red.shade200),
@@ -303,6 +317,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ]),
         ],
       ),
+    );
+  }
+
+  /// Chip seleccionable para "Mis favs". [isHeader] resalta las 4 categorías raíz.
+  Widget _favChip(CategoryModel c, String lang, {bool isHeader = false}) {
+    final id  = int.tryParse(c.id) ?? -1;
+    final sel = _catIds.contains(id);
+    return FilterChip(
+      label: Text(c.localizedName(lang)),
+      selected: sel,
+      onSelected: (_) =>
+          setState(() => sel ? _catIds.remove(id) : _catIds.add(id)),
+      selectedColor: AppColors.primary.withAlpha(isHeader ? 40 : 25),
+      checkmarkColor: AppColors.primary,
+      labelStyle: TextStyle(
+        color: sel ? AppColors.primary : Colors.grey.shade800,
+        fontWeight: isHeader
+            ? FontWeight.w700
+            : (sel ? FontWeight.w600 : FontWeight.normal),
+        fontSize: isHeader ? 13.5 : 13,
+      ),
+      side: BorderSide(color: sel ? AppColors.primary : Colors.grey.shade300),
+      backgroundColor: isHeader ? AppColors.primary.withAlpha(10) : Colors.grey.shade50,
     );
   }
 

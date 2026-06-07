@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/datasources/supabase/business_datasource.dart';
 import '../../../data/models/establishment_model.dart';
@@ -88,20 +89,19 @@ class _AdminEstablishmentsScreenState
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Eliminar restaurante'),
+        title: Text(AppLocalizations.of(context).adminEstDeleteTitle),
         content: Text(
-          '¿Eliminar "${est.name}"?\n'
-          'Esto también eliminará sus promociones y datos asociados.',
+          AppLocalizations.of(context).adminEstDeleteConfirm(est.name),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancelar'),
+            child: Text(AppLocalizations.of(context).adminEstCancel),
           ),
           TextButton(
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Eliminar'),
+            child: Text(AppLocalizations.of(context).adminEstDelete),
           ),
         ],
       ),
@@ -116,14 +116,14 @@ class _AdminEstablishmentsScreenState
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('"${est.name}" eliminado.'),
+          content: Text(AppLocalizations.of(context).adminEstDeleted(est.name)),
           behavior: SnackBarBehavior.floating,
         ));
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Error al eliminar: $e'),
+          content: Text(AppLocalizations.of(context).adminEstDeleteError(e.toString())),
           backgroundColor: Colors.red.shade700,
           behavior: SnackBarBehavior.floating,
         ));
@@ -151,9 +151,9 @@ class _AdminEstablishmentsScreenState
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text(
-          'Restaurantes Admin',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          AppLocalizations.of(context).adminEstTitle,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         actions: [
           if (_loading)
@@ -167,7 +167,7 @@ class _AdminEstablishmentsScreenState
           else
             IconButton(
               icon:    const Icon(Icons.refresh_rounded),
-              tooltip: 'Actualizar',
+              tooltip: AppLocalizations.of(context).adminEstRefresh,
               onPressed: _load,
             ),
         ],
@@ -175,7 +175,7 @@ class _AdminEstablishmentsScreenState
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openCreate,
         icon:    const Icon(Icons.add_business_rounded),
-        label:   const Text('Agregar restaurante'),
+        label:   Text(AppLocalizations.of(context).adminEstAdd),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
@@ -187,7 +187,7 @@ class _AdminEstablishmentsScreenState
             child: TextField(
               onChanged: (v) => setState(() => _query = v),
               decoration: InputDecoration(
-                hintText:   'Buscar por nombre o dirección…',
+                hintText:   AppLocalizations.of(context).adminEstSearchHint,
                 prefixIcon: const Icon(Icons.search, size: 20),
                 suffixIcon: _query.isNotEmpty
                     ? IconButton(
@@ -217,8 +217,8 @@ class _AdminEstablishmentsScreenState
               alignment: Alignment.centerLeft,
               child: Text(
                 _loading
-                    ? 'Cargando…'
-                    : '${filtered.length} establecimiento${filtered.length != 1 ? "s" : ""}',
+                    ? AppLocalizations.of(context).adminEstLoading
+                    : AppLocalizations.of(context).adminEstCount(filtered.length),
                 style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
               ),
             ),
@@ -251,7 +251,7 @@ class _AdminEstablishmentsScreenState
             ElevatedButton.icon(
               onPressed: _load,
               icon:  const Icon(Icons.refresh),
-              label: const Text('Reintentar'),
+              label: Text(AppLocalizations.of(context).adminEstRetry),
             ),
           ],
         ),
@@ -267,8 +267,8 @@ class _AdminEstablishmentsScreenState
             const SizedBox(height: 12),
             Text(
               _query.isEmpty
-                  ? 'Aún no hay restaurantes gestionados por Admin.'
-                  : 'Sin resultados para "$_query".',
+                  ? AppLocalizations.of(context).adminEstEmpty
+                  : AppLocalizations.of(context).adminEstNoResults(_query),
               style: TextStyle(color: Colors.grey.shade500),
               textAlign: TextAlign.center,
             ),
@@ -277,7 +277,7 @@ class _AdminEstablishmentsScreenState
               ElevatedButton.icon(
                 onPressed: _openCreate,
                 icon:  const Icon(Icons.add_business_rounded),
-                label: const Text('Agregar primero'),
+                label: Text(AppLocalizations.of(context).adminEstAddFirst),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
@@ -398,13 +398,13 @@ class _EstablishmentRow extends StatelessWidget {
               IconButton(
                 icon:      const Icon(Icons.edit_outlined, size: 20),
                 color:     AppColors.primary,
-                tooltip:   'Editar',
+                tooltip:   AppLocalizations.of(context).adminEstEdit,
                 onPressed: onEdit,
               ),
               IconButton(
                 icon:      const Icon(Icons.delete_outline, size: 20),
                 color:     Colors.red.shade300,
-                tooltip:   'Eliminar',
+                tooltip:   AppLocalizations.of(context).adminEstDelete,
                 onPressed: onDelete,
               ),
             ],

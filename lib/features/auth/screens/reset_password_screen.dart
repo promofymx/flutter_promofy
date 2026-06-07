@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../main.dart';
 
@@ -42,7 +43,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       if (res.user != null) {
         setState(() { _success = true; _loading = false; });
       } else {
-        setState(() { _error = 'No se pudo actualizar la contraseña.'; _loading = false; });
+        setState(() { _error = AppLocalizations.of(context).resetPwdUpdateError; _loading = false; });
       }
     } catch (e) {
       setState(() { _error = e.toString(); _loading = false; });
@@ -54,7 +55,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Nueva contraseña'),
+        title: Text(AppLocalizations.of(context).resetPwdAppBarTitle),
         backgroundColor: Colors.white,
         foregroundColor: AppColors.textDark,
         elevation: 0,
@@ -83,15 +84,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               size: 44, color: Color(0xFF2E7D32)),
         ),
         const SizedBox(height: 24),
-        const Text(
-          '¡Contraseña actualizada!',
+        Text(
+          AppLocalizations.of(context).resetPwdSuccessTitle,
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.textDark),
         ),
         const SizedBox(height: 12),
         Text(
-          'Ya puedes iniciar sesión\ncon tu nueva contraseña.',
+          AppLocalizations.of(context).resetPwdSuccessSubtitle,
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 14, color: Colors.grey.shade600, height: 1.5),
         ),
@@ -105,8 +106,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             elevation: 0,
           ),
-          child: const Text('Ir al inicio',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+          child: Text(AppLocalizations.of(context).resetPwdGoHome,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
         ),
       ],
     );
@@ -118,13 +119,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Crea tu nueva contraseña',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.textDark),
+          Text(
+            AppLocalizations.of(context).resetPwdFormTitle,
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.textDark),
           ),
           const SizedBox(height: 8),
           Text(
-            'Debe tener al menos 6 caracteres.',
+            AppLocalizations.of(context).resetPwdFormHint,
             style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
           ),
           const SizedBox(height: 32),
@@ -146,14 +147,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             controller: _passCtrl,
             obscureText: _obscure1,
             decoration: InputDecoration(
-              labelText: 'Nueva contraseña',
+              labelText: AppLocalizations.of(context).resetPwdNewLabel,
               suffixIcon: IconButton(
                 icon: Icon(_obscure1 ? Icons.visibility_off_outlined : Icons.visibility_outlined),
                 onPressed: () => setState(() => _obscure1 = !_obscure1),
               ),
             ),
             validator: (v) {
-              if (v == null || v.trim().length < 6) return 'Mínimo 6 caracteres';
+              if (v == null || v.trim().length < 6) return AppLocalizations.of(context).resetPwdMinLength;
               return null;
             },
           ),
@@ -164,14 +165,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             controller: _confirmCtrl,
             obscureText: _obscure2,
             decoration: InputDecoration(
-              labelText: 'Confirmar contraseña',
+              labelText: AppLocalizations.of(context).resetPwdConfirmLabel,
               suffixIcon: IconButton(
                 icon: Icon(_obscure2 ? Icons.visibility_off_outlined : Icons.visibility_outlined),
                 onPressed: () => setState(() => _obscure2 = !_obscure2),
               ),
             ),
             validator: (v) {
-              if (v != _passCtrl.text) return 'Las contraseñas no coinciden';
+              if (v != _passCtrl.text) return AppLocalizations.of(context).resetPwdMismatch;
               return null;
             },
           ),
@@ -191,8 +192,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     height: 20, width: 20,
                     child: CircularProgressIndicator(
                         color: Colors.white, strokeWidth: 2))
-                : const Text('Guardar contraseña',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                : Text(AppLocalizations.of(context).resetPwdSave,
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
           ),
         ],
       ),

@@ -7,6 +7,7 @@ import '../bloc/auth_state.dart';
 import '../../../core/services/geocoding_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../main.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 
 class LocationPermissionScreen extends StatefulWidget {
   const LocationPermissionScreen({super.key});
@@ -119,10 +120,10 @@ class _LocationPermissionScreenState
 
                 const SizedBox(height: 40),
 
-                const Text(
-                  '¡Las promos te esperan\ncerca de ti!',
+                Text(
+                  AppLocalizations.of(context).locationPermTitle,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -132,10 +133,10 @@ class _LocationPermissionScreenState
 
                 const SizedBox(height: 16),
 
-                const Text(
-                  'Comparte tu ubicación para ver\nlas mejores promociones ordenadas\npor distancia al instante.',
+                Text(
+                  AppLocalizations.of(context).locationPermSubtitle,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white70,
                     fontSize: 16,
                     height: 1.6,
@@ -166,9 +167,9 @@ class _LocationPermissionScreenState
                               strokeWidth: 2,
                             ),
                           )
-                        : const Text(
-                            'Permitir ubicación',
-                            style: TextStyle(
+                        : Text(
+                            AppLocalizations.of(context).locationPermAllowButton,
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -181,9 +182,9 @@ class _LocationPermissionScreenState
                 // Botón secundario
                 TextButton(
                   onPressed: _skip,
-                  child: const Text(
-                    'Ahora no',
-                    style: TextStyle(
+                  child: Text(
+                    AppLocalizations.of(context).locationPermSkipButton,
+                    style: const TextStyle(
                       color: Colors.white60,
                       fontSize: 15,
                     ),

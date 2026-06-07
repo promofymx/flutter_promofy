@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import '../cubit/ads_display_cubit.dart';
 import '../cubit/ads_display_state.dart';
 import '../../../core/theme/app_theme.dart';
@@ -110,7 +111,9 @@ class _AdBannerCardState extends State<_AdBannerCard> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      ad.isPromotionAd ? ad.establishmentName : 'Ver sus promociones',
+                      ad.isPromotionAd
+                          ? ad.establishmentName
+                          : AppLocalizations.of(context).adBannerSeePromotions,
                       style: const TextStyle(fontSize: 11, color: Colors.grey),
                     ),
                   ],
@@ -132,9 +135,9 @@ class _AdBannerCardState extends State<_AdBannerCard> {
                       borderRadius: BorderRadius.circular(6),
                       border: Border.all(color: Colors.grey.shade300),
                     ),
-                    child: const Text(
-                      'Publicidad',
-                      style: TextStyle(
+                    child: Text(
+                      AppLocalizations.of(context).adBannerAdLabel,
+                      style: const TextStyle(
                         fontSize: 9,
                         color: Colors.grey,
                         fontWeight: FontWeight.w500,

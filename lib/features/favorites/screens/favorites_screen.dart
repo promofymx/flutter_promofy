@@ -6,6 +6,7 @@ import '../cubit/favorites_cubit.dart';
 import '../cubit/favorites_state.dart';
 import '../../home/widgets/promo_card.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../data/models/establishment_model.dart';
 
 class FavoritesScreen extends StatefulWidget {
@@ -85,9 +86,9 @@ class _FavoritesScreenState extends State<FavoritesScreen>
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text(
-          'Mis favoritos',
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context).favTitle,
+          style: const TextStyle(
             color:      AppColors.textDark,
             fontWeight: FontWeight.bold,
             fontSize:   20,
@@ -101,9 +102,9 @@ class _FavoritesScreenState extends State<FavoritesScreen>
           indicatorWeight:   2.5,
           labelStyle:        const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
           unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 14),
-          tabs: const [
-            Tab(text: 'Promociones'),
-            Tab(text: 'Establecimientos'),
+          tabs: [
+            Tab(text: AppLocalizations.of(context).favTabPromos),
+            Tab(text: AppLocalizations.of(context).favTabEstablishments),
           ],
         ),
       ),
@@ -147,7 +148,7 @@ class _ErrorView extends StatelessWidget {
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: onRetry,
-            child: const Text('Reintentar'),
+            child: Text(AppLocalizations.of(context).retry),
           ),
         ],
       ),
@@ -173,8 +174,8 @@ class _PromosTab extends StatelessWidget {
     if (promos.isEmpty) {
       return _EmptyTab(
         icon:    Icons.local_offer_outlined,
-        title:   'Aún no tienes promos favoritas',
-        subtitle:'Toca el corazón en cualquier promo\npara guardarla aquí',
+        title:   AppLocalizations.of(context).favEmptyPromosTitle,
+        subtitle: AppLocalizations.of(context).favEmptyPromosSubtitle,
         onExplore: () => context.go('/home'),
       );
     }
@@ -232,8 +233,8 @@ class _EstablishmentsTab extends StatelessWidget {
     if (establishments.isEmpty) {
       return _EmptyTab(
         icon:     Icons.store_outlined,
-        title:    'Aún no tienes negocios favoritos',
-        subtitle: 'Entra a un negocio y toca el corazón\npara guardarlo aquí',
+        title:    AppLocalizations.of(context).favEmptyEstTitle,
+        subtitle: AppLocalizations.of(context).favEmptyEstSubtitle,
         onExplore: () => context.go('/home'),
       );
     }
@@ -360,7 +361,7 @@ class _EstablishmentCard extends StatelessWidget {
               icon: const Icon(Icons.favorite_rounded,
                   color: Colors.pinkAccent, size: 22),
               onPressed: onRemove,
-              tooltip: 'Quitar de favoritos',
+              tooltip: AppLocalizations.of(context).removeFromFavorites,
             ),
           ],
         ),
@@ -409,8 +410,8 @@ class _EmptyTab extends StatelessWidget {
           OutlinedButton.icon(
             onPressed: onExplore,
             icon:  const Icon(Icons.explore_outlined, color: AppColors.primary),
-            label: const Text('Explorar',
-                style: TextStyle(color: AppColors.primary)),
+            label: Text(AppLocalizations.of(context).explore,
+                style: const TextStyle(color: AppColors.primary)),
             style: OutlinedButton.styleFrom(
               side:  const BorderSide(color: AppColors.primary),
               shape: RoundedRectangleBorder(

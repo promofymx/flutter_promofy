@@ -23,6 +23,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:csv/csv.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../data/datasources/supabase/business_datasource.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 
 // ─── Pantalla raíz ────────────────────────────────────────────────────────────
 
@@ -47,19 +48,19 @@ class _SuperadminView extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.admin_panel_settings, color: AppColors.primary, size: 22),
-            SizedBox(width: 8),
-            Text('Panel Superadmin',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            const Icon(Icons.admin_panel_settings, color: AppColors.primary, size: 22),
+            const SizedBox(width: 8),
+            Text(AppLocalizations.of(context).adminPanelTitle,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
         actions: [
           BlocBuilder<SuperadminCubit, SuperadminState>(
             builder: (context, state) => IconButton(
               icon:    const Icon(Icons.refresh_outlined),
-              tooltip: 'Recargar',
+              tooltip: AppLocalizations.of(context).adminReload,
               onPressed: state is SuperadminLoading
                   ? null
                   : () => context.read<SuperadminCubit>().load(),
@@ -81,7 +82,7 @@ class _SuperadminView extends StatelessWidget {
                   children: [
                     const Icon(Icons.error_outline, size: 48, color: Colors.red),
                     const SizedBox(height: 12),
-                    Text('Error al cargar',
+                    Text(AppLocalizations.of(context).adminLoadError,
                         style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 8),
                     Text(state.message,
@@ -91,7 +92,7 @@ class _SuperadminView extends StatelessWidget {
                     ElevatedButton(
                       onPressed: () =>
                           context.read<SuperadminCubit>().load(),
-                      child: const Text('Reintentar'),
+                      child: Text(AppLocalizations.of(context).adminRetry),
                     ),
                   ],
                 ),
@@ -130,7 +131,7 @@ class _Dashboard extends StatelessWidget {
       children: [
         const SizedBox(height: 8),
         Text(
-          'Administración',
+          AppLocalizations.of(context).adminSectionTitle,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: AppColors.textDark,
@@ -141,8 +142,8 @@ class _Dashboard extends StatelessWidget {
         _DashTile(
           icon:     Icons.workspace_premium_outlined,
           color:    const Color(0xFF1976D2),
-          title:    'Planes de membresía',
-          subtitle: '${state.plans.length} planes configurados',
+          title:    AppLocalizations.of(context).adminTilePlans,
+          subtitle: AppLocalizations.of(context).adminTilePlansSubtitle(state.plans.length),
           onTap:    () => _push(context, const _PlansScreen()),
         ),
         const SizedBox(height: 12),
@@ -150,8 +151,8 @@ class _Dashboard extends StatelessWidget {
         _DashTile(
           icon:     Icons.people_outline,
           color:    const Color(0xFF00897B),
-          title:    'Dueños de negocio',
-          subtitle: '${state.users.length} propietarios registrados',
+          title:    AppLocalizations.of(context).adminTileOwners,
+          subtitle: AppLocalizations.of(context).adminTileOwnersSubtitle(state.users.length),
           onTap:    () => _push(context, const _OwnersScreen()),
         ),
         const SizedBox(height: 12),
@@ -159,8 +160,8 @@ class _Dashboard extends StatelessWidget {
         _DashTile(
           icon:     Icons.category_outlined,
           color:    const Color(0xFFEF6C00),
-          title:    'Categorías',
-          subtitle: '${state.categories.length} categorías · árbol de tipos',
+          title:    AppLocalizations.of(context).adminTileCategories,
+          subtitle: AppLocalizations.of(context).adminTileCategoriesSubtitle(state.categories.length),
           onTap:    () => _push(context, const _CategoriesScreen()),
         ),
         const SizedBox(height: 12),
@@ -168,8 +169,8 @@ class _Dashboard extends StatelessWidget {
         _DashTile(
           icon:     Icons.checklist_outlined,
           color:    const Color(0xFF6A1B9A),
-          title:    'Características',
-          subtitle: '${state.characteristics.length} características',
+          title:    AppLocalizations.of(context).adminTileCharacteristics,
+          subtitle: AppLocalizations.of(context).adminTileCharacteristicsSubtitle(state.characteristics.length),
           onTap:    () => _push(context, const _CharacteristicsScreen()),
         ),
         const SizedBox(height: 12),
@@ -177,9 +178,9 @@ class _Dashboard extends StatelessWidget {
         _DashTile(
           icon:     Icons.notifications_outlined,
           color:    const Color(0xFFC62828),
-          title:    'Notificaciones push',
-          subtitle: '${state.totalDevices} dispositivos · '
-              '${state.notificationLogs.length} envíos registrados',
+          title:    AppLocalizations.of(context).adminTileNotifications,
+          subtitle: AppLocalizations.of(context).adminTileNotificationsSubtitle(
+              state.totalDevices, state.notificationLogs.length),
           onTap:    () => _push(context, const _NotificationsScreen()),
         ),
         const SizedBox(height: 12),
@@ -187,8 +188,8 @@ class _Dashboard extends StatelessWidget {
         _DashTile(
           icon:     Icons.manage_accounts_outlined,
           color:    const Color(0xFF37474F),
-          title:    'Todos los usuarios',
-          subtitle: 'Gestionar cuentas · activar / desactivar',
+          title:    AppLocalizations.of(context).adminTileAllUsers,
+          subtitle: AppLocalizations.of(context).adminTileAllUsersSubtitle,
           onTap:    () => _push(context, const _AllUsersScreen()),
         ),
         const SizedBox(height: 12),
@@ -196,8 +197,8 @@ class _Dashboard extends StatelessWidget {
         _DashTile(
           icon:     Icons.campaign_outlined,
           color:    const Color(0xFF00838F),
-          title:    'Publicidad',
-          subtitle: 'Precios por formato · gestión de campañas',
+          title:    AppLocalizations.of(context).adminTileAds,
+          subtitle: AppLocalizations.of(context).adminTileAdsSubtitle,
           onTap:    () => _push(context, const _AdPricingScreen()),
         ),
         const SizedBox(height: 12),
@@ -205,8 +206,8 @@ class _Dashboard extends StatelessWidget {
         _DashTile(
           icon:     Icons.account_balance_wallet_outlined,
           color:    const Color(0xFF00838F),
-          title:    'Créditos publicitarios',
-          subtitle: 'Asignar saldo a cuentas de establecimientos',
+          title:    AppLocalizations.of(context).adminTileCredits,
+          subtitle: AppLocalizations.of(context).adminTileCreditsSubtitle,
           onTap:    () => _push(context, const _AdCreditsScreen()),
         ),
         const SizedBox(height: 12),
@@ -214,8 +215,8 @@ class _Dashboard extends StatelessWidget {
         _DashTile(
           icon:     Icons.upload_file_outlined,
           color:    const Color(0xFF2E7D32),
-          title:    'Carga masiva de promos',
-          subtitle: 'Crear promociones para negocios · no cuenta contra el plan',
+          title:    AppLocalizations.of(context).adminTileBulk,
+          subtitle: AppLocalizations.of(context).adminTileBulkSubtitle,
           onTap:    () => _push(context, const _BulkPromoUploadScreen()),
         ),
       ],
@@ -307,13 +308,24 @@ class _AllUsersScreenState extends State<_AllUsersScreen> {
   String _roleFilter = 'all'; // 'all' | 'user' | 'staff' | 'business_owner' | 'admin'
   List<AdminAllUserEntry> _users = [];
 
-  static const _roleFilters = [
-    ('all',           'Todos'),
-    ('user',          'Usuarios'),
-    ('staff',         'Staff'),
-    ('business_owner','Dueños'),
-    ('admin',         'Admin'),
+  static const _roleFilterKeys = [
+    'all',
+    'user',
+    'staff',
+    'business_owner',
+    'admin',
   ];
+
+  String _roleFilterLabel(BuildContext context, String key) {
+    final l = AppLocalizations.of(context);
+    switch (key) {
+      case 'user':           return l.adminRoleFilterUsers;
+      case 'staff':          return l.adminRoleFilterStaff;
+      case 'business_owner': return l.adminRoleFilterOwners;
+      case 'admin':          return l.adminRoleFilterAdmin;
+      default:               return l.adminRoleFilterAll;
+    }
+  }
 
   @override
   void initState() {
@@ -343,7 +355,7 @@ class _AllUsersScreenState extends State<_AllUsersScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Error: $e'),
+          content: Text(AppLocalizations.of(context).adminErrorWithMsg(e.toString())),
           backgroundColor: Colors.red.shade700,
           behavior: SnackBarBehavior.floating,
         ));
@@ -370,7 +382,7 @@ class _AllUsersScreenState extends State<_AllUsersScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title:           const Text('Todos los usuarios'),
+        title:           Text(AppLocalizations.of(context).adminAllUsersTitle),
         backgroundColor: Colors.white,
         actions: [
           if (_loading)
@@ -394,7 +406,7 @@ class _AllUsersScreenState extends State<_AllUsersScreen> {
             child: TextField(
               onChanged: (v) => setState(() => _query = v),
               decoration: InputDecoration(
-                hintText:   'Buscar por nombre o correo…',
+                hintText:   AppLocalizations.of(context).adminSearchNameEmail,
                 prefixIcon: const Icon(Icons.search, size: 20),
                 suffixIcon: _query.isNotEmpty
                     ? IconButton(
@@ -421,14 +433,14 @@ class _AllUsersScreenState extends State<_AllUsersScreen> {
             child: ListView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              children: _roleFilters.map((rf) {
-                final selected = _roleFilter == rf.$1;
+              children: _roleFilterKeys.map((rf) {
+                final selected = _roleFilter == rf;
                 return Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: ChoiceChip(
-                    label:     Text(rf.$2),
+                    label:     Text(_roleFilterLabel(context, rf)),
                     selected:  selected,
-                    onSelected: (_) => setState(() => _roleFilter = rf.$1),
+                    onSelected: (_) => setState(() => _roleFilter = rf),
                     selectedColor:    AppColors.primary,
                     labelStyle: TextStyle(
                       fontSize: 12,
@@ -447,7 +459,7 @@ class _AllUsersScreenState extends State<_AllUsersScreen> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                '${filtered.length} usuario${filtered.length != 1 ? "s" : ""}',
+                AppLocalizations.of(context).adminUserCount(filtered.length),
                 style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
               ),
             ),
@@ -458,7 +470,7 @@ class _AllUsersScreenState extends State<_AllUsersScreen> {
                 ? const Center(child: CircularProgressIndicator())
                 : filtered.isEmpty
                     ? Center(
-                        child: Text('Sin resultados',
+                        child: Text(AppLocalizations.of(context).adminNoResults,
                             style: TextStyle(color: Colors.grey.shade500)),
                       )
                     : ListView.separated(
@@ -557,7 +569,7 @@ class _AllUserRow extends StatelessWidget {
                       children: [
                         Icon(Icons.block, size: 11, color: Colors.red.shade400),
                         const SizedBox(width: 4),
-                        Text('Cuenta desactivada',
+                        Text(AppLocalizations.of(context).adminAccountDeactivated,
                             style: TextStyle(fontSize: 11, color: Colors.red.shade400)),
                       ],
                     ),
@@ -579,7 +591,9 @@ class _AllUserRow extends StatelessWidget {
                 ),
               ),
               child: Text(
-                blocked ? 'Activar' : 'Desactivar',
+                blocked
+                    ? AppLocalizations.of(context).adminActivate
+                    : AppLocalizations.of(context).adminDeactivate,
                 style: TextStyle(
                   fontSize:   12,
                   fontWeight: FontWeight.w600,
@@ -598,21 +612,25 @@ class _AllUserRow extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text(blocked ? 'Activar cuenta' : 'Desactivar cuenta'),
+        title: Text(blocked
+            ? AppLocalizations.of(context).adminActivateAccount
+            : AppLocalizations.of(context).adminDeactivateAccount),
         content: Text(blocked
-            ? '¿Reactivar la cuenta de ${user.displayName}? Podrá volver a iniciar sesión.'
-            : '¿Desactivar la cuenta de ${user.displayName}? No podrá iniciar sesión ni aparecerá su contenido.'),
+            ? AppLocalizations.of(context).adminActivateAccountConfirm(user.displayName)
+            : AppLocalizations.of(context).adminDeactivateAccountConfirm(user.displayName)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: Text(AppLocalizations.of(context).adminCancel),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: blocked ? Colors.green : Colors.red,
             ),
             onPressed: () { Navigator.pop(context); onToggle(); },
-            child: Text(blocked ? 'Activar' : 'Desactivar',
+            child: Text(blocked
+                ? AppLocalizations.of(context).adminActivate
+                : AppLocalizations.of(context).adminDeactivate,
                 style: const TextStyle(color: Colors.white)),
           ),
         ],
@@ -653,7 +671,7 @@ class _PlansScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Planes de membresía'),
+        title: Text(AppLocalizations.of(context).adminPlansTitle),
         backgroundColor: Colors.white,
       ),
       body: BlocBuilder<SuperadminCubit, SuperadminState>(
@@ -687,9 +705,9 @@ class _PlansScreen extends StatelessWidget {
                         size: 16, color: Color(0xFF7B1FA2)),
                   ),
                   const SizedBox(width: 10),
-                  const Text(
-                    'Add-ons',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context).adminAddons,
+                    style: const TextStyle(
                       fontSize:   14,
                       fontWeight: FontWeight.bold,
                       color:      AppColors.textDark,
@@ -699,7 +717,7 @@ class _PlansScreen extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                'Precios por unidad/mes que se cobran por encima del límite del plan.',
+                AppLocalizations.of(context).adminAddonsDesc,
                 style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
               ),
               const SizedBox(height: 10),
@@ -717,16 +735,16 @@ class _PlansScreen extends StatelessWidget {
                       Icon(Icons.cloud_off_outlined,
                           size: 32, color: Colors.grey.shade400),
                       const SizedBox(height: 8),
-                      const Text(
-                        'Tabla addon_pricing no encontrada.',
-                        style: TextStyle(
+                      Text(
+                        AppLocalizations.of(context).adminAddonTableMissing,
+                        style: const TextStyle(
                             fontSize: 13, color: Colors.grey),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 4),
-                      const Text(
-                        'Ejecuta el SQL de add-ons en Supabase primero.',
-                        style: TextStyle(fontSize: 11, color: Colors.grey),
+                      Text(
+                        AppLocalizations.of(context).adminAddonRunSql,
+                        style: const TextStyle(fontSize: 11, color: Colors.grey),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -794,7 +812,7 @@ class _OwnersScreenState extends State<_OwnersScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title:           const Text('Dueños de negocio'),
+        title:           Text(AppLocalizations.of(context).adminOwnersTitle),
         backgroundColor: Colors.white,
       ),
       body: BlocBuilder<SuperadminCubit, SuperadminState>(
@@ -818,7 +836,7 @@ class _OwnersScreenState extends State<_OwnersScreen> {
                 child: TextField(
                   onChanged:   (v) => setState(() => _query = v),
                   decoration: InputDecoration(
-                    hintText:    'Buscar por nombre o correo…',
+                    hintText:    AppLocalizations.of(context).adminSearchNameEmail,
                     prefixIcon:  const Icon(Icons.search, size: 20),
                     suffixIcon:  _query.isNotEmpty
                         ? IconButton(
@@ -846,7 +864,7 @@ class _OwnersScreenState extends State<_OwnersScreen> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    '${filtered.length} resultado${filtered.length != 1 ? "s" : ""}',
+                    AppLocalizations.of(context).adminResultCount(filtered.length),
                     style: TextStyle(
                         fontSize: 12, color: Colors.grey.shade500),
                   ),
@@ -856,7 +874,7 @@ class _OwnersScreenState extends State<_OwnersScreen> {
               Expanded(
                 child: filtered.isEmpty
                     ? Center(
-                        child: Text('Sin resultados',
+                        child: Text(AppLocalizations.of(context).adminNoResults,
                             style: TextStyle(color: Colors.grey.shade500)),
                       )
                     : ListView.separated(
@@ -893,13 +911,13 @@ class _CategoriesScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title:           const Text('Categorías'),
+        title:           Text(AppLocalizations.of(context).adminCategoriesTitle),
         backgroundColor: Colors.white,
         actions: [
           BlocBuilder<SuperadminCubit, SuperadminState>(
             builder: (context, state) => IconButton(
               icon:    const Icon(Icons.add),
-              tooltip: 'Nuevo tipo raíz',
+              tooltip: AppLocalizations.of(context).adminNewRootType,
               onPressed: state is SuperadminLoaded
                   ? () => _showCategorySheet(context, null, state.categories)
                   : null,
@@ -914,7 +932,7 @@ class _CategoriesScreen extends StatelessWidget {
           }
           if (state.categories.isEmpty) {
             return Center(
-              child: Text('Sin categorías',
+              child: Text(AppLocalizations.of(context).adminNoCategories,
                   style: TextStyle(color: Colors.grey.shade500)),
             );
           }
@@ -944,7 +962,8 @@ class _CategoriesScreen extends StatelessWidget {
     final children = all.where((c) => c.parentId == cat.id).toList()
       ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
     final canAdd = level < 2;
-    final levelLabel = ['Tipo', 'Subtipo', 'Sub-subtipo'][level];
+    final l = AppLocalizations.of(context);
+    final levelLabel = [l.adminLevelType, l.adminLevelSubtype, l.adminLevelSubSubtype][level];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -959,7 +978,7 @@ class _CategoriesScreen extends StatelessWidget {
                 ? IconButton(
                     icon:    const Icon(Icons.subdirectory_arrow_right, size: 18),
                     color:   AppColors.primary,
-                    tooltip: 'Agregar subcategoría',
+                    tooltip: l.adminAddSubcategory,
                     onPressed: () => _showCategorySheet(
                         context, null, all, parentId: cat.id),
                   )
@@ -967,10 +986,10 @@ class _CategoriesScreen extends StatelessWidget {
             onEdit: () => _showCategorySheet(context, cat, all),
             onDelete: () => _confirmDelete(
               context,
-              title: 'Eliminar categoría',
+              title: l.adminDeleteCategory,
               body:  children.isNotEmpty
-                  ? '¿Eliminar "${cat.name}"? También se eliminarán sus ${children.length} subcategoría(s).'
-                  : '¿Eliminar "${cat.name}"?',
+                  ? l.adminDeleteCategoryWithChildren(cat.name, children.length)
+                  : l.adminDeleteCategorySimple(cat.name),
               onConfirm: () =>
                   context.read<SuperadminCubit>().deleteCategory(cat.id),
             ),
@@ -1019,14 +1038,14 @@ class _CategoriesScreen extends StatelessWidget {
         actions: [
           TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('Cancelar')),
+              child: Text(AppLocalizations.of(ctx).adminCancel)),
           TextButton(
             onPressed: () {
               Navigator.of(ctx).pop();
               onConfirm();
             },
-            child: const Text('Eliminar',
-                style: TextStyle(color: Colors.red)),
+            child: Text(AppLocalizations.of(ctx).adminDelete,
+                style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -1046,12 +1065,12 @@ class _CharacteristicsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title:           const Text('Características'),
+        title:           Text(AppLocalizations.of(context).adminCharacteristicsTitle),
         backgroundColor: Colors.white,
         actions: [
           IconButton(
             icon:    const Icon(Icons.add),
-            tooltip: 'Nueva característica',
+            tooltip: AppLocalizations.of(context).adminNewCharacteristic,
             onPressed: () => _showSheet(context, null),
           ),
         ],
@@ -1063,7 +1082,7 @@ class _CharacteristicsScreen extends StatelessWidget {
           }
           if (state.characteristics.isEmpty) {
             return Center(
-              child: Text('Sin características',
+              child: Text(AppLocalizations.of(context).adminNoCharacteristics,
                   style: TextStyle(color: Colors.grey.shade500)),
             );
           }
@@ -1079,8 +1098,8 @@ class _CharacteristicsScreen extends StatelessWidget {
                 onEdit:   () => _showSheet(context, ch),
                 onDelete: () => _confirmDelete(
                   context,
-                  title: 'Eliminar característica',
-                  body:  '¿Eliminar "${ch.name}"? Se quitará de todos los establecimientos.',
+                  title: AppLocalizations.of(context).adminDeleteCharacteristic,
+                  body:  AppLocalizations.of(context).adminDeleteCharacteristicConfirm(ch.name),
                   onConfirm: () =>
                       context.read<SuperadminCubit>().deleteCharacteristic(ch.id),
                 ),
@@ -1118,14 +1137,14 @@ class _CharacteristicsScreen extends StatelessWidget {
         actions: [
           TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('Cancelar')),
+              child: Text(AppLocalizations.of(ctx).adminCancel)),
           TextButton(
             onPressed: () {
               Navigator.of(ctx).pop();
               onConfirm();
             },
-            child: const Text('Eliminar',
-                style: TextStyle(color: Colors.red)),
+            child: Text(AppLocalizations.of(ctx).adminDelete,
+                style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -1191,8 +1210,8 @@ class _PlanCard extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   plan.priceMxn == 0
-                      ? 'Gratis'
-                      : '\$${plan.priceMxn.toStringAsFixed(0)} MXN/mes',
+                      ? AppLocalizations.of(context).adminFree
+                      : AppLocalizations.of(context).adminPricePerMonth(plan.priceMxn.toStringAsFixed(0)),
                   style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
                 ),
                 const SizedBox(height: 6),
@@ -1200,9 +1219,9 @@ class _PlanCard extends StatelessWidget {
                   spacing: 6,
                   children: [
                     _MiniChip(
-                        '${plan.maxEstablishments} negocio${plan.maxEstablishments > 1 ? "s" : ""}'),
+                        AppLocalizations.of(context).adminBusinessCount(plan.maxEstablishments)),
                     _MiniChip(
-                        '${plan.maxPromotions} promo${plan.maxPromotions > 1 ? "s" : ""}'),
+                        AppLocalizations.of(context).adminPromoCount(plan.maxPromotions)),
                   ],
                 ),
               ],
@@ -1212,7 +1231,7 @@ class _PlanCard extends StatelessWidget {
             onPressed: onEdit,
             icon:      const Icon(Icons.edit_outlined, size: 20),
             color:     Colors.grey.shade500,
-            tooltip:   'Editar plan',
+            tooltip:   AppLocalizations.of(context).adminEditPlan,
           ),
         ],
       ),
@@ -1260,8 +1279,8 @@ class _AddonCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final icon = _typeIcons[addon.type] ?? Icons.extension_outlined;
     final fmtPrice = addon.priceMxn == 0
-        ? 'Gratis / sin cargo'
-        : '\$${addon.priceMxn.toStringAsFixed(0)} MXN/mes';
+        ? AppLocalizations.of(context).adminFreeNoCharge
+        : AppLocalizations.of(context).adminPricePerMonth(addon.priceMxn.toStringAsFixed(0));
 
     return Container(
       padding:    const EdgeInsets.all(16),
@@ -1326,7 +1345,7 @@ class _AddonCard extends StatelessWidget {
             onPressed: onEdit,
             icon:      const Icon(Icons.edit_outlined, size: 20),
             color:     Colors.grey.shade500,
-            tooltip:   'Editar precio',
+            tooltip:   AppLocalizations.of(context).adminEditPrice,
           ),
         ],
       ),
@@ -1365,7 +1384,7 @@ class _EditAddonSheetState extends State<_EditAddonSheet> {
   Future<void> _save() async {
     final price = double.tryParse(_priceCtrl.text.replaceAll(',', '.'));
     if (price == null || price < 0) {
-      setState(() => _error = 'Ingresa un precio válido (0 o mayor).');
+      setState(() => _error = AppLocalizations.of(context).adminInvalidPriceMin);
       return;
     }
     setState(() { _saving = true; _error = null; });
@@ -1408,7 +1427,7 @@ class _EditAddonSheetState extends State<_EditAddonSheet> {
                   size: 20, color: Color(0xFF7B1FA2)),
               const SizedBox(width: 8),
               Expanded(
-                child: Text('Editar: ${widget.addon.label}',
+                child: Text(AppLocalizations.of(context).adminEditLabel(widget.addon.label),
                     style: const TextStyle(
                         fontSize:   17,
                         fontWeight: FontWeight.bold,
@@ -1430,8 +1449,8 @@ class _EditAddonSheetState extends State<_EditAddonSheet> {
               FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
             ],
             decoration: InputDecoration(
-              labelText:      'Precio mensual por unidad (MXN)',
-              hintText:       '0 = sin cargo adicional',
+              labelText:      AppLocalizations.of(context).adminMonthlyPricePerUnit,
+              hintText:       AppLocalizations.of(context).adminNoAdditionalCharge,
               prefixText:     '\$ ',
               border:         OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -1442,7 +1461,7 @@ class _EditAddonSheetState extends State<_EditAddonSheet> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Escribe 0 si el add-on es gratuito o aún no está activo.',
+            AppLocalizations.of(context).adminAddonZeroHint,
             style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
           ),
           // Error
@@ -1475,8 +1494,8 @@ class _EditAddonSheetState extends State<_EditAddonSheet> {
                       width: 22, height: 22,
                       child: CircularProgressIndicator(
                           strokeWidth: 2.5, color: Colors.white))
-                  : const Text('Guardar precio',
-                      style: TextStyle(
+                  : Text(AppLocalizations.of(context).adminSavePrice,
+                      style: const TextStyle(
                           fontSize: 15, fontWeight: FontWeight.w600)),
             ),
           ),
@@ -1557,18 +1576,18 @@ class _EditPlanSheetState extends State<_EditPlanSheet> {
             ),
           ),
           const SizedBox(height: 20),
-          Text('Editar plan: ${widget.plan.name}',
+          Text(AppLocalizations.of(context).adminEditPlanLabel(widget.plan.name),
               style: const TextStyle(
                   fontSize: 17, fontWeight: FontWeight.bold,
                   color: AppColors.textDark)),
           const SizedBox(height: 20),
-          _FormField(label: 'Precio (MXN/mes)', ctrl: _priceCtrl,
-              inputType: TextInputType.number, hint: '0 para plan gratuito'),
+          _FormField(label: AppLocalizations.of(context).adminPriceMxnMonth, ctrl: _priceCtrl,
+              inputType: TextInputType.number, hint: AppLocalizations.of(context).adminZeroForFree),
           const SizedBox(height: 14),
-          _FormField(label: 'Máx. establecimientos', ctrl: _estCtrl,
+          _FormField(label: AppLocalizations.of(context).adminMaxEstablishments, ctrl: _estCtrl,
               inputType: TextInputType.number),
           const SizedBox(height: 14),
-          _FormField(label: 'Máx. promociones activas', ctrl: _promoCtrl,
+          _FormField(label: AppLocalizations.of(context).adminMaxActivePromos, ctrl: _promoCtrl,
               inputType: TextInputType.number),
           const SizedBox(height: 28),
           SizedBox(
@@ -1585,8 +1604,8 @@ class _EditPlanSheetState extends State<_EditPlanSheet> {
                       width: 22, height: 22,
                       child: CircularProgressIndicator(
                           strokeWidth: 2.5, color: Colors.white))
-                  : const Text('Guardar cambios',
-                      style: TextStyle(
+                  : Text(AppLocalizations.of(context).adminSaveChanges,
+                      style: const TextStyle(
                           fontSize: 15, fontWeight: FontWeight.w600)),
             ),
           ),
@@ -1625,8 +1644,10 @@ class _UserRow extends StatelessWidget {
                     dense:      true,
                     title:      Text(plan.name),
                     subtitle:   Text(
-                      '\$${plan.priceMxn.toStringAsFixed(0)} MXN/mes'
-                      ' · ${plan.maxEstablishments} neg. · ${plan.maxPromotions} promos',
+                      AppLocalizations.of(context).adminPlanPickerSubtitle(
+                          plan.priceMxn.toStringAsFixed(0),
+                          plan.maxEstablishments,
+                          plan.maxPromotions),
                       style: TextStyle(
                           fontSize: 11, color: Colors.grey.shade600),
                     ),
@@ -1679,7 +1700,7 @@ class _UserRow extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 Text(
-                  '${user.estCount} negocio${user.estCount != 1 ? "s" : ""}',
+                  AppLocalizations.of(context).adminBusinessCount(user.estCount),
                   style: TextStyle(fontSize: 11, color: Colors.grey.shade400),
                 ),
               ],
@@ -1771,13 +1792,13 @@ class _CatalogRow extends StatelessWidget {
           IconButton(
             icon:      const Icon(Icons.edit_outlined, size: 18),
             color:     Colors.grey.shade500,
-            tooltip:   'Editar',
+            tooltip:   AppLocalizations.of(context).adminEdit,
             onPressed: onEdit,
           ),
           IconButton(
             icon:      const Icon(Icons.delete_outline, size: 18),
             color:     Colors.red.shade300,
-            tooltip:   'Eliminar',
+            tooltip:   AppLocalizations.of(context).adminDelete,
             onPressed: onDelete,
           ),
         ],
@@ -1874,17 +1895,18 @@ class _EditCategorySheetState extends State<_EditCategorySheet> {
       ..sort((a, b) => a.name.compareTo(b.name));
   }
 
-  String _levelLabel(CategoryModel cat) {
-    if (cat.parentId == null) return 'Tipo';
+  String _levelLabel(BuildContext context, CategoryModel cat) {
+    final l = AppLocalizations.of(context);
+    if (cat.parentId == null) return l.adminLevelType;
     final gp = widget.allCategories
         .firstWhere((c) => c.id == cat.parentId, orElse: () => cat);
-    return gp.parentId == null ? 'Subtipo' : 'Sub-subtipo';
+    return gp.parentId == null ? l.adminLevelSubtype : l.adminLevelSubSubtype;
   }
 
   Future<void> _save() async {
     final name = _nameCtrl.text.trim();
     if (name.isEmpty) {
-      setState(() => _error = 'El nombre no puede estar vacío.');
+      setState(() => _error = AppLocalizations.of(context).adminNameEmpty);
       return;
     }
     final icon = _iconCtrl.text.trim().isEmpty ? null : _iconCtrl.text.trim();
@@ -1936,22 +1958,22 @@ class _EditCategorySheetState extends State<_EditCategorySheet> {
             ),
           ),
           const SizedBox(height: 20),
-          Text(isNew ? 'Nueva categoría' : 'Editar categoría',
+          Text(isNew ? AppLocalizations.of(context).adminNewCategory : AppLocalizations.of(context).adminEditCategory,
               style: const TextStyle(
                   fontSize: 17, fontWeight: FontWeight.bold,
                   color: AppColors.textDark)),
           const SizedBox(height: 20),
-          _FormField(label: 'Nombre *', ctrl: _nameCtrl,
+          _FormField(label: AppLocalizations.of(context).adminNameRequired, ctrl: _nameCtrl,
               inputType: TextInputType.text),
           const SizedBox(height: 12),
-          _FormField(label: 'Emoji / ícono', ctrl: _iconCtrl,
+          _FormField(label: AppLocalizations.of(context).adminEmojiIcon, ctrl: _iconCtrl,
               inputType: TextInputType.text, hint: '🍕'),
           const SizedBox(height: 12),
           DropdownButtonFormField<String?>(
             value:       _selectedParentId,
             isExpanded:  true,
             decoration: InputDecoration(
-              labelText:      'Pertenece a (padre)',
+              labelText:      AppLocalizations.of(context).adminBelongsToParent,
               border:         OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10)),
               contentPadding: const EdgeInsets.symmetric(
@@ -1959,15 +1981,15 @@ class _EditCategorySheetState extends State<_EditCategorySheet> {
               isDense: true,
             ),
             items: [
-              const DropdownMenuItem<String?>(
+              DropdownMenuItem<String?>(
                 value: null,
-                child: Text('— Sin padre (Tipo raíz) —',
-                    style: TextStyle(color: Colors.grey)),
+                child: Text(AppLocalizations.of(context).adminNoParentRoot,
+                    style: const TextStyle(color: Colors.grey)),
               ),
               ...parents.map((cat) => DropdownMenuItem<String?>(
                     value: cat.id,
                     child: Text(
-                      '${cat.icon ?? '📂'} ${cat.name}  ·  ${_levelLabel(cat)}',
+                      '${cat.icon ?? '📂'} ${cat.name}  ·  ${_levelLabel(context, cat)}',
                       overflow: TextOverflow.ellipsis,
                     ),
                   )),
@@ -2005,7 +2027,7 @@ class _EditCategorySheetState extends State<_EditCategorySheet> {
                       width: 22, height: 22,
                       child: CircularProgressIndicator(
                           strokeWidth: 2.5, color: Colors.white))
-                  : Text(isNew ? 'Crear categoría' : 'Guardar cambios',
+                  : Text(isNew ? AppLocalizations.of(context).adminCreateCategory : AppLocalizations.of(context).adminSaveChanges,
                       style: const TextStyle(
                           fontSize: 15, fontWeight: FontWeight.w600)),
             ),
@@ -2088,15 +2110,15 @@ class _EditCharacteristicSheetState extends State<_EditCharacteristicSheet> {
             ),
           ),
           const SizedBox(height: 20),
-          Text(isNew ? 'Nueva característica' : 'Editar característica',
+          Text(isNew ? AppLocalizations.of(context).adminNewCharacteristic : AppLocalizations.of(context).adminEditCharacteristic,
               style: const TextStyle(
                   fontSize: 17, fontWeight: FontWeight.bold,
                   color: AppColors.textDark)),
           const SizedBox(height: 20),
-          _FormField(label: 'Nombre *', ctrl: _nameCtrl,
+          _FormField(label: AppLocalizations.of(context).adminNameRequired, ctrl: _nameCtrl,
               inputType: TextInputType.text),
           const SizedBox(height: 12),
-          _FormField(label: 'Emoji / ícono', ctrl: _iconCtrl,
+          _FormField(label: AppLocalizations.of(context).adminEmojiIcon, ctrl: _iconCtrl,
               inputType: TextInputType.text, hint: '🅿️'),
           const SizedBox(height: 28),
           SizedBox(
@@ -2113,7 +2135,7 @@ class _EditCharacteristicSheetState extends State<_EditCharacteristicSheet> {
                       width: 22, height: 22,
                       child: CircularProgressIndicator(
                           strokeWidth: 2.5, color: Colors.white))
-                  : Text(isNew ? 'Crear característica' : 'Guardar cambios',
+                  : Text(isNew ? AppLocalizations.of(context).adminCreateCharacteristic : AppLocalizations.of(context).adminSaveChanges,
                       style: const TextStyle(
                           fontSize: 15, fontWeight: FontWeight.w600)),
             ),
@@ -2156,7 +2178,7 @@ class _NotificationsScreenState extends State<_NotificationsScreen>
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title:           const Text('Notificaciones push'),
+        title:           Text(AppLocalizations.of(context).adminNotificationsTitle),
         backgroundColor: Colors.white,
         bottom: TabBar(
           controller:        _tab,
@@ -2165,11 +2187,11 @@ class _NotificationsScreenState extends State<_NotificationsScreen>
           indicatorColor:    AppColors.primary,
           labelStyle:        const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
           unselectedLabelStyle: const TextStyle(fontSize: 12),
-          tabs: const [
-            Tab(icon: Icon(Icons.send, size: 18),        text: 'Enviar'),
-            Tab(icon: Icon(Icons.schedule, size: 18),    text: 'Programadas'),
-            Tab(icon: Icon(Icons.history, size: 18),     text: 'Historial'),
-            Tab(icon: Icon(Icons.bar_chart, size: 18),   text: 'Métricas'),
+          tabs: [
+            Tab(icon: const Icon(Icons.send, size: 18),        text: AppLocalizations.of(context).adminTabSend),
+            Tab(icon: const Icon(Icons.schedule, size: 18),    text: AppLocalizations.of(context).adminTabScheduled),
+            Tab(icon: const Icon(Icons.history, size: 18),     text: AppLocalizations.of(context).adminTabHistory),
+            Tab(icon: const Icon(Icons.bar_chart, size: 18),   text: AppLocalizations.of(context).adminTabMetrics),
           ],
         ),
       ),
@@ -2251,7 +2273,7 @@ class _SendTabState extends State<_SendTab> {
     final body  = _bodyCtrl.text.trim();
     if (title.isEmpty || body.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Completa título y mensaje')));
+          SnackBar(content: Text(AppLocalizations.of(context).adminCompleteTitleBody)));
       return;
     }
     setState(() { _sending = true; _lastResult = null; });
@@ -2266,13 +2288,13 @@ class _SendTabState extends State<_SendTab> {
       setState(() {
         _sending     = false;
         _lastSuccess = true;
-        _lastResult  =
-            '✅ Enviada a ${result.sent} dispositivos'
-            '${result.failed > 0 ? " · ${result.failed} fallidos" : ""}';
+        _lastResult  = result.failed > 0
+            ? AppLocalizations.of(context).adminSentResultWithFailed(result.sent, result.failed)
+            : AppLocalizations.of(context).adminSentResult(result.sent);
       });
     } catch (e) {
       setState(() { _sending = false; _lastSuccess = false;
-        _lastResult = '❌ Error: $e'; });
+        _lastResult = AppLocalizations.of(context).adminSendErrorResult(e.toString()); });
     }
   }
 
@@ -2281,7 +2303,7 @@ class _SendTabState extends State<_SendTab> {
     final body  = _bodyCtrl.text.trim();
     if (title.isEmpty || body.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Completa título y mensaje antes de programar')));
+          SnackBar(content: Text(AppLocalizations.of(context).adminCompleteTitleBodyBeforeSchedule)));
       return;
     }
     await showDialog<void>(
@@ -2296,7 +2318,7 @@ class _SendTabState extends State<_SendTab> {
             _titleCtrl.clear(); _bodyCtrl.clear();
             setState(() {
               _lastSuccess = true;
-              _lastResult  = '📅 Notificación programada correctamente';
+              _lastResult  = AppLocalizations.of(context).adminScheduledOk;
             });
           },
         ),
@@ -2329,7 +2351,7 @@ class _SendTabState extends State<_SendTab> {
             ),
             Padding(
               padding: const EdgeInsets.only(top: 6, bottom: 16),
-              child: Text('Total: ${state.totalDevices} dispositivos',
+              child: Text(AppLocalizations.of(context).adminTotalDevices(state.totalDevices),
                   style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
             ),
 
@@ -2337,21 +2359,21 @@ class _SendTabState extends State<_SendTab> {
             _Card(child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const _Label('Título *'),
+                _Label(AppLocalizations.of(context).adminTitleRequired),
                 const SizedBox(height: 6),
                 TextField(
                   controller:  _titleCtrl,
                   maxLength:   80,
-                  decoration:  _inputDeco('Ej. Nueva función disponible'),
+                  decoration:  _inputDeco(AppLocalizations.of(context).adminTitleHint),
                 ),
                 const SizedBox(height: 10),
-                const _Label('Mensaje *'),
+                _Label(AppLocalizations.of(context).adminMessageRequired),
                 const SizedBox(height: 6),
                 TextField(
                   controller:   _bodyCtrl,
                   maxLines:     3,
                   maxLength:    200,
-                  decoration:   _inputDeco('Escribe el cuerpo…'),
+                  decoration:   _inputDeco(AppLocalizations.of(context).adminBodyHint),
                   keyboardType: TextInputType.multiline,
                 ),
               ],
@@ -2366,7 +2388,7 @@ class _SendTabState extends State<_SendTab> {
                   children: [
                     const Icon(Icons.filter_list, size: 16, color: AppColors.primary),
                     const SizedBox(width: 8),
-                    const Expanded(child: _Label('Segmentar destinatarios')),
+                    Expanded(child: _Label(AppLocalizations.of(context).adminSegmentRecipients)),
                     Switch.adaptive(
                       value:       _segmented,
                       activeColor: AppColors.primary,
@@ -2381,31 +2403,31 @@ class _SendTabState extends State<_SendTab> {
                   const Divider(height: 20),
 
                   // Género
-                  const _Label('Género'),
+                  _Label(AppLocalizations.of(context).adminGender),
                   const SizedBox(height: 6),
                   DropdownButtonFormField<String?>(
                     value:       _gender,
                     isExpanded:  true,
-                    decoration:  _fieldDeco('Todos los géneros'),
-                    items: const [
-                      DropdownMenuItem(value: null,                child: Text('Todos')),
-                      DropdownMenuItem(value: 'male',             child: Text('Hombres')),
-                      DropdownMenuItem(value: 'female',           child: Text('Mujeres')),
-                      DropdownMenuItem(value: 'prefer_not_to_say',child: Text('Prefieren no decir')),
+                    decoration:  _fieldDeco(AppLocalizations.of(context).adminAllGenders),
+                    items: [
+                      DropdownMenuItem(value: null,                child: Text(AppLocalizations.of(context).adminAll)),
+                      DropdownMenuItem(value: 'male',             child: Text(AppLocalizations.of(context).adminMen)),
+                      DropdownMenuItem(value: 'female',           child: Text(AppLocalizations.of(context).adminWomen)),
+                      DropdownMenuItem(value: 'prefer_not_to_say',child: Text(AppLocalizations.of(context).adminPreferNotToSay)),
                     ],
                     onChanged: (v) => setState(() { _gender = v; _recipientPreview = null; }),
                   ),
                   const SizedBox(height: 12),
 
                   // Edad
-                  const _Label('Rango de edad'),
+                  _Label(AppLocalizations.of(context).adminAgeRange),
                   const SizedBox(height: 6),
                   Row(
                     children: [
                       Expanded(child: TextField(
                         controller:  _ageMinCtrl,
                         keyboardType: TextInputType.number,
-                        decoration:  _inputDeco('Mín'),
+                        decoration:  _inputDeco(AppLocalizations.of(context).adminMin),
                         onChanged: (v) => setState(() {
                           _ageMin = int.tryParse(v);
                           _recipientPreview = null;
@@ -2418,7 +2440,7 @@ class _SendTabState extends State<_SendTab> {
                       Expanded(child: TextField(
                         controller:  _ageMaxCtrl,
                         keyboardType: TextInputType.number,
-                        decoration:  _inputDeco('Máx'),
+                        decoration:  _inputDeco(AppLocalizations.of(context).adminMax),
                         onChanged: (v) => setState(() {
                           _ageMax = int.tryParse(v);
                           _recipientPreview = null;
@@ -2429,36 +2451,36 @@ class _SendTabState extends State<_SendTab> {
                   const SizedBox(height: 12),
 
                   // Inactividad
-                  const _Label('Usuarios inactivos desde hace'),
+                  _Label(AppLocalizations.of(context).adminInactiveUsersSince),
                   const SizedBox(height: 6),
                   DropdownButtonFormField<int?>(
                     value:       _inactiveDays,
                     isExpanded:  true,
-                    decoration:  _fieldDeco('No filtrar'),
-                    items: const [
-                      DropdownMenuItem(value: null, child: Text('No filtrar')),
-                      DropdownMenuItem(value: 7,    child: Text('7 días')),
-                      DropdownMenuItem(value: 15,   child: Text('15 días')),
-                      DropdownMenuItem(value: 30,   child: Text('30 días')),
-                      DropdownMenuItem(value: 60,   child: Text('60 días')),
-                      DropdownMenuItem(value: 90,   child: Text('90 días o más')),
+                    decoration:  _fieldDeco(AppLocalizations.of(context).adminNoFilter),
+                    items: [
+                      DropdownMenuItem(value: null, child: Text(AppLocalizations.of(context).adminNoFilter)),
+                      DropdownMenuItem(value: 7,    child: Text(AppLocalizations.of(context).adminDays7)),
+                      DropdownMenuItem(value: 15,   child: Text(AppLocalizations.of(context).adminDays15)),
+                      DropdownMenuItem(value: 30,   child: Text(AppLocalizations.of(context).adminDays30)),
+                      DropdownMenuItem(value: 60,   child: Text(AppLocalizations.of(context).adminDays60)),
+                      DropdownMenuItem(value: 90,   child: Text(AppLocalizations.of(context).adminDays90Plus)),
                     ],
                     onChanged: (v) => setState(() { _inactiveDays = v; _recipientPreview = null; }),
                   ),
                   const SizedBox(height: 12),
 
                   // Plataforma
-                  const _Label('Plataforma'),
+                  _Label(AppLocalizations.of(context).adminPlatform),
                   const SizedBox(height: 6),
                   DropdownButtonFormField<String?>(
                     value:       _platform,
                     isExpanded:  true,
-                    decoration:  _fieldDeco('Todas'),
-                    items: const [
-                      DropdownMenuItem(value: null,      child: Text('Todas')),
-                      DropdownMenuItem(value: 'android', child: Text('Android')),
-                      DropdownMenuItem(value: 'ios',     child: Text('iOS')),
-                      DropdownMenuItem(value: 'web',     child: Text('Web')),
+                    decoration:  _fieldDeco(AppLocalizations.of(context).adminAllFem),
+                    items: [
+                      DropdownMenuItem(value: null,      child: Text(AppLocalizations.of(context).adminAllFem)),
+                      const DropdownMenuItem(value: 'android', child: Text('Android')),
+                      const DropdownMenuItem(value: 'ios',     child: Text('iOS')),
+                      const DropdownMenuItem(value: 'web',     child: Text('Web')),
                     ],
                     onChanged: (v) => setState(() { _platform = v; _recipientPreview = null; }),
                   ),
@@ -2472,10 +2494,10 @@ class _SendTabState extends State<_SendTab> {
                             child: CircularProgressIndicator(strokeWidth: 2))
                         : const Icon(Icons.people_outline, size: 16),
                     label: Text(_counting
-                        ? 'Calculando…'
+                        ? AppLocalizations.of(context).adminCalculating
                         : _recipientPreview != null
-                            ? '~$_recipientPreview destinatarios'
-                            : 'Estimar destinatarios'),
+                            ? AppLocalizations.of(context).adminRecipientsApprox(_recipientPreview!)
+                            : AppLocalizations.of(context).adminEstimateRecipients),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.primary,
                       side: const BorderSide(color: AppColors.primary),
@@ -2506,7 +2528,7 @@ class _SendTabState extends State<_SendTab> {
                 Expanded(child: OutlinedButton.icon(
                   onPressed: (_sending || _scheduling) ? null : _openScheduleDialog,
                   icon:  const Icon(Icons.schedule, size: 18),
-                  label: const Text('Programar', style: TextStyle(fontSize: 14)),
+                  label: Text(AppLocalizations.of(context).adminSchedule, style: const TextStyle(fontSize: 14)),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.primary,
                     side: const BorderSide(color: AppColors.primary),
@@ -2521,7 +2543,7 @@ class _SendTabState extends State<_SendTab> {
                       ? const SizedBox(width: 16, height: 16,
                           child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                       : const Icon(Icons.send, size: 18),
-                  label: Text(_sending ? 'Enviando…' : 'Enviar ahora',
+                  label: Text(_sending ? AppLocalizations.of(context).adminSending : AppLocalizations.of(context).adminSendNow,
                       style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(0, 48),
@@ -2560,10 +2582,10 @@ class _ScheduledTab extends StatelessWidget {
                   children: [
                     Icon(Icons.schedule, size: 52, color: Colors.grey.shade300),
                     const SizedBox(height: 12),
-                    Text('Sin notificaciones programadas',
+                    Text(AppLocalizations.of(context).adminNoScheduled,
                         style: TextStyle(color: Colors.grey.shade500)),
                     const SizedBox(height: 6),
-                    Text('Usa la pestaña Enviar → Programar',
+                    Text(AppLocalizations.of(context).adminNoScheduledHint,
                         style: TextStyle(fontSize: 12, color: Colors.grey.shade400)),
                   ],
                 ),
@@ -2599,7 +2621,7 @@ class _ScheduledTab extends StatelessWidget {
                             IconButton(
                               icon:    const Icon(Icons.cancel_outlined,
                                   size: 20, color: Colors.red),
-                              tooltip: 'Cancelar',
+                              tooltip: AppLocalizations.of(context).adminCancel,
                               onPressed: () => context
                                   .read<SuperadminCubit>()
                                   .cancelScheduled(s.id),
@@ -2624,7 +2646,7 @@ class _ScheduledTab extends StatelessWidget {
                           const SizedBox(width: 4),
                           Text(
                             s.nextSendAt != null
-                                ? 'Próximo: ${fmt.format(s.nextSendAt!)}'
+                                ? AppLocalizations.of(context).adminNextSend(fmt.format(s.nextSendAt!))
                                 : fmt.format(s.sendAt),
                             style: TextStyle(
                                 fontSize: 11, color: Colors.grey.shade500),
@@ -2634,7 +2656,7 @@ class _ScheduledTab extends StatelessWidget {
                             Icon(Icons.check_circle_outline,
                                 size: 13, color: Colors.green.shade600),
                             const SizedBox(width: 4),
-                            Text('${s.runCount} ejecución${s.runCount != 1 ? "es" : ""}',
+                            Text(AppLocalizations.of(context).adminRunCount(s.runCount),
                                 style: TextStyle(
                                     fontSize: 11, color: Colors.green.shade600)),
                           ],
@@ -2665,7 +2687,7 @@ class _HistoryTab extends StatelessWidget {
         }
         if (state.notificationLogs.isEmpty) {
           return Center(
-            child: Text('Sin envíos registrados.',
+            child: Text(AppLocalizations.of(context).adminNoSends,
                 style: TextStyle(color: Colors.grey.shade500)),
           );
         }
@@ -2700,21 +2722,21 @@ class _MetricsTab extends StatelessWidget {
             // ── KPIs ─────────────────────────────────────────────────────────
             Row(children: [
               _KpiCard(
-                label:  'Total enviados',
+                label:  AppLocalizations.of(context).adminTotalSent,
                 value:  '${state.totalSentAll}',
                 icon:   Icons.send,
                 color:  AppColors.primary,
               ),
               const SizedBox(width: 10),
               _KpiCard(
-                label:  'Entrega prom.',
+                label:  AppLocalizations.of(context).adminAvgDelivery,
                 value:  '${state.avgDeliveryRate.toStringAsFixed(1)}%',
                 icon:   Icons.check_circle_outline,
                 color:  Colors.green.shade700,
               ),
               const SizedBox(width: 10),
               _KpiCard(
-                label:  'Apertura prom.',
+                label:  AppLocalizations.of(context).adminAvgOpen,
                 value:  '${state.avgOpenRate.toStringAsFixed(1)}%',
                 icon:   Icons.touch_app_outlined,
                 color:  Colors.orange.shade700,
@@ -2727,7 +2749,7 @@ class _MetricsTab extends StatelessWidget {
               _Card(child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const _Label('Envíos diarios — últimos 30 días'),
+                  _Label(AppLocalizations.of(context).adminDailySends30),
                   const SizedBox(height: 16),
                   SizedBox(
                     height: 160,
@@ -2740,14 +2762,14 @@ class _MetricsTab extends StatelessWidget {
                             color: AppColors.primary.withAlpha(180),
                             borderRadius: BorderRadius.circular(2))),
                     const SizedBox(width: 4),
-                    Text('Enviados', style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+                    Text(AppLocalizations.of(context).adminLegendSent, style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
                     const SizedBox(width: 12),
                     Container(width: 12, height: 12,
                         decoration: BoxDecoration(
                             color: Colors.orange.withAlpha(180),
                             borderRadius: BorderRadius.circular(2))),
                     const SizedBox(width: 4),
-                    Text('Aperturas', style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+                    Text(AppLocalizations.of(context).adminLegendOpens, style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
                   ]),
                 ],
               )),
@@ -2755,7 +2777,7 @@ class _MetricsTab extends StatelessWidget {
               _Card(child: Center(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 24),
-                  child: Text('Sin datos de envíos todavía.',
+                  child: Text(AppLocalizations.of(context).adminNoSendData,
                       style: TextStyle(color: Colors.grey.shade500)),
                 ),
               )),
@@ -2766,7 +2788,7 @@ class _MetricsTab extends StatelessWidget {
             _Card(child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const _Label('Dispositivos por plataforma'),
+                _Label(AppLocalizations.of(context).adminDevicesByPlatform),
                 const SizedBox(height: 12),
                 Row(children: [
                   _StatChip(icon: Icons.phone_android, label: 'Android',
@@ -2790,7 +2812,7 @@ class _MetricsTab extends StatelessWidget {
               _Card(child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const _Label('Últimas notificaciones'),
+                  _Label(AppLocalizations.of(context).adminLatestNotifications),
                   const SizedBox(height: 10),
                   Table(
                     columnWidths: const {
@@ -2804,9 +2826,9 @@ class _MetricsTab extends StatelessWidget {
                             border: Border(
                                 bottom: BorderSide(color: Colors.grey.shade200))),
                         children: [
-                          _Th('Notificación'),
-                          _Th('Entrega'),
-                          _Th('Apertura'),
+                          _Th(AppLocalizations.of(context).adminColNotification),
+                          _Th(AppLocalizations.of(context).adminColDelivery),
+                          _Th(AppLocalizations.of(context).adminColOpen),
                         ],
                       ),
                       for (final log in state.notificationLogs.take(10))
@@ -2912,7 +2934,7 @@ class _ScheduleDialogState extends State<_ScheduleDialog> {
   Future<void> _save() async {
     if (_sendAt == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Elige la fecha y hora de envío')));
+          SnackBar(content: Text(AppLocalizations.of(context).adminPickDateTime)));
       return;
     }
     setState(() => _saving = true);
@@ -2932,7 +2954,7 @@ class _ScheduleDialogState extends State<_ScheduleDialog> {
       if (mounted) {
         setState(() => _saving = false);
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $e')));
+            SnackBar(content: Text(AppLocalizations.of(context).adminErrorWithMsg(e.toString()))));
       }
     }
   }
@@ -2940,8 +2962,8 @@ class _ScheduleDialogState extends State<_ScheduleDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Programar notificación',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+      title: Text(AppLocalizations.of(context).adminScheduleNotification,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -2971,8 +2993,8 @@ class _ScheduleDialogState extends State<_ScheduleDialog> {
           const SizedBox(height: 16),
 
           // Fecha y hora
-          const Text('Fecha y hora de envío *',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+          Text(AppLocalizations.of(context).adminSendDateTime,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
           const SizedBox(height: 6),
           GestureDetector(
             onTap: _pickDateTime,
@@ -2994,7 +3016,7 @@ class _ScheduleDialogState extends State<_ScheduleDialog> {
                         : Colors.grey.shade400),
                 const SizedBox(width: 8),
                 Text(
-                  _sendAt != null ? _fmtDt(_sendAt!) : 'Seleccionar…',
+                  _sendAt != null ? _fmtDt(_sendAt!) : AppLocalizations.of(context).adminSelect,
                   style: TextStyle(
                       fontSize: 13,
                       color: _sendAt != null
@@ -3007,18 +3029,18 @@ class _ScheduleDialogState extends State<_ScheduleDialog> {
           const SizedBox(height: 14),
 
           // Recurrencia
-          const Text('Repetición',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+          Text(AppLocalizations.of(context).adminRepetition,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
           const SizedBox(height: 6),
           DropdownButtonFormField<String?>(
             value:       _recurrence,
             isExpanded:  true,
-            decoration:  _fieldDeco('Una sola vez'),
-            items: const [
-              DropdownMenuItem(value: null,      child: Text('Una sola vez')),
-              DropdownMenuItem(value: 'daily',   child: Text('Diariamente')),
-              DropdownMenuItem(value: 'weekly',  child: Text('Semanalmente')),
-              DropdownMenuItem(value: 'monthly', child: Text('Mensualmente')),
+            decoration:  _fieldDeco(AppLocalizations.of(context).adminOnceOnly),
+            items: [
+              DropdownMenuItem(value: null,      child: Text(AppLocalizations.of(context).adminOnceOnly)),
+              DropdownMenuItem(value: 'daily',   child: Text(AppLocalizations.of(context).adminDaily)),
+              DropdownMenuItem(value: 'weekly',  child: Text(AppLocalizations.of(context).adminWeekly)),
+              DropdownMenuItem(value: 'monthly', child: Text(AppLocalizations.of(context).adminMonthly)),
             ],
             onChanged: (v) => setState(() => _recurrence = v),
           ),
@@ -3027,14 +3049,14 @@ class _ScheduleDialogState extends State<_ScheduleDialog> {
       actions: [
         TextButton(
           onPressed: _saving ? null : () => Navigator.of(context).pop(),
-          child: const Text('Cancelar'),
+          child: Text(AppLocalizations.of(context).adminCancel),
         ),
         ElevatedButton(
           onPressed: _saving ? null : _save,
           child: _saving
               ? const SizedBox(width: 16, height: 16,
                   child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-              : const Text('Programar'),
+              : Text(AppLocalizations.of(context).adminSchedule),
         ),
       ],
     );
@@ -3265,19 +3287,19 @@ class _LogCard extends StatelessWidget {
           // Métricas en línea
           Row(children: [
             _MiniStat(Icons.check_circle_outline, '${log.sentCount}',
-                Colors.green.shade700, 'entregados'),
+                Colors.green.shade700, AppLocalizations.of(context).adminDelivered),
             if (log.failedCount > 0) ...[
               const SizedBox(width: 12),
               _MiniStat(Icons.error_outline, '${log.failedCount}',
-                  Colors.orange.shade700, 'fallidos'),
+                  Colors.orange.shade700, AppLocalizations.of(context).adminFailed),
             ],
             const SizedBox(width: 12),
             _MiniStat(Icons.touch_app_outlined, '${log.openRate.toStringAsFixed(1)}%',
-                Colors.blue.shade700, 'apertura'),
+                Colors.blue.shade700, AppLocalizations.of(context).adminOpenStat),
             const SizedBox(width: 12),
             _MiniStat(Icons.local_shipping_outlined,
                 '${log.deliveryRate.toStringAsFixed(0)}%',
-                Colors.green.shade700, 'entrega'),
+                Colors.green.shade700, AppLocalizations.of(context).adminDeliveryStat),
           ]),
         ],
       ),
@@ -3398,12 +3420,12 @@ class _AdPricingScreen extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.campaign_outlined, color: Color(0xFF00838F), size: 22),
-            SizedBox(width: 8),
-            Text('Publicidad · Precios',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            const Icon(Icons.campaign_outlined, color: Color(0xFF00838F), size: 22),
+            const SizedBox(width: 8),
+            Text(AppLocalizations.of(context).adminAdsPricesTitle,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
       ),
@@ -3420,19 +3442,19 @@ class _AdPricingScreen extends StatelessWidget {
                   const Icon(Icons.cloud_off_outlined,
                       size: 48, color: Colors.grey),
                   const SizedBox(height: 12),
-                  const Text('Sin datos de precios',
-                      style: TextStyle(color: Colors.grey)),
+                  Text(AppLocalizations.of(context).adminNoPriceData,
+                      style: const TextStyle(color: Colors.grey)),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Ejecuta el SQL de publicidad en Supabase primero.',
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  Text(
+                    AppLocalizations.of(context).adminRunAdsSql,
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
                     onPressed: () => context.read<SuperadminCubit>().load(),
                     icon: const Icon(Icons.refresh),
-                    label: const Text('Reintentar'),
+                    label: Text(AppLocalizations.of(context).adminRetry),
                   ),
                 ],
               ),
@@ -3455,8 +3477,8 @@ class _AdPricingScreen extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Text('Precios por formato',
-                            style: TextStyle(
+                        Text(AppLocalizations.of(context).adminPricesByFormat,
+                            style: const TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 14)),
                         const Spacer(),
                         Container(
@@ -3472,7 +3494,7 @@ class _AdPricingScreen extends StatelessWidget {
                               const Icon(Icons.people_outline,
                                   size: 14, color: Color(0xFF00838F)),
                               const SizedBox(width: 4),
-                              Text('${state.totalUserCount} usuarios',
+                              Text(AppLocalizations.of(context).adminUsersCount(state.totalUserCount),
                                   style: const TextStyle(
                                       fontSize: 12,
                                       color: Color(0xFF00838F),
@@ -3483,10 +3505,9 @@ class _AdPricingScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 6),
-                    const Text(
-                      'La unidad de cobro (impresiones por precio) se calcula automáticamente '
-                      'según los usuarios activos: crece con la plataforma.',
-                      style: TextStyle(fontSize: 12, color: Colors.black54),
+                    Text(
+                      AppLocalizations.of(context).adminBillingUnitInfo,
+                      style: const TextStyle(fontSize: 12, color: Colors.black54),
                     ),
                   ],
                 ),
@@ -3546,7 +3567,7 @@ class _AdPricingScreen extends StatelessWidget {
                                     ),
                                     const SizedBox(width: 8),
                                     _PriceBadge(
-                                      label: 'Mín. campaña',
+                                      label: AppLocalizations.of(context).adminMinCampaign,
                                       value: fmt.format(pricing.minBudgetMxn),
                                       color: Colors.grey.shade600,
                                     ),
@@ -3560,7 +3581,7 @@ class _AdPricingScreen extends StatelessWidget {
                           IconButton(
                             icon: const Icon(Icons.edit_outlined, size: 20),
                             color: Colors.grey.shade600,
-                            tooltip: 'Editar precio',
+                            tooltip: AppLocalizations.of(context).adminEditPrice,
                             onPressed: () => _showEditSheet(context, pricing, state.totalUserCount),
                           ),
                         ],
@@ -3661,11 +3682,11 @@ class _EditAdPricingSheetState extends State<_EditAdPricingSheet> {
     final price     = double.tryParse(_priceCtrl.text.replaceAll(',', '.'));
     final minBudget = double.tryParse(_minBudgetCtrl.text.replaceAll(',', '.'));
     if (price == null || price < 0) {
-      setState(() => _error = 'Precio inválido');
+      setState(() => _error = AppLocalizations.of(context).adminInvalidPrice);
       return;
     }
     if (minBudget == null || minBudget < 0) {
-      setState(() => _error = 'Presupuesto mínimo inválido');
+      setState(() => _error = AppLocalizations.of(context).adminInvalidMinBudget);
       return;
     }
     setState(() { _saving = true; _error = null; });
@@ -3701,7 +3722,7 @@ class _EditAdPricingSheetState extends State<_EditAdPricingSheet> {
               const Icon(Icons.edit_outlined, size: 20),
               const SizedBox(width: 8),
               Expanded(
-                child: Text('Editar: ${widget.pricing.label}',
+                child: Text(AppLocalizations.of(context).adminEditLabel(widget.pricing.label),
                     style: const TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 16)),
               ),
@@ -3723,10 +3744,10 @@ class _EditAdPricingSheetState extends State<_EditAdPricingSheet> {
                 const TextInputType.numberWithOptions(decimal: true),
             decoration: _inputDeco(
               widget.pricing.billingType == 'cpm'
-                  ? 'Precio por 1 000 impresiones (MXN)'
+                  ? AppLocalizations.of(context).adminPricePerThousand
                   : widget.pricing.billingType == 'per_send'
-                      ? 'Precio por envío (MXN)'
-                      : 'Tarifa fija (MXN)',
+                      ? AppLocalizations.of(context).adminPricePerSend
+                      : AppLocalizations.of(context).adminFixedRate,
             ).copyWith(prefixText: '\$ '),
           ),
           const SizedBox(height: 14),
@@ -3738,7 +3759,7 @@ class _EditAdPricingSheetState extends State<_EditAdPricingSheet> {
             controller: _minBudgetCtrl,
             keyboardType:
                 const TextInputType.numberWithOptions(decimal: true),
-            decoration: _inputDeco('Presupuesto mínimo de campaña (MXN)')
+            decoration: _inputDeco(AppLocalizations.of(context).adminMinCampaignBudget)
                 .copyWith(prefixText: '\$ '),
           ),
 
@@ -3765,7 +3786,7 @@ class _EditAdPricingSheetState extends State<_EditAdPricingSheet> {
                 child: OutlinedButton(
                   onPressed:
                       _saving ? null : () => Navigator.of(context).pop(),
-                  child: const Text('Cancelar'),
+                  child: Text(AppLocalizations.of(context).adminCancel),
                 ),
               ),
               const SizedBox(width: 12),
@@ -3782,7 +3803,7 @@ class _EditAdPricingSheetState extends State<_EditAdPricingSheet> {
                           height: 18,
                           child: CircularProgressIndicator(
                               strokeWidth: 2, color: Colors.white))
-                      : const Text('Guardar'),
+                      : Text(AppLocalizations.of(context).adminSave),
                 ),
               ),
             ],
@@ -3884,8 +3905,8 @@ class _AdCreditsScreenState extends State<_AdCreditsScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text('Créditos publicitarios',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(AppLocalizations.of(context).adminCreditsTitle,
+            style: const TextStyle(fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_outlined),
@@ -3901,7 +3922,7 @@ class _AdCreditsScreenState extends State<_AdCreditsScreen> {
             child: TextField(
               onChanged:   _onSearch,
               decoration: InputDecoration(
-                hintText: 'Buscar establecimiento o dueño…',
+                hintText: AppLocalizations.of(context).adminSearchEstOwner,
                 prefixIcon:    const Icon(Icons.search, size: 20),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -3915,7 +3936,7 @@ class _AdCreditsScreenState extends State<_AdCreditsScreen> {
           else if (_filtered.isEmpty)
             Expanded(
               child: Center(
-                child: Text('Sin resultados',
+                child: Text(AppLocalizations.of(context).adminNoResults,
                     style: TextStyle(color: Colors.grey.shade500)),
               ),
             )
@@ -3969,7 +3990,7 @@ class _AdCreditsScreenState extends State<_AdCreditsScreen> {
                                     ? const Color(0xFF00838F)
                                     : Colors.grey.shade500,
                               )),
-                          Text('saldo', style: TextStyle(
+                          Text(AppLocalizations.of(context).adminBalance, style: TextStyle(
                               fontSize: 10, color: Colors.grey.shade400)),
                         ],
                       ),
@@ -4011,12 +4032,12 @@ class _AddCreditSheetState extends State<_AddCreditSheet> {
   Future<void> _save() async {
     final amount = double.tryParse(_amountCtrl.text.replaceAll(',', '.'));
     if (amount == null || amount <= 0) {
-      setState(() => _error = 'Ingresa un monto válido');
+      setState(() => _error = AppLocalizations.of(context).adminEnterValidAmount);
       return;
     }
     final desc = _descCtrl.text.trim();
     if (desc.isEmpty) {
-      setState(() => _error = 'Escribe una descripción');
+      setState(() => _error = AppLocalizations.of(context).adminEnterDescription);
       return;
     }
 
@@ -4038,8 +4059,8 @@ class _AddCreditSheetState extends State<_AddCreditSheet> {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
-            'Crédito agregado correctamente. '
-            'Nuevo saldo: ${NumberFormat.currency(locale: "es_MX", symbol: "\$").format(newBalance)}',
+            AppLocalizations.of(context).adminCreditAdded(
+                NumberFormat.currency(locale: "es_MX", symbol: "\$").format(newBalance)),
           ),
           behavior: SnackBarBehavior.floating,
           backgroundColor: const Color(0xFF00838F),
@@ -4103,7 +4124,7 @@ class _AddCreditSheetState extends State<_AddCreditSheet> {
                     size: 16, color: Color(0xFF00838F)),
                 const SizedBox(width: 8),
                 Text(
-                  'Saldo actual: ${fmt.format(widget.establishment.creditBalance)}',
+                  AppLocalizations.of(context).adminCurrentBalance(fmt.format(widget.establishment.creditBalance)),
                   style: const TextStyle(
                       fontSize: 13,
                       color:    Color(0xFF00838F),
@@ -4119,7 +4140,7 @@ class _AddCreditSheetState extends State<_AddCreditSheet> {
             controller:   _amountCtrl,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             decoration: InputDecoration(
-              labelText:  'Monto a agregar (MXN)',
+              labelText:  AppLocalizations.of(context).adminAmountToAdd,
               prefixText: '\$ ',
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
               contentPadding:
@@ -4132,7 +4153,7 @@ class _AddCreditSheetState extends State<_AddCreditSheet> {
           TextField(
             controller:  _descCtrl,
             decoration: InputDecoration(
-              labelText:  'Descripción / motivo',
+              labelText:  AppLocalizations.of(context).adminDescriptionReason,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -4163,7 +4184,7 @@ class _AddCreditSheetState extends State<_AddCreditSheet> {
                       child: CircularProgressIndicator(
                           strokeWidth: 2, color: Colors.white))
                   : const Icon(Icons.add_card_outlined),
-              label: Text(_saving ? 'Guardando…' : 'Agregar crédito'),
+              label: Text(_saving ? AppLocalizations.of(context).adminSaving : AppLocalizations.of(context).adminAddCredit),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF00838F),
                 foregroundColor: Colors.white,
@@ -4225,13 +4246,13 @@ class _BulkPromoUploadScreenState extends State<_BulkPromoUploadScreen>
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title:           const Text('Carga masiva superadmin'),
+        title:           Text(AppLocalizations.of(context).adminBulkTitle),
         backgroundColor: Colors.white,
         bottom: TabBar(
           controller: _tabs,
-          tabs: const [
-            Tab(icon: Icon(Icons.store_outlined),      text: 'Establecimientos'),
-            Tab(icon: Icon(Icons.local_offer_outlined), text: 'Promociones'),
+          tabs: [
+            Tab(icon: const Icon(Icons.store_outlined),      text: AppLocalizations.of(context).adminTabEstablishments),
+            Tab(icon: const Icon(Icons.local_offer_outlined), text: AppLocalizations.of(context).adminTabPromotions),
           ],
         ),
       ),
@@ -4282,7 +4303,7 @@ class _EstsTabState extends State<_EstsTab> with AutomaticKeepAliveClientMixin {
         .convert(content.trim());
 
     if (all.isEmpty) {
-      setState(() => _error = 'El archivo CSV está vacío.');
+      setState(() => _error = AppLocalizations.of(context).adminCsvEmpty);
       return;
     }
     setState(() {
@@ -4296,17 +4317,18 @@ class _EstsTabState extends State<_EstsTab> with AutomaticKeepAliveClientMixin {
 
   Future<void> _create() async {
     if (_selectedOwner == null) {
-      setState(() => _error = 'Selecciona un dueño antes de continuar.');
+      setState(() => _error = AppLocalizations.of(context).adminSelectOwner);
       return;
     }
     if (_rows.isEmpty) {
-      setState(() => _error = 'Sube un CSV con al menos una fila de datos.');
+      setState(() => _error = AppLocalizations.of(context).adminUploadCsvRow);
       return;
     }
 
     setState(() { _uploading = true; _error = null; });
     int ok = 0;
     final errors = <String>[];
+    final l = AppLocalizations.of(context);
 
     for (final row in _rows) {
       try {
@@ -4318,7 +4340,7 @@ class _EstsTabState extends State<_EstsTab> with AutomaticKeepAliveClientMixin {
         final lng       = double.tryParse(_cell(row, 5)) ?? 0.0;
 
         if (nombre.isEmpty) {
-          errors.add('Fila ${ok + errors.length + 2}: nombre vacío');
+          errors.add(l.adminRowEmptyName(ok + errors.length + 2));
           continue;
         }
         await _bizDs.createEstablishment(
@@ -4332,8 +4354,8 @@ class _EstsTabState extends State<_EstsTab> with AutomaticKeepAliveClientMixin {
         );
         ok++;
       } catch (e) {
-        errors.add('Fila ${ok + errors.length + 2}: '
-            '${e.toString().split('\n').first}');
+        errors.add(l.adminRowError(
+            ok + errors.length + 2, e.toString().split('\n').first));
       }
     }
 
@@ -4347,7 +4369,7 @@ class _EstsTabState extends State<_EstsTab> with AutomaticKeepAliveClientMixin {
 
     if (mounted && ok > 0) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content:         Text('$ok establecimiento(s) creado(s)'),
+        content:         Text(AppLocalizations.of(context).adminEstCreated(ok)),
         backgroundColor: const Color(0xFF2E7D32),
         behavior:        SnackBarBehavior.floating,
       ));
@@ -4369,8 +4391,7 @@ class _EstsTabState extends State<_EstsTab> with AutomaticKeepAliveClientMixin {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _InfoBanner(
-            'Crea establecimientos para cualquier dueño.\n'
-            'Esta sesión: $_created creado(s).',
+            AppLocalizations.of(context).adminBulkEstBanner(_created),
           ),
           const SizedBox(height: 16),
 
@@ -4378,10 +4399,10 @@ class _EstsTabState extends State<_EstsTab> with AutomaticKeepAliveClientMixin {
           OutlinedButton.icon(
             onPressed: () => Share.share(
               _kCsvEsts,
-              subject: 'Plantilla establecimientos Promofy',
+              subject: AppLocalizations.of(context).adminTemplateEstSubject,
             ),
             icon:  const Icon(Icons.download_outlined, size: 18),
-            label: const Text('Descargar plantilla CSV'),
+            label: Text(AppLocalizations.of(context).adminDownloadCsvTemplate),
             style: OutlinedButton.styleFrom(
               foregroundColor: const Color(0xFF2E7D32),
               side: const BorderSide(color: Color(0xFF2E7D32)),
@@ -4394,13 +4415,13 @@ class _EstsTabState extends State<_EstsTab> with AutomaticKeepAliveClientMixin {
             value:      _selectedOwner,
             isExpanded: true,
             decoration: InputDecoration(
-              labelText: 'Dueño *',
+              labelText: AppLocalizations.of(context).adminOwnerRequired,
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10)),
               contentPadding: const EdgeInsets.symmetric(
                   horizontal: 14, vertical: 12),
             ),
-            hint: const Text('Selecciona un dueño…'),
+            hint: Text(AppLocalizations.of(context).adminSelectOwnerHint),
             items: owners.map((u) => DropdownMenuItem(
               value: u,
               child: Text(
@@ -4416,13 +4437,13 @@ class _EstsTabState extends State<_EstsTab> with AutomaticKeepAliveClientMixin {
           OutlinedButton.icon(
             onPressed: _pickCsv,
             icon:  const Icon(Icons.upload_file_outlined, size: 18),
-            label: const Text('Seleccionar archivo CSV'),
+            label: Text(AppLocalizations.of(context).adminSelectCsvFile),
           ),
 
           if (_headers.isNotEmpty) ...[
             const SizedBox(height: 16),
             Text(
-              'Vista previa (${_rows.length} fila(s)):',
+              AppLocalizations.of(context).adminPreviewRows(_rows.length),
               style: const TextStyle(
                   fontSize: 12, fontWeight: FontWeight.w600),
             ),
@@ -4447,8 +4468,8 @@ class _EstsTabState extends State<_EstsTab> with AutomaticKeepAliveClientMixin {
                           strokeWidth: 2, color: Colors.white))
                   : const Icon(Icons.cloud_upload_outlined),
               label: Text(_uploading
-                  ? 'Creando establecimientos…'
-                  : 'Crear${_rows.isEmpty ? "" : " ${_rows.length}"} establecimiento(s)'),
+                  ? AppLocalizations.of(context).adminCreatingEsts
+                  : AppLocalizations.of(context).adminCreateEstsBtn(_rows.length)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2E7D32),
                 foregroundColor: Colors.white,
@@ -4519,7 +4540,7 @@ class _PromosTabState extends State<_PromosTab> with AutomaticKeepAliveClientMix
         .convert(content.trim());
 
     if (all.isEmpty) {
-      setState(() => _error = 'El archivo CSV está vacío.');
+      setState(() => _error = AppLocalizations.of(context).adminCsvEmpty);
       return;
     }
     setState(() {
@@ -4549,17 +4570,18 @@ class _PromosTabState extends State<_PromosTab> with AutomaticKeepAliveClientMix
 
   Future<void> _create() async {
     if (_selectedEst == null) {
-      setState(() => _error = 'Selecciona un establecimiento.');
+      setState(() => _error = AppLocalizations.of(context).adminSelectEst);
       return;
     }
     if (_rows.isEmpty) {
-      setState(() => _error = 'Sube un CSV con al menos una fila de datos.');
+      setState(() => _error = AppLocalizations.of(context).adminUploadCsvRow);
       return;
     }
 
     setState(() { _uploading = true; _error = null; });
     int ok = 0;
     final errors = <String>[];
+    final l = AppLocalizations.of(context);
 
     for (final row in _rows) {
       try {
@@ -4570,11 +4592,11 @@ class _PromosTabState extends State<_PromosTab> with AutomaticKeepAliveClientMix
         final fin    = _parseTime(_cell(row, 4));
 
         if (nombre.isEmpty) {
-          errors.add('Fila ${ok + errors.length + 2}: nombre vacío');
+          errors.add(l.adminRowEmptyName(ok + errors.length + 2));
           continue;
         }
         if (dias.isEmpty) {
-          errors.add('Fila ${ok + errors.length + 2}: días inválidos (usa 1-7)');
+          errors.add(l.adminRowInvalidDays(ok + errors.length + 2));
           continue;
         }
 
@@ -4591,8 +4613,8 @@ class _PromosTabState extends State<_PromosTab> with AutomaticKeepAliveClientMix
         );
         ok++;
       } catch (e) {
-        errors.add('Fila ${ok + errors.length + 2}: '
-            '${e.toString().split('\n').first}');
+        errors.add(l.adminRowError(
+            ok + errors.length + 2, e.toString().split('\n').first));
       }
     }
 
@@ -4606,7 +4628,7 @@ class _PromosTabState extends State<_PromosTab> with AutomaticKeepAliveClientMix
 
     if (mounted && ok > 0) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content:         Text('$ok promoción(es) creada(s) · no cuentan contra el plan'),
+        content:         Text(AppLocalizations.of(context).adminPromosCreated(ok)),
         backgroundColor: const Color(0xFF2E7D32),
         behavior:        SnackBarBehavior.floating,
       ));
@@ -4626,9 +4648,7 @@ class _PromosTabState extends State<_PromosTab> with AutomaticKeepAliveClientMix
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _InfoBanner(
-            'Crea promociones para cualquier negocio. '
-            'No cuentan contra el límite del plan.\n'
-            'Esta sesión: $_created creada(s).',
+            AppLocalizations.of(context).adminBulkPromoBanner(_created),
           ),
           const SizedBox(height: 16),
 
@@ -4636,10 +4656,10 @@ class _PromosTabState extends State<_PromosTab> with AutomaticKeepAliveClientMix
           OutlinedButton.icon(
             onPressed: () => Share.share(
               _kCsvPromos,
-              subject: 'Plantilla promociones Promofy',
+              subject: AppLocalizations.of(context).adminTemplatePromoSubject,
             ),
             icon:  const Icon(Icons.download_outlined, size: 18),
-            label: const Text('Descargar plantilla CSV'),
+            label: Text(AppLocalizations.of(context).adminDownloadCsvTemplate),
             style: OutlinedButton.styleFrom(
               foregroundColor: const Color(0xFF2E7D32),
               side: const BorderSide(color: Color(0xFF2E7D32)),
@@ -4652,13 +4672,13 @@ class _PromosTabState extends State<_PromosTab> with AutomaticKeepAliveClientMix
             value:      _selectedEst,
             isExpanded: true,
             decoration: InputDecoration(
-              labelText: 'Establecimiento *',
+              labelText: AppLocalizations.of(context).adminEstRequired,
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10)),
               contentPadding: const EdgeInsets.symmetric(
                   horizontal: 14, vertical: 12),
             ),
-            hint: const Text('Selecciona un negocio…'),
+            hint: Text(AppLocalizations.of(context).adminSelectBusinessHint),
             items: _ests.map((e) => DropdownMenuItem(
               value: e,
               child: Text(e.name, overflow: TextOverflow.ellipsis),
@@ -4671,13 +4691,13 @@ class _PromosTabState extends State<_PromosTab> with AutomaticKeepAliveClientMix
           OutlinedButton.icon(
             onPressed: _pickCsv,
             icon:  const Icon(Icons.upload_file_outlined, size: 18),
-            label: const Text('Seleccionar archivo CSV'),
+            label: Text(AppLocalizations.of(context).adminSelectCsvFile),
           ),
 
           if (_headers.isNotEmpty) ...[
             const SizedBox(height: 16),
             Text(
-              'Vista previa (${_rows.length} fila(s)):',
+              AppLocalizations.of(context).adminPreviewRows(_rows.length),
               style: const TextStyle(
                   fontSize: 12, fontWeight: FontWeight.w600),
             ),
@@ -4702,8 +4722,8 @@ class _PromosTabState extends State<_PromosTab> with AutomaticKeepAliveClientMix
                           strokeWidth: 2, color: Colors.white))
                   : const Icon(Icons.cloud_upload_outlined),
               label: Text(_uploading
-                  ? 'Creando promociones…'
-                  : 'Crear${_rows.isEmpty ? "" : " ${_rows.length}"} promoción(es)'),
+                  ? AppLocalizations.of(context).adminCreatingPromos
+                  : AppLocalizations.of(context).adminCreatePromosBtn(_rows.length)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2E7D32),
                 foregroundColor: Colors.white,

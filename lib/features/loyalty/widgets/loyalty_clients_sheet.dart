@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/loyalty_client_model.dart';
 import '../../../data/repositories/loyalty_repository.dart';
@@ -66,10 +67,10 @@ class _LoyaltyClientsSheetState extends State<LoyaltyClientsSheet> {
                     const Icon(Icons.people_rounded,
                         size: 20, color: AppColors.primary),
                     const SizedBox(width: 8),
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        'Mis clientes',
-                        style: TextStyle(
+                        AppLocalizations.of(context).loyaltyClientsTitle,
+                        style: const TextStyle(
                           fontSize:   17,
                           fontWeight: FontWeight.bold,
                           color:      AppColors.textDark,
@@ -108,7 +109,7 @@ class _LoyaltyClientsSheetState extends State<LoyaltyClientsSheet> {
                                 color: Colors.grey.shade400, size: 36),
                             const SizedBox(height: 8),
                             Text(
-                              'No se pudieron cargar los clientes.',
+                              AppLocalizations.of(context).loyaltyClientsLoadError,
                               style: TextStyle(
                                   color: Colors.grey.shade500, fontSize: 13),
                             ),
@@ -117,7 +118,7 @@ class _LoyaltyClientsSheetState extends State<LoyaltyClientsSheet> {
                               onPressed: () => setState(
                                 () => _future = _repo.getClients(widget.programId),
                               ),
-                              child: const Text('Reintentar'),
+                              child: Text(AppLocalizations.of(context).loyaltyClientsRetry),
                             ),
                           ],
                         ),
@@ -167,14 +168,14 @@ class _ProgramProgressTable extends StatelessWidget {
                 color:        AppColors.primary.withAlpha(20),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.loyalty, size: 13, color: AppColors.primary),
-                  SizedBox(width: 4),
+                  const Icon(Icons.loyalty, size: 13, color: AppColors.primary),
+                  const SizedBox(width: 4),
                   Text(
-                    'PROGRAMA ACTUAL',
-                    style: TextStyle(
+                    AppLocalizations.of(context).loyaltyClientsCurrentProgram,
+                    style: const TextStyle(
                       fontSize:    10,
                       fontWeight:  FontWeight.w700,
                       color:       AppColors.primary,
@@ -186,7 +187,7 @@ class _ProgramProgressTable extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             Text(
-              '${clients.length} participante${clients.length != 1 ? "s" : ""}',
+              AppLocalizations.of(context).loyaltyClientsParticipants(clients.length),
               style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
             ),
           ],
@@ -194,10 +195,9 @@ class _ProgramProgressTable extends StatelessWidget {
         const SizedBox(height: 12),
 
         if (clients.isEmpty)
-          const _EmptyHint(
+          _EmptyHint(
             icon:    Icons.person_search_outlined,
-            message: 'Aún no hay clientes en este programa. '
-                     'Escanea el QR de tus primeros visitantes.',
+            message: AppLocalizations.of(context).loyaltyClientsEmptyProgram,
           )
         else
           ...clients.map((c) => _ProgressRow(client: c)),
@@ -275,7 +275,7 @@ class _ProgressRow extends StatelessWidget {
                                     size: 11, color: Colors.amber.shade700),
                                 const SizedBox(width: 3),
                                 Text(
-                                  '¡Premio!',
+                                  AppLocalizations.of(context).loyaltyClientsReward,
                                   style: TextStyle(
                                     fontSize:   10,
                                     fontWeight: FontWeight.w600,
@@ -287,7 +287,7 @@ class _ProgressRow extends StatelessWidget {
                           )
                         else
                           Text(
-                            '${client.stampsLeft} para su premio',
+                            AppLocalizations.of(context).loyaltyClientsStampsLeft(client.stampsLeft),
                             style: TextStyle(
                               fontSize: 11,
                               color:    Colors.grey.shade500,
@@ -352,14 +352,14 @@ class _HistoricalTable extends StatelessWidget {
             color:        AppColors.secondary.withAlpha(20),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: const Row(
+          child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.leaderboard_rounded, size: 13, color: AppColors.secondary),
-              SizedBox(width: 4),
+              const Icon(Icons.leaderboard_rounded, size: 13, color: AppColors.secondary),
+              const SizedBox(width: 4),
               Text(
-                'HISTORIAL DE COMENSALES',
-                style: TextStyle(
+                AppLocalizations.of(context).loyaltyClientsHistoryHeader,
+                style: const TextStyle(
                   fontSize:    10,
                   fontWeight:  FontWeight.w700,
                   color:       AppColors.secondary,
@@ -371,30 +371,29 @@ class _HistoricalTable extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         Text(
-          'Total de visitas registradas con QR, de mayor a menor.',
+          AppLocalizations.of(context).loyaltyClientsHistorySubtitle,
           style: TextStyle(fontSize: 11, color: Colors.grey.shade500, height: 1.3),
         ),
         const SizedBox(height: 12),
 
         if (clients.isEmpty)
-          const _EmptyHint(
+          _EmptyHint(
             icon:    Icons.history_toggle_off,
-            message: 'El historial aparecerá aquí conforme escanees '
-                     'a tus clientes con QR.',
+            message: AppLocalizations.of(context).loyaltyClientsEmptyHistory,
           )
         else ...[
           // Encabezado de columnas
-          const Padding(
-            padding: EdgeInsets.only(bottom: 6),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 6),
             child: Row(
               children: [
-                SizedBox(width: 28),  // espacio del ranking
-                SizedBox(width: 8),
+                const SizedBox(width: 28),  // espacio del ranking
+                const SizedBox(width: 8),
                 Expanded(
                   flex: 3,
                   child: Text(
-                    'Cliente',
-                    style: TextStyle(
+                    AppLocalizations.of(context).loyaltyClientsColumnClient,
+                    style: const TextStyle(
                       fontSize:   10,
                       fontWeight: FontWeight.w600,
                       color:      AppColors.textDark,
@@ -404,9 +403,9 @@ class _HistoricalTable extends StatelessWidget {
                 SizedBox(
                   width: 56,
                   child: Text(
-                    'Visitas',
+                    AppLocalizations.of(context).loyaltyClientsColumnVisits,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize:   10,
                       fontWeight: FontWeight.w600,
                       color:      AppColors.textDark,
@@ -416,9 +415,9 @@ class _HistoricalTable extends StatelessWidget {
                 SizedBox(
                   width: 60,
                   child: Text(
-                    'Gasto',
+                    AppLocalizations.of(context).loyaltyClientsColumnSpent,
                     textAlign: TextAlign.right,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize:   10,
                       fontWeight: FontWeight.w600,
                       color:      AppColors.textDark,
@@ -428,9 +427,9 @@ class _HistoricalTable extends StatelessWidget {
                 SizedBox(
                   width: 52,
                   child: Text(
-                    'Última',
+                    AppLocalizations.of(context).loyaltyClientsColumnLast,
                     textAlign: TextAlign.right,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize:   10,
                       fontWeight: FontWeight.w600,
                       color:      AppColors.textDark,

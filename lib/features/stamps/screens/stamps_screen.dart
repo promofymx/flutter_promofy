@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/stamp_card_model.dart';
@@ -39,13 +40,13 @@ class _StampsScreenState extends State<StampsScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text('Mis Sellos',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(AppLocalizations.of(context).stampsTitle,
+            style: const TextStyle(fontWeight: FontWeight.bold)),
         actions: [
           if (userId != null)
             IconButton(
               icon:    const Icon(Icons.qr_code_2),
-              tooltip: 'Mi QR de visitas',
+              tooltip: AppLocalizations.of(context).stampsMyQrTooltip,
               onPressed: () => _showMyQr(context, userId),
             ),
         ],
@@ -131,7 +132,7 @@ class _LoadedBodyState extends State<_LoadedBody> {
           if (ready.isNotEmpty) ...[
             _SectionHeader(
               icon:  Icons.card_giftcard_rounded,
-              label: 'Recompensas listas para canjear',
+              label: AppLocalizations.of(context).stampsSectionReady,
               count: ready.length,
               color: _kGold,
               showCountBadge: true,
@@ -148,9 +149,11 @@ class _LoadedBodyState extends State<_LoadedBody> {
           if (progress.isNotEmpty) ...[
             _SectionHeader(
               icon:   Icons.pending_actions_rounded,
-              label:  'En progreso',
+              label:  AppLocalizations.of(context).stampsSectionInProgress,
               count:  progress.length,
-              suffix: progress.length == 1 ? 'programa' : 'programas',
+              suffix: progress.length == 1
+                  ? AppLocalizations.of(context).stampsSuffixProgram
+                  : AppLocalizations.of(context).stampsSuffixPrograms,
               color:  AppColors.textDark,
             ),
             const SizedBox(height: 10),
@@ -165,9 +168,9 @@ class _LoadedBodyState extends State<_LoadedBody> {
           if (claimed.isNotEmpty) ...[
             _SectionHeader(
               icon:   Icons.emoji_events_rounded,
-              label:  'Recompensas ganadas',
+              label:  AppLocalizations.of(context).stampsSectionEarned,
               count:  claimed.length,
-              suffix: 'totales',
+              suffix: AppLocalizations.of(context).stampsSuffixTotal,
               color:  _kGreen,
             ),
             const SizedBox(height: 10),
@@ -179,10 +182,10 @@ class _LoadedBodyState extends State<_LoadedBody> {
               const SizedBox(height: 6),
               GestureDetector(
                 onTap: () => setState(() => _showAllClaimed = true),
-                child: const Center(
+                child: Center(
                   child: Text(
-                    'Ver todas las recompensas →',
-                    style: TextStyle(
+                    AppLocalizations.of(context).stampsSeeAllRewards,
+                    style: const TextStyle(
                       color:      AppColors.primary,
                       fontWeight: FontWeight.w600,
                       fontSize:   14,
@@ -360,8 +363,8 @@ class _ReadyCard extends StatelessWidget {
                       children: [
                         const Icon(Icons.qr_code_2, size: 18, color: _kGold),
                         const SizedBox(width: 8),
-                        const Text('Toca para ver QR de canje',
-                            style: TextStyle(
+                        Text(AppLocalizations.of(context).stampsTapForRedemptionQr,
+                            style: const TextStyle(
                               fontSize:   13,
                               fontWeight: FontWeight.w600,
                               color:      _kGold,
@@ -404,8 +407,8 @@ class _ReadyCard extends StatelessWidget {
                     bottomLeft:  Radius.circular(10),
                   ),
                 ),
-                child: const Text('¡LISTA!',
-                    style: TextStyle(
+                child: Text(AppLocalizations.of(context).stampsReadyBadge,
+                    style: const TextStyle(
                       fontSize:      10,
                       fontWeight:    FontWeight.bold,
                       color:         Colors.white,
@@ -494,7 +497,9 @@ class _ProgressCard extends StatelessWidget {
                   ),
                 ),
                 if (faded)
-                  _MiniChip(label: 'Terminado', color: Colors.grey.shade500),
+                  _MiniChip(
+                      label: AppLocalizations.of(context).stampsFinished,
+                      color: Colors.grey.shade500),
               ],
             ),
           ),
@@ -515,7 +520,8 @@ class _ProgressCard extends StatelessWidget {
             child: Row(
               children: [
                 Text(
-                  '${card.programVisits}/${card.visitsRequired} visitas',
+                  AppLocalizations.of(context).stampsVisitsCount(
+                      card.programVisits, card.visitsRequired),
                   style: TextStyle(
                     fontSize:   13,
                     fontWeight: FontWeight.w700,
@@ -525,7 +531,7 @@ class _ProgressCard extends StatelessWidget {
                 const Spacer(),
                 if (!faded && card.stampsLeft > 0)
                   Text(
-                    '¡Te faltan ${card.stampsLeft}! 🔥',
+                    AppLocalizations.of(context).stampsStampsLeft(card.stampsLeft),
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
@@ -558,8 +564,10 @@ class _ProgressCard extends StatelessWidget {
                 const SizedBox(width: 5),
                 Text(
                   faded
-                      ? 'Venció el ${_fmt.format(card.programEndsAt)}'
-                      : 'Caduca el ${_fmt.format(card.programEndsAt)}',
+                      ? AppLocalizations.of(context)
+                          .stampsExpiredOn(_fmt.format(card.programEndsAt))
+                      : AppLocalizations.of(context)
+                          .stampsExpiresOn(_fmt.format(card.programEndsAt)),
                   style: TextStyle(
                     fontSize: 11,
                     color: faded ? Colors.grey : _kBlue.withAlpha(180),
@@ -620,7 +628,9 @@ class _ClaimedTile extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          _MiniChip(label: 'Canjeada', color: _kGreen),
+          _MiniChip(
+              label: AppLocalizations.of(context).stampsRedeemed,
+              color: _kGreen),
         ],
       ),
     );
@@ -720,10 +730,10 @@ class _RedemptionQrSheet extends StatelessWidget {
                   color:        _kOrange,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Text(
-                  'Canjear recompensa',
+                child: Text(
+                  AppLocalizations.of(context).stampsRedeemReward,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color:      Colors.white,
                     fontSize:   16,
                     fontWeight: FontWeight.bold,
@@ -751,7 +761,8 @@ class _RedemptionQrSheet extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'en ${card.establishmentName}',
+                          AppLocalizations.of(context)
+                              .stampsAtEstablishment(card.establishmentName),
                           style: const TextStyle(
                             fontSize:   18,
                             fontWeight: FontWeight.bold,
@@ -784,7 +795,7 @@ class _RedemptionQrSheet extends StatelessWidget {
 
                     // ── Código alfanumérico ──────────────────────────────
                     Text(
-                      'Código: $_shortCode',
+                      AppLocalizations.of(context).stampsCodeLabel(_shortCode),
                       style: const TextStyle(
                         fontSize:      13,
                         fontWeight:    FontWeight.w700,
@@ -796,9 +807,9 @@ class _RedemptionQrSheet extends StatelessWidget {
                     const SizedBox(height: 16),
 
                     // ── Instrucción ──────────────────────────────────────
-                    const Text(
-                      'Muestra este código al personal',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context).stampsShowCodeToStaff,
+                      style: const TextStyle(
                         fontSize:   14,
                         fontWeight: FontWeight.w600,
                         color:      AppColors.textDark,
@@ -806,7 +817,7 @@ class _RedemptionQrSheet extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Lo escanearán para validar tu recompensa',
+                      AppLocalizations.of(context).stampsStaffWillScan,
                       style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
                     ),
                     const SizedBox(height: 16),
@@ -827,7 +838,8 @@ class _RedemptionQrSheet extends StatelessWidget {
                               size: 14, color: _kOrange),
                           const SizedBox(width: 6),
                           Text(
-                            'Caduca el ${_fmtLong.format(card.programEndsAt)}',
+                            AppLocalizations.of(context)
+                                .stampsExpiresOn(_fmtLong.format(card.programEndsAt)),
                             style: const TextStyle(
                               fontSize:   12,
                               fontWeight: FontWeight.w500,
@@ -875,15 +887,15 @@ class _MyQrSheet extends StatelessWidget {
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            const Text('Mi código QR',
-                style: TextStyle(
+            Text(AppLocalizations.of(context).stampsMyQrTitle,
+                style: const TextStyle(
                   fontSize:   20,
                   fontWeight: FontWeight.bold,
                   color:      AppColors.textDark,
                 )),
             const SizedBox(height: 8),
             Text(
-              'Muéstrale este código al negocio para registrar tu visita.',
+              AppLocalizations.of(context).stampsMyQrSubtitle,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
             ),
@@ -910,7 +922,7 @@ class _MyQrSheet extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Código único de tu cuenta',
+              AppLocalizations.of(context).stampsUniqueAccountCode,
               style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
             ),
           ],
@@ -1001,7 +1013,7 @@ class _ErrorView extends StatelessWidget {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: onRetry,
-              child: const Text('Reintentar'),
+              child: Text(AppLocalizations.of(context).stampsRetry),
             ),
           ],
         ),
@@ -1034,9 +1046,9 @@ class _EmptyState extends StatelessWidget {
                   size: 48, color: AppColors.primary),
             ),
             const SizedBox(height: 24),
-            const Text(
-              'Aún no tienes sellos',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context).stampsEmptyTitle,
+              style: const TextStyle(
                 fontSize:   20,
                 fontWeight: FontWeight.bold,
                 color:      AppColors.textDark,
@@ -1044,8 +1056,7 @@ class _EmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              'Visita negocios con programa de lealtad '
-              'y muéstrales tu código QR para acumular sellos.',
+              AppLocalizations.of(context).stampsEmptyMsg,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
@@ -1058,8 +1069,8 @@ class _EmptyState extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: onQrTap,
                 icon:  const Icon(Icons.qr_code_2),
-                label: const Text('Ver mi QR',
-                    style: TextStyle(
+                label: Text(AppLocalizations.of(context).stampsViewMyQr,
+                    style: const TextStyle(
                       fontSize:   15,
                       fontWeight: FontWeight.w600,
                     )),

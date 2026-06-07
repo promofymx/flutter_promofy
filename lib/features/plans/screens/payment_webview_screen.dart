@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 
 enum PaymentResult { success, failure, pending, cancelled }
@@ -87,19 +88,19 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
     if (kIsWeb) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Pago seguro'),
+          title: Text(AppLocalizations.of(context).paymentSecureTitle),
           leading: IconButton(
             icon: const Icon(Icons.close),
             onPressed: () => Navigator.of(context).pop(PaymentResult.cancelled),
           ),
         ),
-        body: const Center(
+        body: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text('Abriendo MercadoPago en tu navegador...'),
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              Text(AppLocalizations.of(context).paymentOpeningBrowser),
             ],
           ),
         ),
@@ -119,7 +120,7 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
         ),
         leading: IconButton(
           icon: const Icon(Icons.close),
-          tooltip: 'Cancelar pago',
+          tooltip: AppLocalizations.of(context).paymentCancelTooltip,
           onPressed: () => Navigator.of(context).pop(PaymentResult.cancelled),
         ),
         bottom: _loading

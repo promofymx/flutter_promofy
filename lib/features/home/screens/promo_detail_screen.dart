@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/promotion_model.dart';
 import '../../../data/repositories/promotions_repository.dart';
@@ -227,7 +228,7 @@ class _PromoDetailScreenState extends State<PromoDetailScreen> {
                           iconColor: const Color(0xFFFFC107),
                           suffix: promo.hasRealRating
                               ? null
-                              : ' · Nuevo',
+                              : ' · ${AppLocalizations.of(context).promoDetailNew}',
                         ),
                         _MetaChip(
                           icon: Icons.favorite_rounded,
@@ -305,7 +306,7 @@ class _PromoDetailScreenState extends State<PromoDetailScreen> {
                                   style: TextStyle(fontSize: 18)),
                               const SizedBox(width: 8),
                               Text(
-                                'Tu regalo de cumpleaños',
+                                AppLocalizations.of(context).promoDetailBirthdayGift,
                                 style: TextStyle(
                                   fontSize:   15,
                                   fontWeight: FontWeight.bold,
@@ -324,7 +325,7 @@ class _PromoDetailScreenState extends State<PromoDetailScreen> {
                             if (promo.birthdayTerms != null) ...[
                               const SizedBox(height: 10),
                               Text(
-                                'Condiciones: ${promo.birthdayTerms!}',
+                                AppLocalizations.of(context).promoDetailConditions(promo.birthdayTerms!),
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.orange.shade700,
@@ -340,9 +341,9 @@ class _PromoDetailScreenState extends State<PromoDetailScreen> {
 
                     // Descripción
                     if (promo.description.isNotEmpty) ...[
-                      const Text(
-                        'Descripción',
-                        style: TextStyle(
+                      Text(
+                        AppLocalizations.of(context).promoDetailDescription,
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 15,
                           color: AppColors.textDark,
@@ -361,9 +362,9 @@ class _PromoDetailScreenState extends State<PromoDetailScreen> {
                     ],
 
                     // Horario y días
-                    const Text(
-                      'Disponibilidad',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context).promoDetailAvailability,
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 15,
                         color: AppColors.textDark,
@@ -387,9 +388,9 @@ class _PromoDetailScreenState extends State<PromoDetailScreen> {
                                 FontAwesomeIcons.whatsapp,
                                 size: 18,
                                 color: Color(0xFF25D366)),
-                            label: const Text(
-                              'Compartir',
-                              style: TextStyle(
+                            label: Text(
+                              AppLocalizations.of(context).promoDetailShare,
+                              style: const TextStyle(
                                   color: AppColors.textDark),
                             ),
                             style: OutlinedButton.styleFrom(
@@ -427,7 +428,9 @@ class _PromoDetailScreenState extends State<PromoDetailScreen> {
                                     color: Colors.white,
                                   ),
                             label: Text(
-                              _isFavorited ? 'Guardado' : 'Guardar',
+                              _isFavorited
+                                  ? AppLocalizations.of(context).promoDetailSaved
+                                  : AppLocalizations.of(context).promoDetailSave,
                               style: const TextStyle(
                                   color: Colors.white),
                             ),
@@ -489,13 +492,15 @@ class _FlashBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final now = DateTime.now();
     final endsAt = promo.flashEndsAt;
-    String label = '⚡ Relámpago';
+    final l10n = AppLocalizations.of(context);
+    String label = l10n.promoDetailFlash;
     if (endsAt != null && endsAt.isAfter(now)) {
       final diff = endsAt.difference(now);
       if (diff.inHours > 0) {
-        label = '⚡ Termina en ${diff.inHours}h ${diff.inMinutes % 60}m';
+        label = l10n.promoDetailFlashEndsInHours(
+            diff.inHours, diff.inMinutes % 60);
       } else {
-        label = '⚡ Termina en ${diff.inMinutes}m';
+        label = l10n.promoDetailFlashEndsInMinutes(diff.inMinutes);
       }
     }
     return Container(

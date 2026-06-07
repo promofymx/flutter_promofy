@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/establishment_model.dart';
 import '../../../data/models/establishment_photo_model.dart';
@@ -27,11 +28,25 @@ class _PhotosSectionState extends State<PhotosSection> {
   String?  _uploadingCat;   // clave de categoría siendo subida
   String?  _deletingId;     // id de foto siendo eliminada
 
-  static const _categories = <(String, String, int)>[
-    ('establishment', 'Fotos del establecimiento', 2),
-    ('children_area', 'Área infantil',              2),
-    ('menu',          'Menú',                       3),
+  static const _categories = <(String, int)>[
+    ('establishment', 2),
+    ('children_area', 2),
+    ('menu',          3),
   ];
+
+  String _categoryLabel(BuildContext context, String key) {
+    final l10n = AppLocalizations.of(context);
+    switch (key) {
+      case 'establishment':
+        return l10n.photosCategoryEstablishment;
+      case 'children_area':
+        return l10n.photosCategoryChildrenArea;
+      case 'menu':
+        return l10n.photosCategoryMenu;
+      default:
+        return key;
+    }
+  }
 
   @override
   void initState() {
@@ -69,7 +84,7 @@ class _PhotosSectionState extends State<PhotosSection> {
     } catch (_) {
       if (mounted) {
         setState(() => _uploadingLogo = false);
-        _snack('No se pudo subir el logo. Intenta de nuevo.');
+        _snack(AppLocalizations.of(context).photosErrorUploadLogo);
       }
     }
   }
@@ -98,7 +113,7 @@ class _PhotosSectionState extends State<PhotosSection> {
     } catch (_) {
       if (mounted) {
         setState(() => _uploadingCat = null);
-        _snack('No se pudo subir la foto. Intenta de nuevo.');
+        _snack(AppLocalizations.of(context).photosErrorUploadPhoto);
       }
     }
   }
@@ -107,17 +122,17 @@ class _PhotosSectionState extends State<PhotosSection> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (dialogCtx) => AlertDialog(
-        title:   const Text('Eliminar foto'),
-        content: const Text('¿Seguro que quieres eliminar esta foto?'),
+        title:   Text(AppLocalizations.of(context).photosDeleteTitle),
+        content: Text(AppLocalizations.of(context).photosDeleteConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogCtx).pop(false),
-            child: const Text('Cancelar'),
+            child: Text(AppLocalizations.of(context).photosCancel),
           ),
           TextButton(
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             onPressed: () => Navigator.of(dialogCtx).pop(true),
-            child: const Text('Eliminar'),
+            child: Text(AppLocalizations.of(context).photosDelete),
           ),
         ],
       ),
@@ -136,7 +151,7 @@ class _PhotosSectionState extends State<PhotosSection> {
     } catch (_) {
       if (mounted) {
         setState(() => _deletingId = null);
-        _snack('No se pudo eliminar la foto. Intenta de nuevo.');
+        _snack(AppLocalizations.of(context).photosErrorDeletePhoto);
       }
     }
   }
@@ -166,14 +181,14 @@ class _PhotosSectionState extends State<PhotosSection> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // ── Encabezado ───────────────────────────────────────────────────
-          const Row(
+          Row(
             children: [
-              Icon(Icons.photo_library_outlined,
+              const Icon(Icons.photo_library_outlined,
                   size: 20, color: AppColors.primary),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
-                'Logo y fotos',
-                style: TextStyle(
+                AppLocalizations.of(context).photosSectionTitle,
+                style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark),
@@ -201,9 +216,9 @@ class _PhotosSectionState extends State<PhotosSection> {
               ),
             )
           else
-            for (final (key, label, maxCount) in _categories) ...[
+            for (final (key, maxCount) in _categories) ...[
               _PhotoCategorySection(
-                label:      label,
+                label:      _categoryLabel(context, key),
                 photos:     _photos.where((p) => p.category == key).toList(),
                 maxCount:   maxCount,
                 uploading:  _uploadingCat == key,
@@ -284,16 +299,16 @@ class _LogoRow extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Logo del negocio',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context).photosLogoTitle,
+                style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textDark),
               ),
               const SizedBox(height: 4),
               Text(
-                'Imagen cuadrada, mínimo 400×400 px.',
+                AppLocalizations.of(context).photosLogoHint,
                 style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
               ),
               const SizedBox(height: 8),
@@ -306,7 +321,9 @@ class _LogoRow extends StatelessWidget {
                   size: 16,
                 ),
                 label: Text(
-                  logoUrl != null ? 'Cambiar logo' : 'Subir logo',
+                  logoUrl != null
+                      ? AppLocalizations.of(context).photosChangeLogo
+                      : AppLocalizations.of(context).photosUploadLogo,
                   style: const TextStyle(fontSize: 13),
                 ),
                 style: TextButton.styleFrom(
@@ -379,7 +396,7 @@ class _PhotoCategorySection extends StatelessWidget {
           child: photos.isEmpty && !showAdd
               ? Center(
                   child: Text(
-                    'Sin fotos',
+                    AppLocalizations.of(context).photosEmpty,
                     style: TextStyle(fontSize: 12, color: Colors.grey.shade400),
                   ),
                 )

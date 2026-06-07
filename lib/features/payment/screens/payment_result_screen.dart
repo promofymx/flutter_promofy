@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 
 enum PaymentResult { success, failure, pending, subscriptionCallback }
@@ -10,7 +11,7 @@ class PaymentResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cfg = _config(result);
+    final cfg = _config(result, context);
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -59,18 +60,19 @@ class PaymentResultScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(14)),
                   elevation: 0,
                 ),
-                child: const Text(
-                  'Ir al inicio',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                child: Text(
+                  AppLocalizations.of(context).paymentResultGoHome,
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ),
               if (result == PaymentResult.failure) ...[
                 const SizedBox(height: 12),
                 TextButton(
                   onPressed: () => context.go('/business'),
-                  child: const Text(
-                    'Intentar de nuevo',
-                    style: TextStyle(color: AppColors.primary),
+                  child: Text(
+                    AppLocalizations.of(context).paymentResultTryAgain,
+                    style: const TextStyle(color: AppColors.primary),
                   ),
                 ),
               ],
@@ -81,39 +83,40 @@ class PaymentResultScreen extends StatelessWidget {
     );
   }
 
-  _Cfg _config(PaymentResult r) {
+  _Cfg _config(PaymentResult r, BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     switch (r) {
       case PaymentResult.success:
-        return const _Cfg(
+        return _Cfg(
           icon:      Icons.check_circle_outline_rounded,
           iconColor: const Color(0xFF2E7D32),
           bgColor:   const Color(0xFFE8F5E9),
-          title:     '¡Pago exitoso!',
-          subtitle:  'Tu saldo de créditos publicitarios se verá\nreflejado en tu panel en unos momentos.',
+          title:     l10n.paymentResultSuccessTitle,
+          subtitle:  l10n.paymentResultSuccessSubtitle,
         );
       case PaymentResult.failure:
-        return const _Cfg(
+        return _Cfg(
           icon:      Icons.cancel_outlined,
           iconColor: const Color(0xFFC62828),
           bgColor:   const Color(0xFFFFEBEE),
-          title:     'Pago no completado',
-          subtitle:  'No se realizó ningún cargo. Puedes\nintentar de nuevo cuando quieras.',
+          title:     l10n.paymentResultFailureTitle,
+          subtitle:  l10n.paymentResultFailureSubtitle,
         );
       case PaymentResult.pending:
-        return const _Cfg(
+        return _Cfg(
           icon:      Icons.schedule_rounded,
           iconColor: const Color(0xFFE65100),
           bgColor:   const Color(0xFFFFF3E0),
-          title:     'Pago en proceso',
-          subtitle:  'Tu pago está siendo procesado.\nTe notificaremos cuando se confirme.',
+          title:     l10n.paymentResultPendingTitle,
+          subtitle:  l10n.paymentResultPendingSubtitle,
         );
       case PaymentResult.subscriptionCallback:
         return _Cfg(
           icon:      Icons.verified_outlined,
           iconColor: AppColors.primary,
           bgColor:   AppColors.primary.withAlpha(25),
-          title:     '¡Suscripción activada!',
-          subtitle:  'Tu plan Promofy ya está activo.\nDisfruta todas las funciones de tu negocio.',
+          title:     l10n.paymentResultSubscriptionTitle,
+          subtitle:  l10n.paymentResultSubscriptionSubtitle,
         );
     }
   }

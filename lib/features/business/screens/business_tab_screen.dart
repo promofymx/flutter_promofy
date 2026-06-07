@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/characteristic_model.dart';
 import '../../../data/models/establishment_model.dart';
@@ -63,11 +64,7 @@ class _BusinessTabScreenState extends State<BusinessTabScreen> {
       final max = s.maxPromotionsEffective;
       if (s.totalPromoCount >= max) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-            'Llegaste a tu límite de $max '
-            'promoción${max != 1 ? "es" : ""}. '
-            'Compra espacio extra o sube de plan para agregar más.',
-          ),
+          content: Text(AppLocalizations.of(context).bizPromoLimitReached(max)),
           behavior: SnackBarBehavior.floating,
         ));
         return;
@@ -96,11 +93,8 @@ class _BusinessTabScreenState extends State<BusinessTabScreen> {
         if (s.establishments.length >= max) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(
-                'Tu plan "${s.plan?.name ?? ""}" permite hasta $max '
-                'establecimiento${max != 1 ? "s" : ""}. '
-                'Actualiza tu plan para agregar más.',
-              ),
+              content: Text(AppLocalizations.of(context)
+                  .bizEstablishmentLimitReached(s.plan?.name ?? "", max)),
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -136,9 +130,9 @@ class _BusinessTabScreenState extends State<BusinessTabScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text(
-          'Mi negocio',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          AppLocalizations.of(context).bizMyBusiness,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
       body: BlocConsumer<BusinessCubit, BusinessState>(
@@ -286,7 +280,7 @@ class _LoadedBody extends StatelessWidget {
           OutlinedButton.icon(
             onPressed: () => onEditEstablishment(est),
             icon:      const Icon(Icons.edit_outlined),
-            label:     const Text('Editar información'),
+            label:     Text(AppLocalizations.of(context).bizEditInfo),
             style: OutlinedButton.styleFrom(
               minimumSize:  const Size(double.infinity, 52),
               side:         const BorderSide(color: AppColors.primary),
@@ -331,13 +325,13 @@ class _SubscriptionGate extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          const Text(
-            'Estadísticas de tu negocio',
-            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+          Text(
+            AppLocalizations.of(context).bizStatsTitle,
+            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
           ),
           const SizedBox(height: 6),
           Text(
-            'Activa un plan para ver impresiones, favoritos y demografía de tu audiencia.',
+            AppLocalizations.of(context).bizStatsGateDesc,
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
           ),
@@ -353,7 +347,7 @@ class _SubscriptionGate extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10)),
               minimumSize: const Size(double.infinity, 44),
             ),
-            child: const Text('Ver planes'),
+            child: Text(AppLocalizations.of(context).bizViewPlans),
           ),
         ],
       ),
@@ -402,9 +396,9 @@ class _PlanUsageBar extends StatelessWidget {
                 fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.primary),
           ),
           const SizedBox(width: 10),
-          _UsagePill(current: estCount,   max: maxEst,    label: 'neg.'),
+          _UsagePill(current: estCount,   max: maxEst,    label: AppLocalizations.of(context).bizUsageBusinesses),
           const SizedBox(width: 6),
-          _UsagePill(current: promoCount, max: maxPromos, label: 'promos'),
+          _UsagePill(current: promoCount, max: maxPromos, label: AppLocalizations.of(context).bizUsagePromos),
           const Spacer(),
           TextButton(
             onPressed: () => Navigator.of(context).push(
@@ -416,7 +410,7 @@ class _PlanUsageBar extends StatelessWidget {
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               foregroundColor: AppColors.secondary,
             ),
-            child: const Text('Upgrade ↗', style: TextStyle(fontSize: 12)),
+            child: Text(AppLocalizations.of(context).bizUpgrade, style: const TextStyle(fontSize: 12)),
           ),
         ],
       ),
@@ -565,7 +559,7 @@ class _AddEstChip extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             Text(
-              'Agregar',
+              AppLocalizations.of(context).bizAdd,
               style: TextStyle(
                 fontSize:   12,
                 color:      canAdd ? AppColors.primary : Colors.grey,
@@ -618,8 +612,8 @@ class _InfoCard extends StatelessWidget {
     }
 
     if (rows.isEmpty) {
-      rows.add(const Text('Sin información adicional.',
-          style: TextStyle(color: Colors.grey)));
+      rows.add(Text(AppLocalizations.of(context).bizNoExtraInfo,
+          style: const TextStyle(color: Colors.grey)));
     }
 
     return Container(
@@ -628,8 +622,8 @@ class _InfoCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Información del negocio',
-              style: TextStyle(
+          Text(AppLocalizations.of(context).bizBusinessInfo,
+              style: const TextStyle(
                   fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textDark)),
           const SizedBox(height: 12),
           ...rows,
@@ -695,19 +689,27 @@ class _DetailsCardState extends State<_DetailsCard> {
   List<CharacteristicModel> _characteristics = [];
   bool     _loading = true;
 
-  static const _typeLabels = {
-    'local':        'Local',
-    'urban_mobile': 'Urbano / Móvil',
-  };
+  static String _typeLabel(BuildContext context, String key) {
+    final l = AppLocalizations.of(context);
+    switch (key) {
+      case 'local':        return l.bizTypeLocal;
+      case 'urban_mobile': return l.bizTypeUrbanMobile;
+      default:             return key;
+    }
+  }
   static const _typeIcons = {
     'local':        Icons.storefront_outlined,
     'urban_mobile': Icons.directions_car_outlined,
   };
-  static const _paymentLabels = {
-    'card':  'Tarjeta crédito/débito',
-    'cash':  'Efectivo',
-    'other': 'Otro',
-  };
+  static String _paymentLabel(BuildContext context, String key) {
+    final l = AppLocalizations.of(context);
+    switch (key) {
+      case 'card':  return l.bizPaymentCard;
+      case 'cash':  return l.bizPaymentCash;
+      case 'other': return l.bizPaymentOther;
+      default:      return key;
+    }
+  }
   static const _paymentIcons = {
     'card':  Icons.credit_card_outlined,
     'cash':  Icons.payments_outlined,
@@ -772,7 +774,7 @@ class _DetailsCardState extends State<_DetailsCard> {
             Icon(_typeIcons[est.establishmentType] ?? Icons.store_outlined,
                 size: 15, color: AppColors.primary),
             const SizedBox(width: 5),
-            Text(_typeLabels[est.establishmentType] ?? est.establishmentType!,
+            Text(_typeLabel(context, est.establishmentType!),
                 style: const TextStyle(
                     fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.textDark)),
           ],
@@ -796,7 +798,7 @@ class _DetailsCardState extends State<_DetailsCard> {
       sections.add(Wrap(
         spacing: 6, runSpacing: 6,
         children: _characteristics
-            .map((c) => _InfoChip(label: c.name, color: AppColors.secondary))
+            .map((c) => _InfoChip(label: c.localizedName(Localizations.localeOf(context).languageCode), color: AppColors.secondary))
             .toList(),
       ));
     }
@@ -812,7 +814,7 @@ class _DetailsCardState extends State<_DetailsCard> {
             Icon(_paymentIcons[key] ?? Icons.payment_outlined,
                 size: 14, color: Colors.green.shade700),
             const SizedBox(width: 5),
-            Text(_paymentLabels[key] ?? key,
+            Text(_paymentLabel(context, key),
                 style: TextStyle(fontSize: 13, color: Colors.green.shade800)),
           ],
         )).toList(),
@@ -827,7 +829,7 @@ class _DetailsCardState extends State<_DetailsCard> {
         children: [
           Icon(Icons.no_adult_content, size: 15, color: Colors.orange.shade700),
           const SizedBox(width: 6),
-          Text('Tiene promociones para adultos',
+          Text(AppLocalizations.of(context).bizAdultPromotions,
               style: TextStyle(
                   fontSize: 12,
                   color: Colors.orange.shade800,
@@ -854,15 +856,19 @@ class _ScheduleCard extends StatelessWidget {
   static const _dayOrder = [
     'monday','tuesday','wednesday','thursday','friday','saturday','sunday',
   ];
-  static const _dayLabels = {
-    'monday':    'Lunes',
-    'tuesday':   'Martes',
-    'wednesday': 'Miércoles',
-    'thursday':  'Jueves',
-    'friday':    'Viernes',
-    'saturday':  'Sábado',
-    'sunday':    'Domingo',
-  };
+  static String _dayLabel(BuildContext context, String key) {
+    final l = AppLocalizations.of(context);
+    switch (key) {
+      case 'monday':    return l.bizDayMonday;
+      case 'tuesday':   return l.bizDayTuesday;
+      case 'wednesday': return l.bizDayWednesday;
+      case 'thursday':  return l.bizDayThursday;
+      case 'friday':    return l.bizDayFriday;
+      case 'saturday':  return l.bizDaySaturday;
+      case 'sunday':    return l.bizDaySunday;
+      default:          return key;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -877,22 +883,22 @@ class _ScheduleCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(children: [
-            Icon(Icons.access_time_outlined, size: 18, color: AppColors.primary),
-            SizedBox(width: 8),
-            Text('Horario de atención',
-                style: TextStyle(
+          Row(children: [
+            const Icon(Icons.access_time_outlined, size: 18, color: AppColors.primary),
+            const SizedBox(width: 8),
+            Text(AppLocalizations.of(context).bizScheduleTitle,
+                style: const TextStyle(
                     fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textDark)),
           ]),
           const SizedBox(height: 12),
-          for (final day in days) _buildDayRow(day, schedule![day]),
+          for (final day in days) _buildDayRow(context, day, schedule![day]),
         ],
       ),
     );
   }
 
-  Widget _buildDayRow(String day, dynamic data) {
-    final label  = _dayLabels[day] ?? day;
+  Widget _buildDayRow(BuildContext context, String day, dynamic data) {
+    final label  = _dayLabel(context, day);
     final closed = data is Map && data['closed'] == true;
     final open   = data is Map ? (data['open']  as String? ?? '') : '';
     final close  = data is Map ? (data['close'] as String? ?? '') : '';
@@ -908,7 +914,7 @@ class _ScheduleCard extends StatelessWidget {
                     fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.textDark)),
           ),
           if (closed)
-            Text('Cerrado', style: TextStyle(fontSize: 13, color: Colors.grey.shade500))
+            Text(AppLocalizations.of(context).bizClosed, style: TextStyle(fontSize: 13, color: Colors.grey.shade500))
           else ...[
             Text(open,  style: const TextStyle(fontSize: 13, color: AppColors.textDark)),
             Text(' – ', style: TextStyle(fontSize: 13, color: Colors.grey.shade400)),
@@ -962,9 +968,9 @@ class _PromosSection extends StatelessWidget {
             children: [
               const Icon(Icons.campaign_outlined, size: 20, color: AppColors.primary),
               const SizedBox(width: 8),
-              const Expanded(
-                child: Text('Mis promociones',
-                    style: TextStyle(
+              Expanded(
+                child: Text(AppLocalizations.of(context).bizMyPromos,
+                    style: const TextStyle(
                         fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textDark)),
               ),
               if (maxPromos != null)
@@ -1006,7 +1012,7 @@ class _PromosSection extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            'Activa "Destacada" para que tu promo aparezca primero en la búsqueda.',
+            AppLocalizations.of(context).bizFeaturedHint,
             style: TextStyle(fontSize: 12, color: Colors.grey.shade600, height: 1.4),
           ),
           const SizedBox(height: 12),
@@ -1020,7 +1026,7 @@ class _PromosSection extends StatelessWidget {
           else if (promos.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text('Aún no tienes promociones en este negocio.',
+              child: Text(AppLocalizations.of(context).bizNoPromosYet,
                   style: TextStyle(fontSize: 13, color: Colors.grey.shade500)),
             )
           else
@@ -1044,13 +1050,13 @@ class _PromosSection extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Llegaste al límite de tu plan',
-                      style: TextStyle(
+                  Text(AppLocalizations.of(context).bizPlanLimitTitle,
+                      style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
                           color: AppColors.textDark)),
                   const SizedBox(height: 2),
-                  Text('Compra espacio extra y sigue publicando sin cambiar de plan.',
+                  Text(AppLocalizations.of(context).bizBuyExtraSpaceDesc,
                       style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
                   const SizedBox(height: 10),
                   SizedBox(
@@ -1060,8 +1066,8 @@ class _PromosSection extends StatelessWidget {
                         MaterialPageRoute(builder: (_) => const PlansScreen()),
                       ),
                       icon:  const Icon(Icons.add_business_outlined, size: 18),
-                      label: const Text('Comprar espacio de promoción',
-                          style: TextStyle(fontWeight: FontWeight.w600)),
+                      label: Text(AppLocalizations.of(context).bizBuyPromoSpace,
+                          style: const TextStyle(fontWeight: FontWeight.w600)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
@@ -1107,9 +1113,9 @@ class _PromoToggleRow extends StatelessWidget {
       if (isLocked) {
         final until = promo.lockedUntil;
         final msg   = until != null
-            ? 'Edición disponible el '
-              '${DateFormat("d 'de' MMMM", "es_MX").format(until)}'
-            : 'Esta promoción aún no puede editarse.';
+            ? AppLocalizations.of(context).bizEditAvailableOn(
+                DateFormat("d 'de' MMMM", "es_MX").format(until))
+            : AppLocalizations.of(context).bizPromoNotEditableYet;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content:  Text(msg),
           behavior: SnackBarBehavior.floating,
@@ -1177,9 +1183,9 @@ class _PromoToggleRow extends StatelessWidget {
                                 const SizedBox(width: 3),
                                 Text(
                                   promo.lockedUntil != null
-                                      ? 'Editable el '
-                                        '${DateFormat("d MMM", "es_MX").format(promo.lockedUntil!)}'
-                                      : 'Bloqueada',
+                                      ? AppLocalizations.of(context).bizEditableOn(
+                                          DateFormat("d MMM", "es_MX").format(promo.lockedUntil!))
+                                      : AppLocalizations.of(context).bizLocked,
                                   style: TextStyle(
                                       fontSize: 11,
                                       color: Colors.orange.shade700,
@@ -1188,20 +1194,20 @@ class _PromoToggleRow extends StatelessWidget {
                               ]),
                             ] else if (isFeatured) ...[
                               const SizedBox(height: 2),
-                              const Row(children: [
-                                Icon(Icons.star, size: 11,
+                              Row(children: [
+                                const Icon(Icons.star, size: 11,
                                     color: Color(0xFFFFB300)),
-                                SizedBox(width: 3),
-                                Text('Destacada',
-                                    style: TextStyle(
+                                const SizedBox(width: 3),
+                                Text(AppLocalizations.of(context).bizFeatured,
+                                    style: const TextStyle(
                                         fontSize: 11,
                                         color: Color(0xFFFFB300),
                                         fontWeight: FontWeight.w600)),
                               ]),
                             ] else if (isFlash) ...[
                               const SizedBox(height: 2),
-                              const Text('Flash',
-                                  style: TextStyle(
+                              Text(AppLocalizations.of(context).bizFlash,
+                                  style: const TextStyle(
                                       fontSize: 11,
                                       color: AppColors.secondary,
                                       fontWeight: FontWeight.w600)),
@@ -1320,14 +1326,14 @@ class _StaffSectionState extends State<_StaffSection> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Eliminar del equipo'),
-        content: Text('¿Quitar a ${m.displayName} del equipo?'),
+        title: Text(AppLocalizations.of(context).bizRemoveFromTeamTitle),
+        content: Text(AppLocalizations.of(context).bizRemoveFromTeamConfirm(m.displayName)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancelar')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(AppLocalizations.of(context).bizCancel)),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Quitar', style: TextStyle(color: Colors.white)),
+            child: Text(AppLocalizations.of(context).bizRemove, style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -1339,7 +1345,7 @@ class _StaffSectionState extends State<_StaffSection> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al quitar del equipo: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text(AppLocalizations.of(context).bizRemoveTeamError(e.toString())), backgroundColor: Colors.red),
         );
       }
     }
@@ -1374,9 +1380,9 @@ class _StaffSectionState extends State<_StaffSection> {
               children: [
                 const Icon(Icons.groups_outlined, size: 20, color: AppColors.primary),
                 const SizedBox(width: 8),
-                const Expanded(
-                  child: Text('Mi equipo',
-                      style: TextStyle(
+                Expanded(
+                  child: Text(AppLocalizations.of(context).bizMyTeam,
+                      style: const TextStyle(
                           fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textDark)),
                 ),
                 if (_loading)
@@ -1391,7 +1397,7 @@ class _StaffSectionState extends State<_StaffSection> {
                 TextButton.icon(
                   onPressed: _openInvite,
                   icon:  const Icon(Icons.person_add_outlined, size: 16),
-                  label: const Text('Invitar', style: TextStyle(fontSize: 13)),
+                  label: Text(AppLocalizations.of(context).bizInvite, style: const TextStyle(fontSize: 13)),
                   style: TextButton.styleFrom(
                     foregroundColor: AppColors.primary,
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -1415,7 +1421,7 @@ class _StaffSectionState extends State<_StaffSection> {
                 children: [
                   Icon(Icons.group_add_outlined, size: 36, color: Colors.grey.shade300),
                   const SizedBox(height: 8),
-                  Text('Sin empleados aún.\nToca "Invitar" para generar un código.',
+                  Text(AppLocalizations.of(context).bizNoStaffYet,
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 13, color: Colors.grey.shade500, height: 1.5)),
                 ],
@@ -1497,7 +1503,7 @@ class _StaffRow extends StatelessWidget {
             icon:    const Icon(Icons.person_remove_outlined, size: 18),
             color:   Colors.red.shade400,
             onPressed: onRemove,
-            tooltip: 'Quitar del equipo',
+            tooltip: AppLocalizations.of(context).bizRemoveFromTeamTooltip,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
           ),
@@ -1559,7 +1565,7 @@ class _InviteSheetState extends State<_InviteSheet> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Error al generar código: $e'),
+          content: Text(AppLocalizations.of(context).bizGenerateCodeError(e.toString())),
           backgroundColor: Colors.red.shade700,
           behavior: SnackBarBehavior.floating,
         ));
@@ -1593,23 +1599,23 @@ class _InviteSheetState extends State<_InviteSheet> {
                 ),
               ),
             ),
-            const Text('Invitar empleado',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,
+            Text(AppLocalizations.of(context).bizInviteStaff,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold,
                     color: AppColors.textDark)),
             const SizedBox(height: 4),
-            Text('El código estará disponible por 48 horas.',
+            Text(AppLocalizations.of(context).bizCodeAvailable48h,
                 style: TextStyle(fontSize: 13, color: Colors.grey.shade500)),
             const SizedBox(height: 20),
 
-            const Text('ROL', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
+            Text(AppLocalizations.of(context).bizRoleLabel, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
                 color: Color(0xFF9E9E9E), letterSpacing: 0.6)),
             const SizedBox(height: 10),
 
             _RoleOption(
               value:    'cashier',
               group:    _role,
-              label:    'Cajero / Mesero',
-              subtitle: 'Solo puede escanear el QR de lealtad',
+              label:    AppLocalizations.of(context).bizRoleCashier,
+              subtitle: AppLocalizations.of(context).bizRoleCashierDesc,
               icon:     Icons.qr_code_scanner,
               color:    const Color(0xFF1976D2),
               onChanged: (v) => setState(() => _role = v),
@@ -1618,8 +1624,8 @@ class _InviteSheetState extends State<_InviteSheet> {
             _RoleOption(
               value:    'manager',
               group:    _role,
-              label:    'Gerente',
-              subtitle: 'Estadísticas, promos y QR de lealtad',
+              label:    AppLocalizations.of(context).bizRoleManager,
+              subtitle: AppLocalizations.of(context).bizRoleManagerDesc,
               icon:     Icons.manage_accounts_outlined,
               color:    const Color(0xFF00897B),
               onChanged: (v) => setState(() => _role = v),
@@ -1628,8 +1634,8 @@ class _InviteSheetState extends State<_InviteSheet> {
             _RoleOption(
               value:    'custom',
               group:    _role,
-              label:    'Personalizado',
-              subtitle: 'Elige los permisos manualmente',
+              label:    AppLocalizations.of(context).bizRoleCustom,
+              subtitle: AppLocalizations.of(context).bizRoleCustomDesc,
               icon:     Icons.tune_outlined,
               color:    const Color(0xFF6A1B9A),
               onChanged: (v) => setState(() => _role = v),
@@ -1637,26 +1643,26 @@ class _InviteSheetState extends State<_InviteSheet> {
 
             if (_role == 'custom') ...[
               const SizedBox(height: 16),
-              const Text('PERMISOS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
+              Text(AppLocalizations.of(context).bizPermissionsLabel, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
                   color: Color(0xFF9E9E9E), letterSpacing: 0.6)),
               const SizedBox(height: 6),
               _PermCheck(
-                label:    'Escanear QR de lealtad',
+                label:    AppLocalizations.of(context).bizPermScanQr,
                 value:    _permScanQr,
                 onChanged: (v) => setState(() => _permScanQr = v),
               ),
               _PermCheck(
-                label:    'Ver estadísticas',
+                label:    AppLocalizations.of(context).bizPermViewStats,
                 value:    _permViewStats,
                 onChanged: (v) => setState(() => _permViewStats = v),
               ),
               _PermCheck(
-                label:    'Gestionar promociones',
+                label:    AppLocalizations.of(context).bizPermManagePromos,
                 value:    _permManagePromos,
                 onChanged: (v) => setState(() => _permManagePromos = v),
               ),
               _PermCheck(
-                label:    'Gestionar pagos',
+                label:    AppLocalizations.of(context).bizPermManagePayments,
                 value:    _permManagePayments,
                 onChanged: (v) => setState(() => _permManagePayments = v),
               ),
@@ -1671,7 +1677,9 @@ class _InviteSheetState extends State<_InviteSheet> {
                     ? const SizedBox(width: 16, height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                     : const Icon(Icons.generating_tokens_outlined),
-                label: Text(_generating ? 'Generando…' : 'Generar código'),
+                label: Text(_generating
+                    ? AppLocalizations.of(context).bizGenerating
+                    : AppLocalizations.of(context).bizGenerateCode),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -1780,11 +1788,12 @@ class _InviteCodeDialog extends StatelessWidget {
   final String role;
   const _InviteCodeDialog({required this.code, required this.role});
 
-  String get _roleLabel {
+  String _roleLabel(BuildContext context) {
+    final l = AppLocalizations.of(context);
     switch (role) {
-      case 'manager': return 'Gerente';
-      case 'cashier': return 'Cajero / Mesero';
-      default:        return 'Personalizado';
+      case 'manager': return l.bizRoleManager;
+      case 'cashier': return l.bizRoleCashier;
+      default:        return l.bizRoleCustom;
     }
   }
 
@@ -1797,10 +1806,10 @@ class _InviteCodeDialog extends StatelessWidget {
         children: [
           const Icon(Icons.check_circle_outline, size: 48, color: Colors.green),
           const SizedBox(height: 12),
-          const Text('Código generado',
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+          Text(AppLocalizations.of(context).bizCodeGenerated,
+              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
-          Text('Rol: $_roleLabel',
+          Text(AppLocalizations.of(context).bizCodeRole(_roleLabel(context)),
               style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
           const SizedBox(height: 20),
           // Código grande con fondo
@@ -1822,21 +1831,21 @@ class _InviteCodeDialog extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          Text('Válido por 48 horas.\nCompartir con el empleado para que lo ingrese en la app.',
+          Text(AppLocalizations.of(context).bizCodeValid48h,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 12, color: Colors.grey.shade500, height: 1.5)),
           const SizedBox(height: 16),
           OutlinedButton.icon(
             onPressed: () {
               Clipboard.setData(ClipboardData(text: code));
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text('Código copiado'),
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(AppLocalizations.of(context).bizCodeCopied),
                 behavior: SnackBarBehavior.floating,
-                duration: Duration(seconds: 2),
+                duration: const Duration(seconds: 2),
               ));
             },
             icon:  const Icon(Icons.copy, size: 16),
-            label: const Text('Copiar código'),
+            label: Text(AppLocalizations.of(context).bizCopyCode),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size(double.infinity, 44),
             ),
@@ -1846,7 +1855,7 @@ class _InviteCodeDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Listo'),
+          child: Text(AppLocalizations.of(context).bizDone),
         ),
       ],
     );
@@ -1926,10 +1935,10 @@ class _NotifStatsSectionState extends State<_NotifStatsSection> {
               children: [
                 const Icon(Icons.notifications_outlined, size: 20, color: AppColors.primary),
                 const SizedBox(width: 8),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'Notificaciones push',
-                    style: TextStyle(
+                    AppLocalizations.of(context).bizPushNotifications,
+                    style: const TextStyle(
                       fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textDark,
                     ),
                   ),
@@ -1964,7 +1973,7 @@ class _NotifStatsSectionState extends State<_NotifStatsSection> {
                   Icon(Icons.notifications_off_outlined, size: 36, color: Colors.grey.shade300),
                   const SizedBox(height: 8),
                   Text(
-                    'Sin notificaciones en este período.\nSe generan automáticamente al crear una promo flash.',
+                    AppLocalizations.of(context).bizNoNotifications,
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 13, color: Colors.grey.shade500, height: 1.5),
                   ),
@@ -1978,21 +1987,21 @@ class _NotifStatsSectionState extends State<_NotifStatsSection> {
               child: Row(
                 children: [
                   _NotifKpi(
-                    label: 'Envíos',
+                    label: AppLocalizations.of(context).bizKpiSent,
                     value: '${_logs.length}',
                     icon:  Icons.send_outlined,
                     color: AppColors.primary,
                   ),
                   const SizedBox(width: 8),
                   _NotifKpi(
-                    label: 'Alcanzados',
+                    label: AppLocalizations.of(context).bizKpiReached,
                     value: '$totalSent',
                     icon:  Icons.people_outline,
                     color: AppColors.secondary,
                   ),
                   const SizedBox(width: 8),
                   _NotifKpi(
-                    label: 'Tasa apertura',
+                    label: AppLocalizations.of(context).bizKpiOpenRate,
                     value: '${avgOpenRate.toStringAsFixed(1)}%',
                     icon:  Icons.touch_app_outlined,
                     color: Colors.teal.shade400,
@@ -2001,11 +2010,11 @@ class _NotifStatsSectionState extends State<_NotifStatsSection> {
               ),
             ),
             const SizedBox(height: 14),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                'HISTORIAL RECIENTE',
-                style: TextStyle(
+                AppLocalizations.of(context).bizRecentHistory,
+                style: const TextStyle(
                   fontSize: 10, fontWeight: FontWeight.w700,
                   color: Color(0xFF9E9E9E), letterSpacing: 0.6,
                 ),
@@ -2090,7 +2099,7 @@ class _NotifLogRow extends StatelessWidget {
                   style: const TextStyle(fontSize: 13, color: AppColors.textDark),
                 ),
                 Text(
-                  '$dateStr · ${log.sentCount} enviadas',
+                  AppLocalizations.of(context).bizNotifSentLine(dateStr, log.sentCount),
                   style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
                 ),
               ],
@@ -2104,7 +2113,7 @@ class _NotifLogRow extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
-              '$openPct% apert.',
+              AppLocalizations.of(context).bizOpenRateShort(openPct),
               style: const TextStyle(
                 fontSize: 11, fontWeight: FontWeight.w600, color: Colors.teal,
               ),
@@ -2198,8 +2207,8 @@ class _EmptyState extends StatelessWidget {
                   size: 52, color: AppColors.primary),
             ),
             const SizedBox(height: 24),
-            const Text('Impulsa tu negocio',
-                style: TextStyle(
+            Text(AppLocalizations.of(context).bizBoostBusiness,
+                style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark),
@@ -2207,15 +2216,14 @@ class _EmptyState extends StatelessWidget {
             const SizedBox(height: 12),
             if (plan != null) ...[
               Text(
-                'Tu plan "${plan!.name}" incluye hasta '
-                '${plan!.maxEstablishments} negocio${plan!.maxEstablishments != 1 ? "s" : ""} '
-                'y ${plan!.maxPromotions} promociones normales.',
+                AppLocalizations.of(context).bizPlanIncludes(
+                    plan!.name, plan!.maxEstablishments, plan!.maxPromotions),
                 style: TextStyle(fontSize: 14, color: Colors.grey.shade600, height: 1.5),
                 textAlign: TextAlign.center,
               ),
             ] else ...[
               Text(
-                'Publica promociones y llega a miles de clientes en tu ciudad.',
+                AppLocalizations.of(context).bizEmptyTagline,
                 style: TextStyle(fontSize: 15, color: Colors.grey.shade600, height: 1.5),
                 textAlign: TextAlign.center,
               ),
@@ -2224,8 +2232,8 @@ class _EmptyState extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: onRegister,
               icon:  const Icon(Icons.add_business_outlined),
-              label: const Text('Registrar mi negocio',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              label: Text(AppLocalizations.of(context).bizRegisterMyBusiness,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
             ),
           ],
         ),
@@ -2358,10 +2366,10 @@ class _AdsSectionState extends State<_AdsSection> {
               children: [
                 const Icon(Icons.campaign_outlined, size: 20, color: _adColor),
                 const SizedBox(width: 8),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'Publicidad',
-                    style: TextStyle(
+                    AppLocalizations.of(context).bizAdvertising,
+                    style: const TextStyle(
                         fontSize: 15, fontWeight: FontWeight.bold,
                         color: AppColors.textDark),
                   ),
@@ -2449,7 +2457,7 @@ class _AdsLoadedBody extends StatelessWidget {
             child: OutlinedButton.icon(
               onPressed: () => onNewCampaign(state),
               icon:  const Icon(Icons.add, size: 18),
-              label: const Text('Nueva campaña'),
+              label: Text(AppLocalizations.of(context).bizNewCampaign),
               style: OutlinedButton.styleFrom(
                 minimumSize:     const Size(0, 48), // SizedBox(width:∞) ya fuerza el ancho completo
                 side:            BorderSide(color: adColor),
@@ -2494,15 +2502,15 @@ class _AdBalanceCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Crédito disponible',
-                    style: TextStyle(color: Colors.white70, fontSize: 12)),
+                Text(AppLocalizations.of(context).bizAvailableCredit,
+                    style: const TextStyle(color: Colors.white70, fontSize: 12)),
                 const SizedBox(height: 4),
                 Text(fmt.format(balance),
                     style: const TextStyle(
                         color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold)),
                 if (reach > 0) ...[
                   const SizedBox(height: 6),
-                  Text('≈ $reach personas alcanzables (banner)',
+                  Text(AppLocalizations.of(context).bizReachableBanner(reach),
                       style: const TextStyle(color: Colors.white70, fontSize: 11)),
                 ],
               ],
@@ -2517,8 +2525,8 @@ class _AdBalanceCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               minimumSize: Size.zero, // override theme's Size(∞, 52) — button is inside a Row
             ),
-            child: const Text('Recargar',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+            child: Text(AppLocalizations.of(context).bizTopUp,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
           ),
         ],
       ),
@@ -2545,12 +2553,12 @@ class _ActiveCampaignsList extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           border:       Border.all(color: Colors.grey.shade200),
         ),
-        child: const Row(
+        child: Row(
           children: [
-            Icon(Icons.campaign_outlined, color: Colors.grey, size: 20),
-            SizedBox(width: 10),
-            Text('Sin campañas activas',
-                style: TextStyle(color: Colors.grey, fontSize: 13)),
+            const Icon(Icons.campaign_outlined, color: Colors.grey, size: 20),
+            const SizedBox(width: 10),
+            Text(AppLocalizations.of(context).bizNoActiveCampaigns,
+                style: const TextStyle(color: Colors.grey, fontSize: 13)),
           ],
         ),
       );
@@ -2559,8 +2567,8 @@ class _ActiveCampaignsList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Campañas en curso',
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+        Text(AppLocalizations.of(context).bizOngoingCampaigns,
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
         const SizedBox(height: 8),
         ...campaigns.map((c) {
           final statusColor = c.isActive ? Colors.green : Colors.orange;
@@ -2613,9 +2621,9 @@ class _ActiveCampaignsList extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Gastado: ${fmt.format(c.spentMxn)}',
+                      Text(AppLocalizations.of(context).bizSpent(fmt.format(c.spentMxn)),
                           style: const TextStyle(fontSize: 11, color: Colors.grey)),
-                      Text('Presupuesto: ${fmt.format(c.budgetMxn)}',
+                      Text(AppLocalizations.of(context).bizBudget(fmt.format(c.budgetMxn)),
                           style: const TextStyle(fontSize: 11, color: Colors.grey)),
                     ],
                   ),
@@ -2630,7 +2638,9 @@ class _ActiveCampaignsList extends StatelessWidget {
                               ? Icons.pause_outlined
                               : Icons.play_arrow_outlined,
                           size: 16),
-                      label: Text(c.isActive ? 'Pausar' : 'Reanudar',
+                      label: Text(c.isActive
+                          ? AppLocalizations.of(context).bizPause
+                          : AppLocalizations.of(context).bizResume,
                           style: const TextStyle(fontSize: 12)),
                       style: TextButton.styleFrom(
                         foregroundColor: const Color(0xFF00838F),
@@ -2674,8 +2684,8 @@ class _TransactionHistoryState extends State<_TransactionHistory> {
           onTap: () => setState(() => _expanded = !_expanded),
           child: Row(
             children: [
-              const Text('Historial de movimientos',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+              Text(AppLocalizations.of(context).bizTransactionHistory,
+                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
               const Spacer(),
               Icon(_expanded ? Icons.expand_less : Icons.expand_more,
                   color: Colors.grey),
@@ -2748,7 +2758,7 @@ class _AdErrorBanner extends StatelessWidget {
           Expanded(
               child: Text(message,
                   style: const TextStyle(fontSize: 12, color: Colors.red))),
-          TextButton(onPressed: onRetry, child: const Text('Reintentar')),
+          TextButton(onPressed: onRetry, child: Text(AppLocalizations.of(context).bizRetry)),
         ],
       ),
     );
@@ -2868,11 +2878,21 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
   Timer?      _reachDebounce;
   String?     _selectedPromoId;        // promo ligada a la campaña (cuando _adType == 'promotion')
 
-  static const _geoModes = <(String, String)>[
-    ('both',              'Física + búsqueda'),
-    ('physical_location', 'Solo ubicación física'),
-    ('search_area',       'Solo área de búsqueda'),
+  static const _geoModeKeys = <String>[
+    'both',
+    'physical_location',
+    'search_area',
   ];
+
+  static String _geoModeLabel(BuildContext context, String key) {
+    final l = AppLocalizations.of(context);
+    switch (key) {
+      case 'both':              return l.bizGeoBoth;
+      case 'physical_location': return l.bizGeoPhysical;
+      case 'search_area':       return l.bizGeoSearchArea;
+      default:                  return key;
+    }
+  }
 
   @override
   void initState() {
@@ -2929,26 +2949,26 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
     final minB   = _minBudget();
 
     if (name.isEmpty) {
-      setState(() => _error = 'El nombre es obligatorio');
+      setState(() => _error = AppLocalizations.of(context).bizErrorNameRequired);
       return;
     }
     if (budget == null || budget <= 0) {
-      setState(() => _error = 'Ingresa un presupuesto válido');
+      setState(() => _error = AppLocalizations.of(context).bizErrorBudgetInvalid);
       return;
     }
     if (budget < minB) {
       final fmt = NumberFormat.currency(locale: 'es_MX', symbol: '\$');
-      setState(() => _error = 'Presupuesto mínimo para este formato: ${fmt.format(minB)}');
+      setState(() => _error = AppLocalizations.of(context).bizErrorMinBudget(fmt.format(minB)));
       return;
     }
     final balance = widget.state.credit?.balanceMxn ?? 0;
     if (budget > balance) {
       final fmt = NumberFormat.currency(locale: 'es_MX', symbol: '\$');
-      setState(() => _error = 'Saldo insuficiente. Disponible: ${fmt.format(balance)}');
+      setState(() => _error = AppLocalizations.of(context).bizErrorInsufficientBalance(fmt.format(balance)));
       return;
     }
     if (_adType == 'promotion' && _selectedPromoId == null) {
-      setState(() => _error = 'Selecciona la promoción que quieres publicitar');
+      setState(() => _error = AppLocalizations.of(context).bizErrorSelectPromo);
       return;
     }
 
@@ -2994,9 +3014,9 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
                 const Icon(Icons.campaign_outlined,
                     size: 20, color: Color(0xFF00838F)),
                 const SizedBox(width: 8),
-                const Expanded(
-                  child: Text('Nueva campaña',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+                Expanded(
+                  child: Text(AppLocalizations.of(context).bizNewCampaign,
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
                 ),
                 IconButton(
                     icon: const Icon(Icons.close, size: 20),
@@ -3009,7 +3029,7 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
             TextField(
               controller: _nameCtrl,
               decoration: InputDecoration(
-                labelText: 'Nombre de la campaña',
+                labelText: AppLocalizations.of(context).bizCampaignName,
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -3018,8 +3038,8 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
             const SizedBox(height: 16),
 
             // ── Tipo de anuncio ─────────────────────────────────────────────
-            const Text('¿Qué publicitarás?',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+            Text(AppLocalizations.of(context).bizWhatToAdvertise,
+                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
             const SizedBox(height: 8),
             Row(
               children: [
@@ -3050,7 +3070,7 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
                               color: _adType == 'establishment'
                                   ? const Color(0xFF00838F) : Colors.grey),
                           const SizedBox(height: 4),
-                          Text('Tu negocio',
+                          Text(AppLocalizations.of(context).bizYourBusiness,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize:   12,
@@ -3093,7 +3113,7 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
                               color: _adType == 'promotion'
                                   ? const Color(0xFF00838F) : Colors.grey),
                           const SizedBox(height: 4),
-                          Text('Una promoción',
+                          Text(AppLocalizations.of(context).bizOnePromotion,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize:   12,
@@ -3112,14 +3132,14 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
 
             // ── ¿Dónde mostrar? (placements) ────────────────────────────────
             if (_specialFormat == null) ...[
-              const Text('¿Dónde quieres mostrarlo?',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+              Text(AppLocalizations.of(context).bizWhereToShow,
+                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
               const SizedBox(height: 4),
               ...<(String, IconData, String)>[
-                ('splash',        Icons.play_circle_outline,    'Splash al abrir la app'),
-                ('featured_list', Icons.grid_view_outlined,     'En el feed de promos'),
+                ('splash',        Icons.play_circle_outline,    AppLocalizations.of(context).bizPlacementSplash),
+                ('featured_list', Icons.grid_view_outlined,     AppLocalizations.of(context).bizPlacementFeed),
                 if (_adType == 'establishment')
-                  ('banner',      Icons.view_headline_outlined, 'Banner en el inicio'),
+                  ('banner',      Icons.view_headline_outlined, AppLocalizations.of(context).bizPlacementBanner),
               ].map(((String, IconData, String) p) {
                 final sel = _placements.contains(p.$1);
                 return InkWell(
@@ -3158,7 +3178,7 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
 
             // ── Formatos especiales (solo establecimiento) ───────────────────
             if (_adType == 'establishment') ...[
-              Text('Formatos especiales',
+              Text(AppLocalizations.of(context).bizSpecialFormats,
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
                     fontSize:   12,
@@ -3169,7 +3189,7 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
                 spacing: 8, runSpacing: 6,
                 children: [
                   ChoiceChip(
-                    label:    const Text('Notif. push'),
+                    label:    Text(AppLocalizations.of(context).bizFormatPush),
                     selected: _specialFormat == 'push',
                     onSelected: (v) => setState(() =>
                         _specialFormat = v ? 'push' : null),
@@ -3180,7 +3200,7 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
                         fontSize: 12),
                   ),
                   ChoiceChip(
-                    label:    const Text('Promo Relámpago'),
+                    label:    Text(AppLocalizations.of(context).bizFormatFlash),
                     selected: _specialFormat == 'flash',
                     onSelected: (v) => setState(() =>
                         _specialFormat = v ? 'flash' : null),
@@ -3201,9 +3221,9 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               onChanged:    (_) => setState(() {}),
               decoration: InputDecoration(
-                labelText:  'Presupuesto (MXN)',
+                labelText:  AppLocalizations.of(context).bizBudgetMxn,
                 prefixText: '\$ ',
-                helperText: minB > 0 ? 'Mínimo ${fmt.format(minB)}' : null,
+                helperText: minB > 0 ? AppLocalizations.of(context).bizMinimum(fmt.format(minB)) : null,
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -3216,7 +3236,7 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
                   const Icon(Icons.people_outline,
                       size: 14, color: Color(0xFF00838F)),
                   const SizedBox(width: 4),
-                  Text('Alcance estimado: $reach personas',
+                  Text(AppLocalizations.of(context).bizEstimatedReach(reach),
                       style: const TextStyle(
                           fontSize: 12, color: Color(0xFF00838F))),
                 ],
@@ -3227,8 +3247,8 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
             // Radio
             Row(
               children: [
-                const Text('Radio:',
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                Text(AppLocalizations.of(context).bizRadius,
+                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
                 const SizedBox(width: 8),
                 Text('$_radiusKm km',
                     style: const TextStyle(
@@ -3247,12 +3267,12 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
             const SizedBox(height: 8),
 
             // Geo mode
-            const Text('Segmentación geográfica',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+            Text(AppLocalizations.of(context).bizGeoSegmentation,
+                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
             const SizedBox(height: 4),
-            ..._geoModes.map(((String, String) m) => RadioListTile<String>(
-                  title:        Text(m.$2, style: const TextStyle(fontSize: 13)),
-                  value:        m.$1,
+            ..._geoModeKeys.map((String m) => RadioListTile<String>(
+                  title:        Text(_geoModeLabel(context, m), style: const TextStyle(fontSize: 13)),
+                  value:        m,
                   groupValue:   _geoMode,
                   activeColor:  const Color(0xFF00838F),
                   dense:        true,
@@ -3265,11 +3285,12 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
             // ── Rango de edad ──────────────────────────────────────────────
             Row(
               children: [
-                const Text('Edad:',
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                Text(AppLocalizations.of(context).bizAge,
+                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
                 const Spacer(),
                 Text(
-                  '${_ageRange.start.round()} – ${_ageRange.end.round()} años',
+                  AppLocalizations.of(context).bizAgeRange(
+                      _ageRange.start.round(), _ageRange.end.round()),
                   style: const TextStyle(
                       color: Color(0xFF00838F), fontWeight: FontWeight.bold,
                       fontSize: 13),
@@ -3283,8 +3304,8 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
               divisions:   62,
               activeColor: const Color(0xFF00838F),
               labels:      RangeLabels(
-                '${_ageRange.start.round()} años',
-                '${_ageRange.end.round()} años',
+                AppLocalizations.of(context).bizYearsOld(_ageRange.start.round()),
+                AppLocalizations.of(context).bizYearsOld(_ageRange.end.round()),
               ),
               onChanged: (v) {
                 setState(() => _ageRange = v);
@@ -3294,15 +3315,15 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
             const SizedBox(height: 4),
 
             // ── Sexo ───────────────────────────────────────────────────────
-            const Text('Sexo',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+            Text(AppLocalizations.of(context).bizGender,
+                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               children: <(String, String)>[
-                ('all',    'Todos'),
-                ('male',   'Hombres'),
-                ('female', 'Mujeres'),
+                ('all',    AppLocalizations.of(context).bizGenderAll),
+                ('male',   AppLocalizations.of(context).bizGenderMale),
+                ('female', AppLocalizations.of(context).bizGenderFemale),
               ].map(((String, String) g) {
                 final sel = _gender == g.$1;
                 return ChoiceChip(
@@ -3345,9 +3366,9 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
                     Expanded(
                       child: Text(
                         _reachPool != null
-                            ? 'Audiencia con estos filtros: '
-                              '${NumberFormat.compact(locale: "es_MX").format(_reachPool!)} personas'
-                            : 'Calculando audiencia...',
+                            ? AppLocalizations.of(context).bizAudienceWithFilters(
+                                NumberFormat.compact(locale: "es_MX").format(_reachPool!))
+                            : AppLocalizations.of(context).bizCalculatingAudience,
                         style: const TextStyle(
                           fontSize:   13,
                           color:      Color(0xFF00838F),
@@ -3363,8 +3384,8 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
 
             // ── Promoción a publicitar (solo cuando _adType == 'promotion') ──
             if (_adType == 'promotion') ...[
-              const Text('Promoción a publicitar',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+              Text(AppLocalizations.of(context).bizPromoToAdvertise,
+                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
               const SizedBox(height: 8),
               if (widget.promotions.isEmpty)
                 Container(
@@ -3378,10 +3399,10 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
                     children: [
                       Icon(Icons.info_outline, size: 16, color: Colors.orange.shade700),
                       const SizedBox(width: 8),
-                      const Expanded(
+                      Expanded(
                         child: Text(
-                          'Crea al menos una promoción activa antes de lanzar una campaña.',
-                          style: TextStyle(fontSize: 12, color: Colors.orange),
+                          AppLocalizations.of(context).bizCreatePromoFirst,
+                          style: const TextStyle(fontSize: 12, color: Colors.orange),
                         ),
                       ),
                     ],
@@ -3417,7 +3438,7 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: _saving ? null : () => Navigator.of(context).pop(),
-                    child: const Text('Cancelar'),
+                    child: Text(AppLocalizations.of(context).bizCancel),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -3433,7 +3454,7 @@ class _CreateCampaignSheetState extends State<_CreateCampaignSheet> {
                             width: 18, height: 18,
                             child: CircularProgressIndicator(
                                 strokeWidth: 2, color: Colors.white))
-                        : const Text('Lanzar campaña'),
+                        : Text(AppLocalizations.of(context).bizLaunchCampaign),
                   ),
                 ),
               ],
@@ -3559,8 +3580,8 @@ class _StaffBusinessViewState extends State<_StaffBusinessView> {
         backgroundColor: AppColors.background,
         appBar: AppBar(
           backgroundColor: Colors.white,
-          title: const Text('Mi negocio',
-              style: TextStyle(fontWeight: FontWeight.bold)),
+          title: Text(AppLocalizations.of(context).bizMyBusiness,
+              style: const TextStyle(fontWeight: FontWeight.bold)),
         ),
         body: const Center(child: CircularProgressIndicator()),
       );
@@ -3571,8 +3592,8 @@ class _StaffBusinessViewState extends State<_StaffBusinessView> {
         backgroundColor: AppColors.background,
         appBar: AppBar(
           backgroundColor: Colors.white,
-          title: const Text('Mi negocio',
-              style: TextStyle(fontWeight: FontWeight.bold)),
+          title: Text(AppLocalizations.of(context).bizMyBusiness,
+              style: const TextStyle(fontWeight: FontWeight.bold)),
         ),
         body: Center(
           child: Padding(
@@ -3584,7 +3605,7 @@ class _StaffBusinessViewState extends State<_StaffBusinessView> {
                     size: 64, color: Colors.grey.shade300),
                 const SizedBox(height: 16),
                 Text(
-                  'Sin establecimientos asignados',
+                  AppLocalizations.of(context).bizNoAssignedEstablishments,
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -3592,7 +3613,7 @@ class _StaffBusinessViewState extends State<_StaffBusinessView> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Pide al dueño del negocio que te invite con un código.',
+                  AppLocalizations.of(context).bizAskOwnerToInvite,
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
                 ),
@@ -3607,12 +3628,12 @@ class _StaffBusinessViewState extends State<_StaffBusinessView> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text('Mi negocio',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(AppLocalizations.of(context).bizMyBusiness,
+            style: const TextStyle(fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_outlined),
-            tooltip: 'Actualizar',
+            tooltip: AppLocalizations.of(context).bizRefresh,
             onPressed: _load,
           ),
         ],
@@ -3649,11 +3670,12 @@ class _StaffEstCard extends StatelessWidget {
     required this.onReload,
   });
 
-  String _roleLabel(String role) {
+  String _roleLabel(BuildContext context, String role) {
+    final l = AppLocalizations.of(context);
     switch (role) {
-      case 'manager': return 'Gerente';
-      case 'cashier': return 'Cajero / Mesero';
-      default:        return 'Personalizado';
+      case 'manager': return l.bizRoleManager;
+      case 'cashier': return l.bizRoleCashier;
+      default:        return l.bizRoleCustom;
     }
   }
 
@@ -3724,7 +3746,7 @@ class _StaffEstCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          _roleLabel(est.role),
+                          _roleLabel(context, est.role),
                           style: TextStyle(
                             fontSize:   11,
                             fontWeight: FontWeight.w600,
@@ -3751,19 +3773,19 @@ class _StaffEstCard extends StatelessWidget {
                   if (est.canManagePromos)
                     _PermChip(
                       icon:  Icons.campaign_outlined,
-                      label: 'Gestionar promos',
+                      label: AppLocalizations.of(context).bizPermManagePromosShort,
                       color: color,
                     ),
                   if (est.canViewStats)
                     _PermChip(
                       icon:  Icons.bar_chart_outlined,
-                      label: 'Ver estadísticas',
+                      label: AppLocalizations.of(context).bizPermViewStats,
                       color: color,
                     ),
                   if (est.canScanQr)
                     _PermChip(
                       icon:  Icons.qr_code_scanner_outlined,
-                      label: 'Escanear sellos',
+                      label: AppLocalizations.of(context).bizScanStamps,
                       color: color,
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
@@ -3781,7 +3803,7 @@ class _StaffEstCard extends StatelessWidget {
                   if (est.canManagePayments)
                     _PermChip(
                       icon:  Icons.payments_outlined,
-                      label: 'Publicidad',
+                      label: AppLocalizations.of(context).bizAdvertising,
                       color: const Color(0xFF2E7D32),
                     ),
                 ],
@@ -3897,12 +3919,13 @@ class _StaffPromoTile extends StatelessWidget {
     this.onEdit,
   });
 
-  String _typeLabel(String type) {
+  String _typeLabel(BuildContext context, String type) {
+    final l = AppLocalizations.of(context);
     switch (type) {
-      case 'flash':     return 'Flash';
-      case 'daily':     return 'Diaria';
-      case 'weekly':    return 'Semanal';
-      case 'permanent': return 'Permanente';
+      case 'flash':     return l.bizPromoTypeFlash;
+      case 'daily':     return l.bizPromoTypeDaily;
+      case 'weekly':    return l.bizPromoTypeWeekly;
+      case 'permanent': return l.bizPromoTypePermanent;
       default:          return type;
     }
   }
@@ -3972,7 +3995,7 @@ class _StaffPromoTile extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
-                        _typeLabel(promo.type),
+                        _typeLabel(context, promo.type),
                         style: TextStyle(fontSize: 11, color: color),
                       ),
                     ],
@@ -3992,7 +4015,7 @@ class _StaffPromoTile extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    active ? 'Activa' : 'Inactiva',
+                    active ? AppLocalizations.of(context).bizActive : AppLocalizations.of(context).bizInactive,
                     style: TextStyle(
                       fontSize:   10,
                       fontWeight: FontWeight.w600,
@@ -4065,9 +4088,10 @@ class _TopUpSheetState extends State<_TopUpSheet> {
   Future<void> _pay() async {
     final amount = _amount;
     if (amount == null || amount < 50) {
-      setState(() => _error = 'Ingresa un monto mínimo de \$50 MXN');
+      setState(() => _error = AppLocalizations.of(context).bizMinAmount50);
       return;
     }
+    final cannotOpenMsg = AppLocalizations.of(context).bizCannotOpenMercadoPago;
     setState(() { _loading = true; _error = null; });
     try {
       final repo = AdsRepository();
@@ -4077,20 +4101,19 @@ class _TopUpSheetState extends State<_TopUpSheet> {
       );
       final uri = Uri.parse(initPoint);
       if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-        throw Exception('No se pudo abrir MercadoPago');
+        throw Exception(cannotOpenMsg);
       }
       if (!mounted) return;
       // Capturar referencias ANTES del pop (el contexto se desmonta al hacer pop)
       final messenger = ScaffoldMessenger.of(context);
       final adsCubit  = context.read<BusinessAdsCubit>();
+      final redirectMsg = AppLocalizations.of(context).bizRedirectedToMercadoPago;
       Navigator.of(context).pop();
       messenger.showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Redirigido a MercadoPago. El saldo se actualizará en minutos tras el pago.',
-          ),
+        SnackBar(
+          content: Text(redirectMsg),
           behavior: SnackBarBehavior.floating,
-          duration: Duration(seconds: 6),
+          duration: const Duration(seconds: 6),
         ),
       );
       // Recargar el estado publicitario para reflejar cualquier cambio de saldo
@@ -4123,9 +4146,9 @@ class _TopUpSheetState extends State<_TopUpSheet> {
                 const Icon(Icons.account_balance_wallet_outlined,
                     size: 20, color: _adColor),
                 const SizedBox(width: 8),
-                const Expanded(
-                  child: Text('Recargar crédito publicitario',
-                      style: TextStyle(
+                Expanded(
+                  child: Text(AppLocalizations.of(context).bizTopUpAdCredit,
+                      style: const TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 17)),
                 ),
                 IconButton(
@@ -4136,15 +4159,14 @@ class _TopUpSheetState extends State<_TopUpSheet> {
             ),
             const SizedBox(height: 4),
             Text(
-              'Cada impresión deduce crédito según el formato de la campaña. '
-              'El pago es procesado por MercadoPago.',
+              AppLocalizations.of(context).bizTopUpDesc,
               style: TextStyle(fontSize: 12, color: Colors.grey.shade600, height: 1.4),
             ),
             const SizedBox(height: 20),
 
             // ── Montos predefinidos ─────────────────────────────────────────
-            const Text('MONTO A RECARGAR',
-                style: TextStyle(
+            Text(AppLocalizations.of(context).bizAmountToTopUp,
+                style: const TextStyle(
                     fontSize: 11, fontWeight: FontWeight.w700,
                     color: Color(0xFF9E9E9E), letterSpacing: 0.6)),
             const SizedBox(height: 10),
@@ -4195,10 +4217,10 @@ class _TopUpSheetState extends State<_TopUpSheet> {
                 _error    = null;
               }),
               decoration: InputDecoration(
-                labelText:   'Otro monto',
+                labelText:   AppLocalizations.of(context).bizOtherAmount,
                 prefixText:  '\$ ',
                 suffixText:  'MXN',
-                helperText:  'Mínimo \$50 MXN',
+                helperText:  AppLocalizations.of(context).bizMin50Mxn,
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10)),
                 contentPadding:
@@ -4247,7 +4269,7 @@ class _TopUpSheetState extends State<_TopUpSheet> {
                     const Icon(Icons.info_outline, size: 16, color: _adColor),
                     const SizedBox(width: 8),
                     Text(
-                      'Total a pagar: ${fmt.format(_amount!)} MXN',
+                      AppLocalizations.of(context).bizTotalToPay(fmt.format(_amount!)),
                       style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -4271,7 +4293,9 @@ class _TopUpSheetState extends State<_TopUpSheet> {
                             strokeWidth: 2, color: Colors.white))
                     : const Icon(Icons.open_in_new, size: 18),
                 label: Text(
-                  _loading ? 'Preparando pago…' : 'Pagar con MercadoPago',
+                  _loading
+                      ? AppLocalizations.of(context).bizPreparingPayment
+                      : AppLocalizations.of(context).bizPayWithMercadoPago,
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 14),
                 ),
@@ -4288,7 +4312,7 @@ class _TopUpSheetState extends State<_TopUpSheet> {
             const SizedBox(height: 8),
             Center(
               child: Text(
-                'Serás redirigido al sitio de MercadoPago.',
+                AppLocalizations.of(context).bizWillRedirectMercadoPago,
                 style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
               ),
             ),

@@ -6,6 +6,7 @@ import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/repositories/auth_repository.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 
 // Logo oficial de Google (multicolor) embebido como SVG.
 const _googleLogoSvg = '''
@@ -106,7 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   const SizedBox(height: 24),
                   Text(
-                    'Bienvenido a Promofy',
+                    AppLocalizations.of(context).loginWelcome,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppColors.textDark,
@@ -114,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Descubre promociones cerca de ti',
+                    AppLocalizations.of(context).loginSubtitle,
                     style: TextStyle(color: Colors.grey[600], fontSize: 15),
                   ),
 
@@ -143,9 +144,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           height: 22,
                         ),
                         const SizedBox(width: 12),
-                        const Text(
-                          'Continuar con Google',
-                          style: TextStyle(
+                        Text(
+                          AppLocalizations.of(context).loginContinueGoogle,
+                          style: const TextStyle(
                             color:      AppColors.textDark,
                             fontSize:   15,
                             fontWeight: FontWeight.w500,
@@ -164,7 +165,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         child:
-                            Text('o', style: TextStyle(color: Colors.grey[500])),
+                            Text(AppLocalizations.of(context).loginOr, style: TextStyle(color: Colors.grey[500])),
                       ),
                       const Expanded(child: Divider()),
                     ],
@@ -180,16 +181,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         TextFormField(
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
-                          decoration: const InputDecoration(
-                            labelText: 'Correo electrónico',
-                            prefixIcon: Icon(Icons.email_outlined),
+                          decoration: InputDecoration(
+                            labelText: AppLocalizations.of(context).loginEmailLabel,
+                            prefixIcon: const Icon(Icons.email_outlined),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Ingresa tu correo';
+                              return AppLocalizations.of(context).loginEmailEmpty;
                             }
                             if (!value.contains('@')) {
-                              return 'Correo no válido';
+                              return AppLocalizations.of(context).loginEmailInvalid;
                             }
                             return null;
                           },
@@ -199,7 +200,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           controller: _passwordController,
                           obscureText: _obscurePassword,
                           decoration: InputDecoration(
-                            labelText: 'Contraseña',
+                            labelText: AppLocalizations.of(context).loginPasswordLabel,
                             prefixIcon: const Icon(Icons.lock_outlined),
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -213,10 +214,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Ingresa tu contraseña';
+                              return AppLocalizations.of(context).loginPasswordEmpty;
                             }
                             if (!_isSignIn && value.length < 6) {
-                              return 'Mínimo 6 caracteres';
+                              return AppLocalizations.of(context).loginPasswordMinLength;
                             }
                             return null;
                           },
@@ -237,9 +238,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           minimumSize: Size.zero,
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
-                        child: const Text(
-                          '¿Olvidaste tu contraseña?',
-                          style: TextStyle(
+                        child: Text(
+                          AppLocalizations.of(context).loginForgotPassword,
+                          style: const TextStyle(
                             fontSize: 13,
                             color: AppColors.primary,
                           ),
@@ -260,7 +261,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 color: Colors.white, strokeWidth: 2),
                           )
                         : Text(
-                            _isSignIn ? 'Iniciar sesión' : 'Crear cuenta',
+                            _isSignIn
+                                ? AppLocalizations.of(context).loginSignInButton
+                                : AppLocalizations.of(context).loginSignUpButton,
                             style: const TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w600),
                           ),
@@ -274,14 +277,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       Text(
                         _isSignIn
-                            ? '¿No tienes cuenta? '
-                            : '¿Ya tienes cuenta? ',
+                            ? AppLocalizations.of(context).loginNoAccount
+                            : AppLocalizations.of(context).loginHaveAccount,
                         style: TextStyle(color: Colors.grey[600]),
                       ),
                       GestureDetector(
                         onTap: () => setState(() => _isSignIn = !_isSignIn),
                         child: Text(
-                          _isSignIn ? 'Regístrate' : 'Inicia sesión',
+                          _isSignIn
+                              ? AppLocalizations.of(context).loginSignUpLink
+                              : AppLocalizations.of(context).loginSignInLink,
                           style: const TextStyle(
                             color: AppColors.primary,
                             fontWeight: FontWeight.bold,
@@ -319,7 +324,7 @@ class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
   Future<void> _send() async {
     final email = widget.emailCtrl.text.trim();
     if (email.isEmpty || !email.contains('@')) {
-      setState(() => _error = 'Ingresa un correo válido.');
+      setState(() => _error = AppLocalizations.of(context).loginResetInvalidEmail);
       return;
     }
     setState(() { _sending = true; _error = null; });
@@ -335,9 +340,9 @@ class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: const Text(
-        'Recuperar contraseña',
-        style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+      title: Text(
+        AppLocalizations.of(context).loginResetTitle,
+        style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
       ),
       content: _sent ? _buildSuccess() : _buildForm(),
       actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
@@ -351,7 +356,7 @@ class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text('Listo'),
+                  child: Text(AppLocalizations.of(context).loginResetDone),
                 ),
               ),
             ]
@@ -367,7 +372,7 @@ class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12)),
                       ),
-                      child: const Text('Cancelar'),
+                      child: Text(AppLocalizations.of(context).loginResetCancel),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -385,8 +390,8 @@ class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
                               child: CircularProgressIndicator(
                                   strokeWidth: 2.5, color: Colors.white),
                             )
-                          : const Text('Enviar',
-                              style: TextStyle(fontWeight: FontWeight.w600)),
+                          : Text(AppLocalizations.of(context).loginResetSend,
+                              style: const TextStyle(fontWeight: FontWeight.w600)),
                     ),
                   ),
                 ],
@@ -401,7 +406,7 @@ class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Te enviaremos un enlace para restablecer tu contraseña.',
+          AppLocalizations.of(context).loginResetDescription,
           style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
         ),
         const SizedBox(height: 14),
@@ -411,7 +416,7 @@ class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
           textInputAction: TextInputAction.send,
           onSubmitted:     (_) => _send(),
           decoration: InputDecoration(
-            hintText:   'tu@correo.com',
+            hintText:   AppLocalizations.of(context).loginResetEmailHint,
             prefixIcon: const Icon(Icons.email_outlined),
             errorText:  _error,
             filled:     true,
@@ -453,7 +458,7 @@ class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
                   color: Colors.green.shade600, size: 44),
               const SizedBox(height: 10),
               Text(
-                '¡Correo enviado!',
+                AppLocalizations.of(context).loginResetSuccessTitle,
                 style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
@@ -461,7 +466,7 @@ class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
               ),
               const SizedBox(height: 4),
               Text(
-                'Revisa tu bandeja de entrada y sigue las instrucciones.',
+                AppLocalizations.of(context).loginResetSuccessBody,
                 textAlign: TextAlign.center,
                 style:
                     TextStyle(fontSize: 12, color: Colors.green.shade700),
@@ -471,7 +476,7 @@ class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
         ),
         const SizedBox(height: 8),
         Text(
-          'Si no llega en unos minutos, revisa la carpeta de spam.',
+          AppLocalizations.of(context).loginResetSpamHint,
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
         ),

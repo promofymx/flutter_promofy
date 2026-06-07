@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/establishment_model.dart';
@@ -211,8 +212,8 @@ class _LoadedView extends StatelessWidget {
                             ),
                           ),
                           if (!establishment.hasRealRating)
-                            const Text(' · Nuevo',
-                                style: TextStyle(
+                            Text(' · ${AppLocalizations.of(context).restaurantNew}',
+                                style: const TextStyle(
                                     color:    Colors.white70,
                                     fontSize: 11)),
                         ],
@@ -339,8 +340,8 @@ class _InfoSection extends StatelessWidget {
                             ? Icons.directions_car_outlined
                             : Icons.storefront_outlined,
                         label: establishment.establishmentType == 'urban_mobile'
-                            ? 'Urbano / Móvil'
-                            : 'Local',
+                            ? AppLocalizations.of(context).restaurantTypeUrbanMobile
+                            : AppLocalizations.of(context).restaurantTypeLocal,
                         color: AppColors.secondary,
                       ),
                     if (establishment.adultPromotions)
@@ -370,7 +371,7 @@ class _InfoSection extends StatelessWidget {
                   ),
                   if (!establishment.hasRealRating)
                     Text(
-                      ' · Nuevo',
+                      ' · ${AppLocalizations.of(context).restaurantNew}',
                       style: TextStyle(
                           fontSize: 10,
                           color:    Colors.grey.shade500),
@@ -449,7 +450,7 @@ class _InfoSection extends StatelessWidget {
                 if (hasPhone && !hasWhatsApp)
                   _ContactBtn(
                     icon:  Icons.phone_outlined,
-                    label: 'Llamar',
+                    label: AppLocalizations.of(context).restaurantCall,
                     color: AppColors.primary,
                     onTap: () {
                       context.read<RestaurantDetailCubit>()
@@ -482,7 +483,7 @@ class _InfoSection extends StatelessWidget {
                 if (hasWebsite)
                   _ContactBtn(
                     icon:  Icons.language_outlined,
-                    label: 'Web',
+                    label: AppLocalizations.of(context).restaurantWebsite,
                     color: Colors.grey.shade600,
                     onTap: () {
                       context.read<RestaurantDetailCubit>()
@@ -548,7 +549,7 @@ class _CharsAndPaymentsSection extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Características',
+                        AppLocalizations.of(context).restaurantCharacteristics,
                         style: TextStyle(
                           fontSize:   10,
                           fontWeight: FontWeight.w600,
@@ -569,7 +570,7 @@ class _CharsAndPaymentsSection extends StatelessWidget {
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
-                                  c.name as String,
+                                  c.localizedName(Localizations.localeOf(context).languageCode) as String,
                                   style: const TextStyle(
                                       fontSize: 11,
                                       color: AppColors.textDark),
@@ -612,7 +613,7 @@ class _CharsAndPaymentsSection extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Métodos de pago',
+                        AppLocalizations.of(context).restaurantPaymentMethods,
                         style: TextStyle(
                           fontSize:   10,
                           fontWeight: FontWeight.w600,
@@ -692,7 +693,7 @@ class _ScheduleSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Horario',
+            AppLocalizations.of(context).restaurantSchedule,
             style: TextStyle(
               fontSize:   10,
               fontWeight: FontWeight.w600,
@@ -736,7 +737,7 @@ class _ScheduleSection extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    closed ? 'Cerrado' : '$open–$close',
+                    closed ? AppLocalizations.of(context).restaurantClosed : '$open–$close',
                     style: TextStyle(
                       fontSize:   10,
                       color: isToday
@@ -799,7 +800,7 @@ class _MapSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Ubicación',
+            AppLocalizations.of(context).restaurantLocation,
             style: TextStyle(
               fontSize:   10,
               fontWeight: FontWeight.w600,
@@ -845,7 +846,7 @@ class _MapSection extends StatelessWidget {
                               size:  20,
                               color: Colors.grey.shade400),
                           const SizedBox(width: 6),
-                          Text('Ver en mapa',
+                          Text(AppLocalizations.of(context).restaurantViewOnMap,
                               style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey.shade500)),
@@ -869,16 +870,16 @@ class _MapSection extends StatelessWidget {
                             ),
                           ],
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.directions,
+                            const Icon(Icons.directions,
                                 size: 12,
                                 color: Color(0xFF4285F4)),
-                            SizedBox(width: 4),
+                            const SizedBox(width: 4),
                             Text(
-                              'Cómo llegar',
-                              style: TextStyle(
+                              AppLocalizations.of(context).restaurantGetDirections,
+                              style: const TextStyle(
                                 fontSize:   11,
                                 fontWeight: FontWeight.w600,
                                 color:      Color(0xFF4285F4),
@@ -915,7 +916,7 @@ class _PhotoGallerySection extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(14, 12, 14, 8),
             child: Text(
-              'Fotos',
+              AppLocalizations.of(context).restaurantPhotos,
               style: TextStyle(
                 fontSize:   10,
                 fontWeight: FontWeight.w600,
@@ -1066,7 +1067,7 @@ class _LoyaltyBanner extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Programa de lealtad',
+            AppLocalizations.of(context).restaurantLoyaltyProgram,
             style: TextStyle(
               fontSize:   10,
               fontWeight: FontWeight.w600,
@@ -1117,7 +1118,7 @@ class _LoyaltyBanner extends StatelessWidget {
                               color:    AppColors.textDark),
                           children: [
                             TextSpan(
-                              text: '${program.visitsRequired} visitas ',
+                              text: '${AppLocalizations.of(context).restaurantVisitsCount(program.visitsRequired)} ',
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color:      AppColors.primary),
@@ -1137,10 +1138,10 @@ class _LoyaltyBanner extends StatelessWidget {
                           const SizedBox(width: 3),
                           Text(
                             daysLeft > 0
-                                ? 'Vigente hasta '
-                                    '${_fmt.format(program.endsAt)}'
-                                    ' · $daysLeft días'
-                                : 'Terminó ${_fmt.format(program.endsAt)}',
+                                ? AppLocalizations.of(context).restaurantValidUntil(
+                                    _fmt.format(program.endsAt), daysLeft)
+                                : AppLocalizations.of(context).restaurantEnded(
+                                    _fmt.format(program.endsAt)),
                             style: TextStyle(
                               fontSize: 10,
                               color:    daysLeft <= 7
@@ -1176,22 +1177,22 @@ class _LoyaltyBanner extends StatelessWidget {
           const SizedBox(height: 10),
           GestureDetector(
             onTap: () => context.go('/stamps'),
-            child: const Row(
+            child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.qr_code_2,
+                const Icon(Icons.qr_code_2,
                     size: 14, color: AppColors.primary),
-                SizedBox(width: 5),
+                const SizedBox(width: 5),
                 Text(
-                  'Ver mis sellos y QR',
-                  style: TextStyle(
+                  AppLocalizations.of(context).restaurantViewStampsAndQr,
+                  style: const TextStyle(
                     fontSize:   12,
                     fontWeight: FontWeight.w600,
                     color:      AppColors.primary,
                   ),
                 ),
-                SizedBox(width: 3),
-                Icon(Icons.chevron_right,
+                const SizedBox(width: 3),
+                const Icon(Icons.chevron_right,
                     size: 14, color: AppColors.primary),
               ],
             ),
@@ -1241,7 +1242,7 @@ class _PromosSection extends StatelessWidget {
           Row(
             children: [
               Text(
-                'Promociones activas',
+                AppLocalizations.of(context).restaurantActivePromos,
                 style: TextStyle(
                   fontSize:   10,
                   fontWeight: FontWeight.w600,
@@ -1278,8 +1279,8 @@ class _PromosSection extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 4),
               child: Text(
                 weekPromos.isEmpty
-                    ? 'Sin promociones activas por ahora.'
-                    : 'Sin promociones para hoy.',
+                    ? AppLocalizations.of(context).restaurantNoActivePromos
+                    : AppLocalizations.of(context).restaurantNoPromosToday,
                 style: TextStyle(
                     fontSize: 13, color: Colors.grey.shade500),
               ),
@@ -1301,7 +1302,7 @@ class _PromosSection extends StatelessWidget {
                     size: 11, color: Colors.grey),
                 const SizedBox(width: 5),
                 Text(
-                  'También esta semana',
+                  AppLocalizations.of(context).restaurantAlsoThisWeek,
                   style: TextStyle(
                     fontSize:   10,
                     fontWeight: FontWeight.w600,
@@ -1428,14 +1429,14 @@ class _PromoListCard extends StatelessWidget {
                               color:        AppColors.primary,
                               borderRadius: BorderRadius.circular(6),
                             ),
-                            child: const Row(
+                            child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.bolt,
+                                const Icon(Icons.bolt,
                                     size: 9, color: Color(0xFFFFD700)),
-                                SizedBox(width: 2),
-                                Text('Flash',
-                                    style: TextStyle(
+                                const SizedBox(width: 2),
+                                Text(AppLocalizations.of(context).restaurantFlash,
+                                    style: const TextStyle(
                                         fontSize:   9,
                                         fontWeight: FontWeight.w600,
                                         color:      Colors.white)),
@@ -1759,7 +1760,7 @@ class _ErrorScaffold extends StatelessWidget {
             ElevatedButton(
               onPressed: () =>
                   context.read<RestaurantDetailCubit>().load(),
-              child: const Text('Reintentar'),
+              child: Text(AppLocalizations.of(context).restaurantRetry),
             ),
           ],
         ),

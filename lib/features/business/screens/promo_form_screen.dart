@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'package:promofy/l10n/app_localizations.dart';
+
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/category_model.dart';
 import '../../../data/models/promotion_model.dart';
@@ -188,7 +190,7 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
         initialTime: initial != null
             ? TimeOfDay.fromDateTime(initial)
             : const TimeOfDay(hour: 21, minute: 0),
-        helpText: 'Hora de fin (mismo día)',
+        helpText: AppLocalizations.of(context).promoFormEndTimeSameDay,
       );
       if (time == null || !mounted) return;
       setState(() {
@@ -206,7 +208,9 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
       initialDate: initial ?? now,
       firstDate:   now,
       lastDate:    now.add(const Duration(days: 365)),
-      helpText:    isStart ? 'Fecha de inicio' : 'Fecha de fin',
+      helpText:    isStart
+          ? AppLocalizations.of(context).promoFormStartDate
+          : AppLocalizations.of(context).promoFormEndDate,
     );
     if (date == null || !mounted) return;
 
@@ -215,7 +219,9 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
       initialTime: initial != null
           ? TimeOfDay.fromDateTime(initial)
           : TimeOfDay(hour: isStart ? 18 : 21, minute: 0),
-      helpText: isStart ? 'Hora de inicio' : 'Hora de fin',
+      helpText: isStart
+          ? AppLocalizations.of(context).promoFormStartTime
+          : AppLocalizations.of(context).promoFormEndTime,
     );
     if (time == null || !mounted) return;
 
@@ -330,8 +336,8 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                       onPressed: onStayHere,
-                      child: const Text('Seleccionar esta',
-                          style: TextStyle(
+                      child: Text(AppLocalizations.of(context).promoFormSelectThis,
+                          style: const TextStyle(
                               fontSize: 11, color: AppColors.primary)),
                     ),
                   ],
@@ -355,8 +361,8 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 12, 8, 4),
                   child: Row(children: [
-                    const Text('Categoría de la promoción',
-                        style: TextStyle(
+                    Text(AppLocalizations.of(context).promoFormCategorySheetTitle,
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize:   17,
                           color:      AppColors.textDark,
@@ -368,8 +374,8 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
                           Navigator.pop(ctx);
                           setState(() => _selectedCategoryId = null);
                         },
-                        child: const Text('Limpiar',
-                            style: TextStyle(color: AppColors.primary)),
+                        child: Text(AppLocalizations.of(context).promoFormClear,
+                            style: const TextStyle(color: AppColors.primary)),
                       ),
                   ]),
                 ),
@@ -383,7 +389,7 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // ── L1: Categoría ─────────────────────────────
-                        secHeader('Categoría'),
+                        secHeader(AppLocalizations.of(context).promoFormCategoryLevel1),
                         ...buildItems(l1List, sheetL1, (id) {
                           if (!parentIds.contains(id)) {
                             Navigator.pop(ctx);
@@ -396,8 +402,8 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
                         // ── L2: Subcategoría ──────────────────────────
                         if (l2List.isNotEmpty) ...[
                           Divider(color: Colors.grey.shade100, height: 1),
-                          secHeader('Subcategoría',
-                              tag: 'opcional',
+                          secHeader(AppLocalizations.of(context).promoFormSubcategory,
+                              tag: AppLocalizations.of(context).promoFormOptionalTag,
                               onStayHere: () {
                                 Navigator.pop(ctx);
                                 setState(() => _selectedCategoryId = sheetL1);
@@ -415,8 +421,8 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
                         // ── L3: Especialidad ──────────────────────────
                         if (l3List.isNotEmpty) ...[
                           Divider(color: Colors.grey.shade100, height: 1),
-                          secHeader('Especialidad',
-                              tag: 'opcional',
+                          secHeader(AppLocalizations.of(context).promoFormSpecialty,
+                              tag: AppLocalizations.of(context).promoFormOptionalTag,
                               onStayHere: () {
                                 Navigator.pop(ctx);
                                 setState(() => _selectedCategoryId = sheetL2);
@@ -441,18 +447,19 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
   }
 
   String? _validate() {
-    if (_nameCtrl.text.trim().isEmpty) return 'El nombre es obligatorio.';
+    final l10n = AppLocalizations.of(context);
+    if (_nameCtrl.text.trim().isEmpty) return l10n.promoFormErrorNameRequired;
 
     if (_type == 'normal') {
-      if (_activeDays.isEmpty) return 'Selecciona al menos un día.';
+      if (_activeDays.isEmpty) return l10n.promoFormErrorSelectDay;
     } else if (_type == 'flash') {
-      if (_flashStart == null) return 'Indica la fecha y hora de inicio.';
-      if (_flashEnd   == null) return 'Indica la hora de fin.';
+      if (_flashStart == null) return l10n.promoFormErrorStartDateTime;
+      if (_flashEnd   == null) return l10n.promoFormErrorEndTime;
       if (!_flashEnd!.isAfter(_flashStart!)) {
-        return 'La hora de fin debe ser posterior al inicio.';
+        return l10n.promoFormErrorEndAfterStart;
       }
       if (!_sameDay(_flashStart!, _flashEnd!)) {
-        return 'La promo flash debe iniciar y terminar el mismo día.';
+        return l10n.promoFormErrorSameDay;
       }
     }
     // birthday: no requiere validación de horario (siempre todos los días)
@@ -481,10 +488,10 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
                   size: 28, color: Colors.orange.shade700),
             ),
             const SizedBox(height: 14),
-            const Text(
-              '¿Todo está correcto?',
+            Text(
+              AppLocalizations.of(context).promoFormConfirmTitle,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -501,7 +508,7 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
-                  '"$name"',
+                  AppLocalizations.of(context).promoFormConfirmName(name),
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize:   14,
@@ -517,16 +524,15 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
               text: TextSpan(
                 style: TextStyle(
                     fontSize: 13, color: Colors.grey.shade700, height: 1.5),
-                children: const [
-                  TextSpan(text: 'Una vez creada, '),
+                children: [
+                  TextSpan(text: AppLocalizations.of(context).promoFormConfirmIntro),
                   TextSpan(
-                    text: 'no podrás editar esta promoción durante 15 días.',
-                    style: TextStyle(
+                    text: AppLocalizations.of(context).promoFormConfirmLockWarning,
+                    style: const TextStyle(
                         fontWeight: FontWeight.w600, color: Colors.black87),
                   ),
                   TextSpan(
-                    text: '\n\nRevisa con detalle el nombre, descripción, '
-                        'horarios y días activos antes de continuar.',
+                    text: AppLocalizations.of(context).promoFormConfirmReview,
                   ),
                 ],
               ),
@@ -542,7 +548,7 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
             ),
-            child: const Text('Revisar más'),
+            child: Text(AppLocalizations.of(context).promoFormReviewMore),
           ),
           const SizedBox(height: 8),
           ElevatedButton(
@@ -554,9 +560,9 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
             ),
-            child: const Text(
-              'Sí, crear promoción',
-              style: TextStyle(fontWeight: FontWeight.bold),
+            child: Text(
+              AppLocalizations.of(context).promoFormConfirmCreate,
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -710,7 +716,7 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
       if (mounted) {
         setState(() => _isSaving = false);
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content:         Text('Error al guardar: ${e.toString()}'),
+          content:         Text(AppLocalizations.of(context).promoFormSaveError(e.toString())),
           backgroundColor: Colors.red.shade700,
           behavior:        SnackBarBehavior.floating,
         ));
@@ -722,18 +728,18 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title:   const Text('Eliminar promoción'),
-        content: const Text(
-            '¿Eliminar esta promoción? Esta acción no se puede deshacer.'),
+        title:   Text(AppLocalizations.of(context).promoFormDeleteTitle),
+        content: Text(
+            AppLocalizations.of(context).promoFormDeleteConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child:     const Text('Cancelar'),
+            child:     Text(AppLocalizations.of(context).promoFormCancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             style:     TextButton.styleFrom(foregroundColor: Colors.red),
-            child:     const Text('Eliminar'),
+            child:     Text(AppLocalizations.of(context).promoFormDelete),
           ),
         ],
       ),
@@ -752,7 +758,7 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
       if (mounted) {
         setState(() => _isSaving = false);
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content:         Text('Error al eliminar: ${e.toString()}'),
+          content:         Text(AppLocalizations.of(context).promoFormDeleteError(e.toString())),
           backgroundColor: Colors.red.shade700,
           behavior:        SnackBarBehavior.floating,
         ));
@@ -769,7 +775,9 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Text(
-          widget.isEditing ? 'Editar promoción' : 'Nueva promoción',
+          widget.isEditing
+              ? AppLocalizations.of(context).promoFormEditTitle
+              : AppLocalizations.of(context).promoFormNewTitle,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         actions: [
@@ -777,7 +785,7 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
             IconButton(
               onPressed: _isSaving ? null : _delete,
               icon:  const Icon(Icons.delete_outline, color: Colors.red),
-              tooltip: 'Eliminar',
+              tooltip: AppLocalizations.of(context).promoFormDelete,
             ),
         ],
       ),
@@ -803,26 +811,26 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const _Label('Tipo de promoción'),
+                          _Label(AppLocalizations.of(context).promoFormTypeLabel),
                           const SizedBox(height: 10),
                           Wrap(
                             spacing: 10,
                             runSpacing: 8,
                             children: [
                               _TypeChip(
-                                label:    'Normal',
+                                label:    AppLocalizations.of(context).promoFormTypeNormal,
                                 icon:     Icons.event_repeat_outlined,
                                 selected: _type == 'normal',
                                 onTap:    () => setState(() => _type = 'normal'),
                               ),
                               _TypeChip(
-                                label:    'Flash ⚡',
+                                label:    AppLocalizations.of(context).promoFormTypeFlash,
                                 icon:     Icons.bolt_outlined,
                                 selected: _type == 'flash',
                                 onTap:    () => setState(() => _type = 'flash'),
                               ),
                               _TypeChip(
-                                label:    'Cumpleañero 🎂',
+                                label:    AppLocalizations.of(context).promoFormTypeBirthday,
                                 icon:     Icons.cake_outlined,
                                 selected: _type == 'birthday',
                                 onTap:    () => setState(() => _type = 'birthday'),
@@ -832,10 +840,10 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
                           const SizedBox(height: 8),
                           Text(
                             _type == 'normal'
-                                ? 'Se repite cada semana en los días y horario elegidos.'
+                                ? AppLocalizations.of(context).promoFormTypeNormalDesc
                                 : _type == 'flash'
-                                    ? 'Evento único, válido un solo día. Máximo 1 flash por mes.'
-                                    : 'Disponible todos los días del año para clientes que cumplan años.',
+                                    ? AppLocalizations.of(context).promoFormTypeFlashDesc
+                                    : AppLocalizations.of(context).promoFormTypeBirthdayDesc,
                             style: TextStyle(
                                 fontSize: 12, color: Colors.grey.shade500, height: 1.4),
                           ),
@@ -849,21 +857,21 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const _Label('Nombre *'),
+                          _Label(AppLocalizations.of(context).promoFormNameLabel),
                           const SizedBox(height: 6),
                           TextFormField(
                             controller:  _nameCtrl,
-                            decoration:  _inputDeco('Ej: 2x1 en micheladas'),
+                            decoration:  _inputDeco(AppLocalizations.of(context).promoFormNameHint),
                             maxLength:   80,
                             textCapitalization: TextCapitalization.sentences,
                           ),
                           const SizedBox(height: 12),
-                          const _Label('Descripción'),
+                          _Label(AppLocalizations.of(context).promoFormDescriptionLabel),
                           const SizedBox(height: 6),
                           TextFormField(
                             controller: _descCtrl,
                             decoration: _inputDeco(
-                                'Cuéntale a tus clientes los detalles'),
+                                AppLocalizations.of(context).promoFormDescriptionHint),
                             maxLength:  300,
                             maxLines:   3,
                             textCapitalization: TextCapitalization.sentences,
@@ -922,23 +930,23 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const _Label('Regalo de cumpleaños *'),
+                            _Label(AppLocalizations.of(context).promoFormBirthdayGiftLabel),
                             const SizedBox(height: 6),
                             TextFormField(
                               controller: _birthdayGiftCtrl,
                               decoration: _inputDeco(
-                                  'Ej: Postre gratis, copa de cortesía…'),
+                                  AppLocalizations.of(context).promoFormBirthdayGiftHint),
                               maxLength: 200,
                               maxLines:  2,
                               textCapitalization: TextCapitalization.sentences,
                             ),
                             const SizedBox(height: 12),
-                            const _Label('Condiciones (opcional)'),
+                            _Label(AppLocalizations.of(context).promoFormBirthdayTermsLabel),
                             const SizedBox(height: 6),
                             TextFormField(
                               controller: _birthdayTermsCtrl,
                               decoration: _inputDeco(
-                                  'Ej: Presentar ID el día de tu cumpleaños'),
+                                  AppLocalizations.of(context).promoFormBirthdayTermsHint),
                               maxLength: 300,
                               maxLines:  2,
                               textCapitalization: TextCapitalization.sentences,
@@ -954,7 +962,7 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const _Label('Foto (opcional)'),
+                          _Label(AppLocalizations.of(context).promoFormPhotoLabel),
                           const SizedBox(height: 10),
                           _PhotoPicker(
                             photoBytes: _photoBytes,
@@ -977,7 +985,7 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const _Label('Categoría (opcional)'),
+                          _Label(AppLocalizations.of(context).promoFormCategoryLabel),
                           const SizedBox(height: 10),
                           GestureDetector(
                             onTap: _categories.isEmpty ? null : _showCategorySheet,
@@ -1013,10 +1021,10 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
                                                       _selectedCategoryId)
                                                   .firstOrNull
                                                   ?.name ??
-                                              'Categoría seleccionada')
+                                              AppLocalizations.of(context).promoFormCategorySelected)
                                           : _categories.isEmpty
-                                              ? 'Cargando categorías...'
-                                              : 'Sin categoría',
+                                              ? AppLocalizations.of(context).promoFormCategoryLoading
+                                              : AppLocalizations.of(context).promoFormCategoryNone,
                                       style: TextStyle(
                                         fontSize:   14,
                                         color: _selectedCategoryId != null
@@ -1052,14 +1060,14 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
-                                  'Contenido para adultos',
-                                  style: TextStyle(
+                                Text(
+                                  AppLocalizations.of(context).promoFormAdultTitle,
+                                  style: const TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 14),
                                 ),
                                 Text(
-                                  'Solo visible para usuarios +18',
+                                  AppLocalizations.of(context).promoFormAdultSubtitle,
                                   style: TextStyle(
                                       fontSize: 12,
                                       color: Colors.grey.shade500),
@@ -1095,8 +1103,8 @@ class _PromoFormScreenState extends State<PromoFormScreen> {
                   ),
                   child: Text(
                     widget.isEditing
-                        ? 'Guardar cambios'
-                        : 'Crear promoción',
+                        ? AppLocalizations.of(context).promoFormSaveChanges
+                        : AppLocalizations.of(context).promoFormCreate,
                     style: const TextStyle(
                         fontSize: 16, fontWeight: FontWeight.w600),
                   ),
@@ -1135,7 +1143,7 @@ class _NormalSchedule extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _Label('Días activos *'),
+        _Label(AppLocalizations.of(context).promoFormActiveDaysLabel),
         const SizedBox(height: 8),
         Wrap(
           spacing: 6,
@@ -1150,13 +1158,13 @@ class _NormalSchedule extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
-        const _Label('Horario'),
+        _Label(AppLocalizations.of(context).promoFormScheduleLabel),
         const SizedBox(height: 8),
         Row(
           children: [
             Expanded(
               child: _TimePicker(
-                label: 'Inicio',
+                label: AppLocalizations.of(context).promoFormStartLabel,
                 time:  displayTime(startTime),
                 onTap: onPickStart,
               ),
@@ -1168,7 +1176,7 @@ class _NormalSchedule extends StatelessWidget {
             ),
             Expanded(
               child: _TimePicker(
-                label: 'Fin',
+                label: AppLocalizations.of(context).promoFormEndLabel,
                 time:  displayTime(endTime),
                 onTap: onPickEnd,
               ),
@@ -1205,21 +1213,23 @@ class _FlashSchedule extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _Label('Inicio del evento *'),
+        _Label(AppLocalizations.of(context).promoFormEventStartLabel),
         const SizedBox(height: 8),
         _DateTimePicker(
           value:  flashStart != null ? displayDateTime(flashStart!) : null,
-          hint:   'Seleccionar fecha y hora',
+          hint:   AppLocalizations.of(context).promoFormPickDateTime,
           onTap:  onPickStart,
         ),
         const SizedBox(height: 14),
-        _Label(startSelected ? 'Hora de fin * (mismo día)' : 'Fin del evento *'),
+        _Label(startSelected
+            ? AppLocalizations.of(context).promoFormEndTimeSameDayLabel
+            : AppLocalizations.of(context).promoFormEventEndLabel),
         const SizedBox(height: 8),
         _DateTimePicker(
           value:  flashEnd != null ? displayDateTime(flashEnd!) : null,
           hint:   startSelected
-              ? 'Seleccionar hora de fin'
-              : 'Seleccionar fecha y hora',
+              ? AppLocalizations.of(context).promoFormPickEndTime
+              : AppLocalizations.of(context).promoFormPickDateTime,
           onTap:  onPickEnd,
         ),
         const SizedBox(height: 10),
@@ -1230,8 +1240,7 @@ class _FlashSchedule extends StatelessWidget {
             const SizedBox(width: 5),
             Expanded(
               child: Text(
-                'La promo flash debe comenzar y terminar el mismo día. '
-                'Solo se permite una por mes por negocio.',
+                AppLocalizations.of(context).promoFormFlashInfo,
                 style: TextStyle(
                     fontSize: 11, color: Colors.grey.shade500, height: 1.4),
               ),
@@ -1519,7 +1528,7 @@ class _PhotoPicker extends StatelessWidget {
                         Icon(Icons.add_photo_alternate_outlined,
                             size: 36, color: Colors.grey.shade400),
                         const SizedBox(height: 8),
-                        Text('Toca para agregar foto',
+                        Text(AppLocalizations.of(context).promoFormPhotoTapToAdd,
                             style: TextStyle(
                                 fontSize: 13, color: Colors.grey.shade500)),
                       ],

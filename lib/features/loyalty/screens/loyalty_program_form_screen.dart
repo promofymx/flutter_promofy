@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../cubit/loyalty_cubit.dart';
 import '../cubit/loyalty_state.dart';
@@ -62,8 +63,8 @@ class _LoyaltyProgramFormScreenState extends State<LoyaltyProgramFormScreen> {
     if (!_formKey.currentState!.validate()) return;
     if (_endsAt == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content:  Text('Selecciona la fecha de fin del programa.'),
+        SnackBar(
+          content:  Text(AppLocalizations.of(context).loyaltyFormSelectEndDate),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -85,8 +86,8 @@ class _LoyaltyProgramFormScreenState extends State<LoyaltyProgramFormScreen> {
       Navigator.of(context).pop();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content:         Text('Error al crear el programa. Intenta de nuevo.'),
+        SnackBar(
+          content:         Text(AppLocalizations.of(context).loyaltyFormCreateError),
           backgroundColor: Colors.red,
           behavior:        SnackBarBehavior.floating,
         ),
@@ -102,9 +103,9 @@ class _LoyaltyProgramFormScreenState extends State<LoyaltyProgramFormScreen> {
         backgroundColor: AppColors.background,
         appBar: AppBar(
           backgroundColor: Colors.white,
-          title: const Text(
-            'Nuevo programa de lealtad',
-            style: TextStyle(fontWeight: FontWeight.bold),
+          title: Text(
+            AppLocalizations.of(context).loyaltyFormTitle,
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
         body: Form(
@@ -120,18 +121,15 @@ class _LoyaltyProgramFormScreenState extends State<LoyaltyProgramFormScreen> {
                   borderRadius: BorderRadius.circular(12),
                   border:       Border.all(color: AppColors.primary.withAlpha(40)),
                 ),
-                child: const Row(
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.info_outline, size: 18, color: AppColors.primary),
-                    SizedBox(width: 10),
+                    const Icon(Icons.info_outline, size: 18, color: AppColors.primary),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'El cliente muestra su QR, tú lo escaneas en cada visita. '
-                        'Al completar el número de visitas, recibirá su premio. '
-                        'Cuando el programa termine puedes crear uno nuevo y todos '
-                        'los contadores se reinician.',
-                        style: TextStyle(
+                        AppLocalizations.of(context).loyaltyFormInfo,
+                        style: const TextStyle(
                             fontSize: 13,
                             color:    AppColors.primary,
                             height:   1.4),
@@ -143,9 +141,9 @@ class _LoyaltyProgramFormScreenState extends State<LoyaltyProgramFormScreen> {
               const SizedBox(height: 24),
 
               // ── Visitas requeridas ────────────────────────────────
-              const Text(
-                'Visitas para ganar el premio',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context).loyaltyFormVisitsLabel,
+                style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textDark),
@@ -158,26 +156,26 @@ class _LoyaltyProgramFormScreenState extends State<LoyaltyProgramFormScreen> {
                   FilteringTextInputFormatter.digitsOnly,
                   LengthLimitingTextInputFormatter(2),
                 ],
-                decoration: const InputDecoration(
-                  hintText:    'Ej. 5',
-                  prefixIcon:  Icon(Icons.confirmation_number_outlined),
-                  suffixText:  'visitas',
+                decoration: InputDecoration(
+                  hintText:    AppLocalizations.of(context).loyaltyFormVisitsHint,
+                  prefixIcon:  const Icon(Icons.confirmation_number_outlined),
+                  suffixText:  AppLocalizations.of(context).loyaltyFormVisitsSuffix,
                 ),
                 validator: (v) {
                   final n = int.tryParse(v ?? '');
                   if (n == null || n < 2) {
-                    return 'Mínimo 2 visitas';
+                    return AppLocalizations.of(context).loyaltyFormVisitsMin;
                   }
-                  if (n > 50) return 'Máximo 50 visitas';
+                  if (n > 50) return AppLocalizations.of(context).loyaltyFormVisitsMax;
                   return null;
                 },
               ),
               const SizedBox(height: 20),
 
               // ── Premio ────────────────────────────────────────────
-              const Text(
-                '¿Qué gana el cliente?',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context).loyaltyFormRewardLabel,
+                style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textDark),
@@ -187,13 +185,13 @@ class _LoyaltyProgramFormScreenState extends State<LoyaltyProgramFormScreen> {
                 controller:  _rewardCtrl,
                 maxLength:   120,
                 maxLines:    2,
-                decoration: const InputDecoration(
-                  hintText:   'Ej. Café gratis, 20% de descuento, postre gratis…',
-                  prefixIcon: Icon(Icons.card_giftcard_outlined),
+                decoration: InputDecoration(
+                  hintText:   AppLocalizations.of(context).loyaltyFormRewardHint,
+                  prefixIcon: const Icon(Icons.card_giftcard_outlined),
                 ),
                 validator: (v) {
                   if (v == null || v.trim().isEmpty) {
-                    return 'Describe el premio';
+                    return AppLocalizations.of(context).loyaltyFormRewardRequired;
                   }
                   return null;
                 },
@@ -201,9 +199,9 @@ class _LoyaltyProgramFormScreenState extends State<LoyaltyProgramFormScreen> {
               const SizedBox(height: 20),
 
               // ── Fechas ────────────────────────────────────────────
-              const Text(
-                'Vigencia del programa',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context).loyaltyFormValidityLabel,
+                style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textDark),
@@ -213,7 +211,7 @@ class _LoyaltyProgramFormScreenState extends State<LoyaltyProgramFormScreen> {
                 children: [
                   Expanded(
                     child: _DateButton(
-                      label:    'Inicio',
+                      label:    AppLocalizations.of(context).loyaltyFormStartLabel,
                       date:     _startsAt,
                       icon:     Icons.calendar_today_outlined,
                       onTap:    () => _pickDate(isEnd: false),
@@ -222,7 +220,7 @@ class _LoyaltyProgramFormScreenState extends State<LoyaltyProgramFormScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: _DateButton(
-                      label:   'Fin',
+                      label:   AppLocalizations.of(context).loyaltyFormEndLabel,
                       date:    _endsAt,
                       icon:    Icons.event_outlined,
                       onTap:   () => _pickDate(isEnd: true),
@@ -243,7 +241,9 @@ class _LoyaltyProgramFormScreenState extends State<LoyaltyProgramFormScreen> {
                             strokeWidth: 2, color: Colors.white))
                     : const Icon(Icons.rocket_launch_outlined),
                 label: Text(
-                  _saving ? 'Guardando…' : 'Activar programa',
+                  _saving
+                      ? AppLocalizations.of(context).loyaltyFormSaving
+                      : AppLocalizations.of(context).loyaltyFormSubmit,
                   style: const TextStyle(
                       fontSize: 16, fontWeight: FontWeight.w600),
                 ),
@@ -308,7 +308,9 @@ class _DateButton extends StatelessWidget {
                         color:    Colors.grey.shade500),
                   ),
                   Text(
-                    date != null ? _fmt.format(date!) : 'Seleccionar',
+                    date != null
+                        ? _fmt.format(date!)
+                        : AppLocalizations.of(context).loyaltyFormSelectDate,
                     style: TextStyle(
                       fontSize:   13,
                       fontWeight: FontWeight.w500,

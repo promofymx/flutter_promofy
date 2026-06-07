@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/ad_display_model.dart';
 
@@ -136,9 +137,10 @@ class _AdSplashOverlayState extends State<AdSplashOverlay> {
                       color:        Colors.black54,
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Text(
-                      'Publicidad',
-                      style: TextStyle(color: Colors.white70, fontSize: 10),
+                    child: Text(
+                      AppLocalizations.of(context).adSplashAdLabel,
+                      style: const TextStyle(
+                          color: Colors.white70, fontSize: 10),
                     ),
                   ),
                 ),
@@ -185,8 +187,9 @@ class _AdSplashOverlayState extends State<AdSplashOverlay> {
                 children: [
                   Text(
                     widget.ad.isPromotionAd
-                        ? 'Promoción especial de ${widget.ad.establishmentName}'
-                        : 'Toca para descubrir sus promociones exclusivas',
+                        ? AppLocalizations.of(context)
+                            .adSplashPromoSpecial(widget.ad.establishmentName)
+                        : AppLocalizations.of(context).adSplashDiscoverMsg,
                     style: const TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                   const SizedBox(height: 12),
@@ -200,9 +203,9 @@ class _AdSplashOverlayState extends State<AdSplashOverlay> {
                           borderRadius: BorderRadius.circular(12)),
                     ),
                     onPressed: _visit,
-                    child: const Text(
-                      'Ver promociones',
-                      style: TextStyle(
+                    child: Text(
+                      AppLocalizations.of(context).adSplashViewPromos,
+                      style: const TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 14),
                     ),
                   ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
@@ -33,9 +34,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       initialDate: DateTime(now.year - 25),
       firstDate: DateTime(1920),
       lastDate: maxDate,
-      helpText: 'Debes ser mayor de 18 años',
-      confirmText: 'Confirmar',
-      cancelText: 'Cancelar',
+      helpText: AppLocalizations.of(context).onboardingMustBeAdult,
+      confirmText: AppLocalizations.of(context).onboardingConfirm,
+      cancelText: AppLocalizations.of(context).onboardingCancel,
       builder: (context, child) => Theme(
         data: Theme.of(context).copyWith(
           colorScheme:
@@ -51,8 +52,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     if (!_formKey.currentState!.validate()) return;
     if (_birthDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Selecciona tu fecha de nacimiento')),
+        SnackBar(
+            content: Text(AppLocalizations.of(context).onboardingSelectBirthDate)),
       );
       return;
     }
@@ -61,8 +62,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final minAge = DateTime(today.year - 18, today.month, today.day);
     if (_birthDate!.isAfter(minAge)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Debes ser mayor de 18 años para usar Promofy'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context).onboardingMustBeAdultToUse),
           backgroundColor: Colors.red,
         ),
       );
@@ -70,7 +71,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }
     if (_gender == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Selecciona tu género')),
+        SnackBar(content: Text(AppLocalizations.of(context).onboardingSelectGender)),
       );
       return;
     }
@@ -91,11 +92,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Completa tu perfil'),
+        title: Text(AppLocalizations.of(context).onboardingTitle),
         automaticallyImplyLeading: false,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          tooltip: 'Salir',
+          tooltip: AppLocalizations.of(context).onboardingExit,
           onPressed: () =>
               context.read<AuthBloc>().add(AuthSignOutRequested()),
         ),
@@ -121,7 +122,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 children: [
                   const SizedBox(height: 8),
                   Text(
-                    'Cuéntanos sobre ti',
+                    AppLocalizations.of(context).onboardingHeading,
                     style: Theme.of(context)
                         .textTheme
                         .headlineSmall
@@ -131,13 +132,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         ),
                   ),
                   const SizedBox(height: 8),
-                  Text('Promofy es exclusivo para mayores de 18 años',
+                  Text(AppLocalizations.of(context).onboardingAdultOnlyNotice,
                       style: TextStyle(color: Colors.grey[600], fontSize: 15)),
                   const SizedBox(height: 36),
 
                   // Nombre
-                  const Text('¿Cuál es tu nombre?',
-                      style: TextStyle(
+                  Text(AppLocalizations.of(context).onboardingNameQuestion,
+                      style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 15,
                           color: AppColors.textDark)),
@@ -145,20 +146,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   TextFormField(
                     controller: _nameController,
                     textCapitalization: TextCapitalization.words,
-                    decoration: const InputDecoration(
-                      hintText: 'Tu nombre completo',
-                      prefixIcon: Icon(Icons.person_outline),
+                    decoration: InputDecoration(
+                      hintText: AppLocalizations.of(context).onboardingNameHint,
+                      prefixIcon: const Icon(Icons.person_outline),
                     ),
                     validator: (value) => (value == null || value.trim().isEmpty)
-                        ? 'Ingresa tu nombre'
+                        ? AppLocalizations.of(context).onboardingNameRequired
                         : null,
                   ),
 
                   const SizedBox(height: 28),
 
                   // Fecha de nacimiento
-                  const Text('¿Cuándo naciste?',
-                      style: TextStyle(
+                  Text(AppLocalizations.of(context).onboardingBirthQuestion,
+                      style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 15,
                           color: AppColors.textDark)),
@@ -183,7 +184,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           Text(
                             _birthDate != null
                                 ? _formatDate(_birthDate!)
-                                : 'Selecciona tu fecha de nacimiento',
+                                : AppLocalizations.of(context).onboardingSelectBirthDate,
                             style: TextStyle(
                               color: _birthDate != null
                                   ? AppColors.textDark
@@ -199,8 +200,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   const SizedBox(height: 28),
 
                   // Género
-                  const Text('¿Cuál es tu sexo?',
-                      style: TextStyle(
+                  Text(AppLocalizations.of(context).onboardingGenderQuestion,
+                      style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 15,
                           color: AppColors.textDark)),
@@ -209,7 +210,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     children: [
                       Expanded(
                         child: _GenderOption(
-                          label: 'Masculino',
+                          label: AppLocalizations.of(context).onboardingGenderMale,
                           icon: Icons.male,
                           selected: _gender == 'male',
                           onTap: () => setState(() => _gender = 'male'),
@@ -218,7 +219,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: _GenderOption(
-                          label: 'Femenino',
+                          label: AppLocalizations.of(context).onboardingGenderFemale,
                           icon: Icons.female,
                           selected: _gender == 'female',
                           onTap: () => setState(() => _gender = 'female'),
@@ -228,7 +229,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                   const SizedBox(height: 12),
                   _GenderOption(
-                    label: 'Prefiero no decir',
+                    label: AppLocalizations.of(context).onboardingGenderPreferNot,
                     icon: Icons.person_outline,
                     selected: _gender == 'prefer_not_to_say',
                     onTap: () =>
@@ -247,8 +248,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             child: CircularProgressIndicator(
                                 color: Colors.white, strokeWidth: 2),
                           )
-                        : const Text('Completar mi perfil',
-                            style: TextStyle(
+                        : Text(AppLocalizations.of(context).onboardingSubmit,
+                            style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                   ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/category_model.dart';
 import '../../../data/models/characteristic_model.dart';
@@ -77,6 +78,32 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     _draft = widget.currentFilters;
   }
 
+  // Etiquetas localizadas para días y métodos de pago (reusan claves de "lugares").
+  String _dayLabel(BuildContext c, int d) {
+    final l = AppLocalizations.of(c);
+    switch (d) {
+      case 1: return l.lugaresDayMon;
+      case 2: return l.lugaresDayTue;
+      case 3: return l.lugaresDayWed;
+      case 4: return l.lugaresDayThu;
+      case 5: return l.lugaresDayFri;
+      case 6: return l.lugaresDaySat;
+      case 7: return l.lugaresDaySun;
+      default: return '';
+    }
+  }
+
+  String _paymentLabel(BuildContext c, String k) {
+    final l = AppLocalizations.of(c);
+    switch (k) {
+      case 'efectivo':      return l.lugaresPaymentCash;
+      case 'tarjeta':       return l.lugaresPaymentCard;
+      case 'transferencia': return l.lugaresPaymentTransfer;
+      case 'mercadopago':   return l.lugaresPaymentMercadopago;
+      default: return k;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
@@ -109,9 +136,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               padding: const EdgeInsets.fromLTRB(20, 14, 8, 8),
               child: Row(
                 children: [
-                  const Text(
-                    'Filtros',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context).filterSheetTitle,
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textDark,
@@ -126,9 +153,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                             dayOfWeek: null,
                             paymentMethod: null,
                           )),
-                      child: const Text(
-                        'Limpiar todo',
-                        style: TextStyle(
+                      child: Text(
+                        AppLocalizations.of(context).filterSheetClearAll,
+                        style: const TextStyle(
                           color: AppColors.primary,
                           fontSize: 13,
                         ),
@@ -148,7 +175,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   children: [
                     // Sección 1: Características del lugar
                     if (widget.characteristics.isNotEmpty) ...[
-                      _SectionTitle('Características del lugar'),
+                      _SectionTitle(AppLocalizations.of(context).filterSheetSectionPlaceFeatures),
                       const SizedBox(height: 10),
                       Wrap(
                         spacing: 8,
@@ -157,7 +184,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                           final active =
                               _draft.characteristicIds.contains(c.id);
                           return _SelectableChip(
-                            label: c.name,
+                            label: c.localizedName(Localizations.localeOf(context).languageCode),
                             isActive: active,
                             onTap: () {
                               final ids = List<String>.from(
@@ -174,7 +201,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
                     // Sección 2: Categoría (solo raíces — sin parent)
                     if (widget.categories.any((c) => c.parentId == null)) ...[
-                      _SectionTitle('Categoría'),
+                      _SectionTitle(AppLocalizations.of(context).filterSheetSectionCategory),
                       const SizedBox(height: 10),
                       Wrap(
                         spacing: 8,
@@ -184,7 +211,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                             .map((c) {
                           final active = _draft.categoryId == c.id;
                           return _SelectableChip(
-                            label: c.name,
+                            label: c.localizedName(Localizations.localeOf(context).languageCode),
                             isActive: active,
                             // Seleccionar categoría limpia tipo de comida y viceversa
                             onTap: () => setState(() => _draft =
@@ -198,7 +225,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
                     // Sección 3: Tipo de comida (subcategorías — con parent)
                     if (widget.categories.any((c) => c.parentId != null)) ...[
-                      _SectionTitle('Tipo de comida'),
+                      _SectionTitle(AppLocalizations.of(context).filterSheetSectionFoodType),
                       const SizedBox(height: 10),
                       Wrap(
                         spacing: 8,
@@ -208,7 +235,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                             .map((c) {
                           final active = _draft.categoryId == c.id;
                           return _SelectableChip(
-                            label: c.name,
+                            label: c.localizedName(Localizations.localeOf(context).languageCode),
                             isActive: active,
                             onTap: () => setState(() => _draft =
                                 _draft.copyWith(
@@ -220,7 +247,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     ],
 
                     // Sección 4: Día de la semana
-                    _SectionTitle('Día'),
+                    _SectionTitle(AppLocalizations.of(context).filterSheetSectionDay),
                     const SizedBox(height: 10),
                     Wrap(
                       spacing: 8,
@@ -228,7 +255,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       children: _days.entries.map((e) {
                         final active = _draft.dayOfWeek == e.key;
                         return _SelectableChip(
-                          label: e.value,
+                          label: _dayLabel(context, e.key),
                           isActive: active,
                           onTap: () => setState(() => _draft = _draft.copyWith(
                                 dayOfWeek: active ? null : e.key,
@@ -239,7 +266,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     const SizedBox(height: 20),
 
                     // Sección 5: Método de pago
-                    _SectionTitle('Método de pago'),
+                    _SectionTitle(AppLocalizations.of(context).filterSheetSectionPaymentMethod),
                     const SizedBox(height: 10),
                     Wrap(
                       spacing: 8,
@@ -247,7 +274,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       children: _paymentMethods.entries.map((e) {
                         final active = _draft.paymentMethod == e.key;
                         return _SelectableChip(
-                          label: e.value,
+                          label: _paymentLabel(context, e.key),
                           isActive: active,
                           onTap: () => setState(() => _draft = _draft.copyWith(
                                 paymentMethod: active ? null : e.key,
@@ -282,8 +309,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   },
                   child: Text(
                     _draft.advancedCount > 0
-                        ? 'Aplicar (${_draft.advancedCount} ${_draft.advancedCount == 1 ? 'filtro' : 'filtros'})'
-                        : 'Aplicar filtros',
+                        ? AppLocalizations.of(context).filterSheetApplyWithCount(_draft.advancedCount)
+                        : AppLocalizations.of(context).filterSheetApply,
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,

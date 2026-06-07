@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/establishment_model.dart';
 import '../../../data/repositories/loyalty_repository.dart';
@@ -60,10 +61,10 @@ class _LoyaltySectionBody extends StatelessWidget {
                 children: [
                   const Icon(Icons.loyalty, size: 20, color: AppColors.primary),
                   const SizedBox(width: 8),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Programa de lealtad',
-                      style: TextStyle(
+                      AppLocalizations.of(context).loyaltyTitle,
+                      style: const TextStyle(
                           fontSize:   15,
                           fontWeight: FontWeight.bold,
                           color:      AppColors.textDark),
@@ -114,8 +115,8 @@ class _ScanButton extends StatelessWidget {
         ),
       ),
       icon:  const Icon(Icons.qr_code_scanner, size: 16),
-      label: const Text('Escanear',
-          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+      label: Text(AppLocalizations.of(context).loyaltyScan,
+          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
       style: ElevatedButton.styleFrom(
         padding:      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         minimumSize:  Size.zero,
@@ -151,21 +152,22 @@ class _LoadedContent extends StatelessWidget {
     String statusLabel;
     IconData statusIcon;
 
+    final l10n = AppLocalizations.of(context);
     if (!program.isActive) {
       statusColor = Colors.grey;
-      statusLabel = 'Desactivado';
+      statusLabel = l10n.loyaltyStatusDeactivated;
       statusIcon  = Icons.pause_circle_outline;
     } else if (isExpired) {
       statusColor = Colors.red.shade600;
-      statusLabel = 'Venció el ${_fmt.format(program.endsAt)}';
+      statusLabel = l10n.loyaltyStatusExpired(_fmt.format(program.endsAt));
       statusIcon  = Icons.timer_off_outlined;
     } else if (daysLeft <= 7) {
       statusColor = Colors.orange.shade700;
-      statusLabel = 'Vence en $daysLeft día${daysLeft != 1 ? "s" : ""}';
+      statusLabel = l10n.loyaltyStatusExpiresIn(daysLeft);
       statusIcon  = Icons.timer_outlined;
     } else {
       statusColor = Colors.green.shade600;
-      statusLabel = 'Activo — termina ${_fmt.format(program.endsAt)}';
+      statusLabel = l10n.loyaltyStatusActive(_fmt.format(program.endsAt));
       statusIcon  = Icons.check_circle_outline;
     }
 
@@ -198,22 +200,22 @@ class _LoadedContent extends StatelessWidget {
         // Datos del programa
         _ProgramDataRow(
           icon:  Icons.confirmation_number_outlined,
-          label: 'Visitas requeridas',
+          label: l10n.loyaltyVisitsRequired,
           value: '${program.visitsRequired}',
         ),
         _ProgramDataRow(
           icon:  Icons.card_giftcard_outlined,
-          label: 'Premio',
+          label: l10n.loyaltyReward,
           value: program.rewardDescription,
         ),
         _ProgramDataRow(
           icon:  Icons.date_range_outlined,
-          label: 'Inicio',
+          label: l10n.loyaltyStart,
           value: _fmt.format(program.startsAt),
         ),
         _ProgramDataRow(
           icon:  Icons.event_outlined,
-          label: 'Fin',
+          label: l10n.loyaltyEnd,
           value: _fmt.format(program.endsAt),
         ),
 
@@ -247,8 +249,8 @@ class _LoadedContent extends StatelessWidget {
           OutlinedButton.icon(
             onPressed: () => _confirmDeactivate(context),
             icon:  const Icon(Icons.stop_circle_outlined, size: 16),
-            label: const Text('Terminar programa ahora',
-                style: TextStyle(fontSize: 13)),
+            label: Text(l10n.loyaltyEndNow,
+                style: const TextStyle(fontSize: 13)),
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.red.shade600,
               side:            BorderSide(color: Colors.red.shade300),
@@ -261,8 +263,8 @@ class _LoadedContent extends StatelessWidget {
           ElevatedButton.icon(
             onPressed: () => _openForm(context),
             icon:  const Icon(Icons.add_circle_outline, size: 16),
-            label: const Text('Crear nuevo programa',
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+            label: Text(l10n.loyaltyCreateNew,
+                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
             style: ElevatedButton.styleFrom(
               minimumSize: const Size(double.infinity, 40),
               shape: RoundedRectangleBorder(
@@ -283,17 +285,16 @@ class _LoadedContent extends StatelessWidget {
   }
 
   void _confirmDeactivate(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title:   const Text('¿Terminar programa?'),
-        content: const Text(
-            'Todos los clientes dejarán de acumular visitas en este programa. '
-            'Podrás crear uno nuevo cuando quieras.'),
+        title:   Text(l10n.loyaltyEndDialogTitle),
+        content: Text(l10n.loyaltyEndDialogContent),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child:     const Text('Cancelar'),
+            child:     Text(l10n.loyaltyCancel),
           ),
           TextButton(
             onPressed: () {
@@ -301,7 +302,7 @@ class _LoadedContent extends StatelessWidget {
               context.read<LoyaltyCubit>().deactivateProgram();
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Terminar'),
+            child: Text(l10n.loyaltyEnd2),
           ),
         ],
       ),
@@ -318,8 +319,7 @@ class _NoProgramView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Fideliza a tus clientes con un sistema de sellos digital. '
-          'Define cuántas visitas necesitan para ganar su premio.',
+          AppLocalizations.of(context).loyaltyNoProgramDesc,
           style: TextStyle(
               fontSize: 13, color: Colors.grey.shade600, height: 1.4),
         ),
@@ -332,8 +332,8 @@ class _NoProgramView extends StatelessWidget {
             ),
           )),
           icon:  const Icon(Icons.add_circle_outline, size: 16),
-          label: const Text('Crear programa',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+          label: Text(AppLocalizations.of(context).loyaltyCreate,
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
           style: ElevatedButton.styleFrom(
             minimumSize: const Size(double.infinity, 40),
             shape: RoundedRectangleBorder(
@@ -396,14 +396,14 @@ class _ClientStats extends StatelessWidget {
     return Row(
       children: [
         _StatPill(
-          label: 'Participantes',
+          label: AppLocalizations.of(context).loyaltyParticipants,
           value: '${cards.length}',
           color: AppColors.primary,
           icon:  Icons.people_outline,
         ),
         const SizedBox(width: 8),
         _StatPill(
-          label: 'Premio ganado',
+          label: AppLocalizations.of(context).loyaltyRewardWon,
           value: '${cards.where((c) => (c.programVisits as int? ?? 0) >= required).length}',
           color: Colors.amber.shade700,
           icon:  Icons.card_giftcard_outlined,
@@ -442,14 +442,14 @@ class _ViewClientsButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           border:       Border.all(color: AppColors.primary.withAlpha(50)),
         ),
-        child: const Row(
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.people_alt_outlined, size: 14, color: AppColors.primary),
-            SizedBox(width: 5),
+            const Icon(Icons.people_alt_outlined, size: 14, color: AppColors.primary),
+            const SizedBox(width: 5),
             Text(
-              'Ver clientes',
-              style: TextStyle(
+              AppLocalizations.of(context).loyaltyViewClients,
+              style: const TextStyle(
                 fontSize:   12,
                 fontWeight: FontWeight.w600,
                 color:      AppColors.primary,

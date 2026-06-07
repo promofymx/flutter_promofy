@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:promofy/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../features/business/cubit/stats_cubit.dart';
 import '../cubit/loyalty_cubit.dart';
@@ -63,8 +64,8 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
 
   void _showInvalidQrSnack() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content:  Text('QR no válido. Pide al cliente que muestre su código.'),
+      SnackBar(
+        content:  Text(AppLocalizations.of(context).qrInvalidCode),
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -101,12 +102,12 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
       appBar: AppBar(
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
-        title: const Text('Escanear cliente'),
+        title: Text(AppLocalizations.of(context).qrScanTitle),
         actions: [
           IconButton(
             icon:     const Icon(Icons.flash_on),
             onPressed: () => _ctrl.toggleTorch(),
-            tooltip:  'Linterna',
+            tooltip:  AppLocalizations.of(context).qrTorch,
           ),
         ],
       ),
@@ -140,9 +141,9 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
                   color:        Colors.black.withAlpha(140),
                   borderRadius: BorderRadius.circular(30),
                 ),
-                child: const Text(
-                  'Apunta al QR del cliente',
-                  style: TextStyle(color: Colors.white, fontSize: 14),
+                child: Text(
+                  AppLocalizations.of(context).qrPointInstruction,
+                  style: const TextStyle(color: Colors.white, fontSize: 14),
                 ),
               ),
             ),
@@ -168,21 +169,29 @@ class _ScanResultSheet extends StatelessWidget {
     this.onTicketSaved,
   });
 
-  static const _errorMessages = {
-    'unauthorized':     'No tienes permiso para registrar visitas en este programa.',
-    'program_inactive': 'El programa está inactivo o venció.',
-    'network_error':    'Error de conexión. Intenta de nuevo.',
-  };
+  String _errorMessage(BuildContext context, String? error) {
+    final l10n = AppLocalizations.of(context);
+    switch (error) {
+      case 'unauthorized':
+        return l10n.qrErrorUnauthorized;
+      case 'program_inactive':
+        return l10n.qrErrorProgramInactive;
+      case 'network_error':
+        return l10n.qrErrorNetwork;
+      default:
+        return l10n.qrErrorUnexpected;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     if (!result.ok) {
       return _Sheet(
         icon:    Icons.error_outline,
         color:   Colors.red,
-        title:   'No se pudo registrar',
-        message: _errorMessages[result.error] ??
-            'Ocurrió un error inesperado.',
+        title:   l10n.qrCouldNotRegister,
+        message: _errorMessage(context, result.error),
       );
     }
 
@@ -190,9 +199,8 @@ class _ScanResultSheet extends StatelessWidget {
       return _Sheet(
         icon:         Icons.card_giftcard,
         color:        Colors.amber.shade700,
-        title:        '¡Premio ganado! 🎉',
-        message:      'El cliente completó ${result.visitsRequired} visitas. '
-            '¡Es momento de entregarle su regalo!',
+        title:        l10n.qrRewardWonTitle,
+        message:      l10n.qrRewardWonMessage(result.visitsRequired ?? 0),
         totalVisits:  result.programVisits,
         required:     result.visitsRequired,
         onTicketSaved: onTicketSaved,
@@ -203,10 +211,10 @@ class _ScanResultSheet extends StatelessWidget {
     return _Sheet(
       icon:    Icons.check_circle_outline,
       color:   Colors.green,
-      title:   'Visita registrada',
+      title:   l10n.qrVisitRegistered,
       message: left > 0
-          ? 'Al cliente le faltan $left visita${left != 1 ? "s" : ""} para su premio.'
-          : '¡Completó el programa!',
+          ? l10n.qrVisitsLeft(left)
+          : l10n.qrProgramCompleted,
       totalVisits:  result.programVisits,
       required:     result.visitsRequired,
       onTicketSaved: onTicketSaved,
@@ -316,11 +324,11 @@ class _SheetState extends State<_Sheet> {
               // ── Campo de importe (solo en escaneos exitosos) ──────────────
               if (showTicketInput) ...[
                 const SizedBox(height: 20),
-                const Align(
+                Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Importe de la cuenta (opcional)',
-                    style: TextStyle(
+                    AppLocalizations.of(context).qrBillAmountLabel,
+                    style: const TextStyle(
                       fontSize:   12,
                       fontWeight: FontWeight.w600,
                       color:      AppColors.textDark,
@@ -339,7 +347,7 @@ class _SheetState extends State<_Sheet> {
                     ),
                   ],
                   decoration: InputDecoration(
-                    hintText:    'Ej. 350',
+                    hintText:    AppLocalizations.of(context).qrBillAmountHint,
                     prefixText:  '\$ ',
                     filled:      true,
                     fillColor:   Colors.grey.shade50,
@@ -364,7 +372,7 @@ class _SheetState extends State<_Sheet> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Registra cuánto gastó el cliente para medir el ROI de Promofy.',
+                  AppLocalizations.of(context).qrBillAmountHelper,
                   style: TextStyle(
                     fontSize: 11,
                     color:    Colors.grey.shade500,
@@ -392,9 +400,9 @@ class _SheetState extends State<_Sheet> {
                           color:       Colors.white,
                         ),
                       )
-                    : const Text(
-                        'Listo',
-                        style: TextStyle(
+                    : Text(
+                        AppLocalizations.of(context).qrDone,
+                        style: const TextStyle(
                           fontSize:   15,
                           fontWeight: FontWeight.w600,
                           color:      Colors.white,
@@ -423,7 +431,7 @@ class _ProgressBar extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('$current/$total visitas',
+            Text(AppLocalizations.of(context).qrVisitsCount(current, total),
                 style: TextStyle(
                     fontSize: 13, fontWeight: FontWeight.w500, color: color)),
             Text('${(pct * 100).round()}%',

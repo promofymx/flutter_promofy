@@ -3699,7 +3699,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get ownerTour2Title => 'Angebote erstellen';
 
   @override
-  String get ownerTour2Desc => 'Veröffentliche normale, Blitz- und Geburtstagsangebote und richte dein Treuestempel-Programm ein.';
+  String get ownerTour2Desc => 'Veröffentliche normale, Blitz- und Geburtstagsangebote, um Kunden anzulocken.';
 
   @override
   String get ownerTour3Title => 'Einlösungen per QR prüfen';
@@ -3733,4 +3733,25 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get bandLateNight => 'Spätnacht';
+
+  @override
+  String get visitasOwnerLoyaltyTitle => 'Treueprogramm';
+
+  @override
+  String get visitasOwnerLoyaltySubtitle => 'Scanne den QR deiner Kunden, um Stempel zu vergeben';
+
+  @override
+  String get visitasPickEstablishment => 'Betrieb auswählen';
+
+  @override
+  String get visitasNoEstablishments => 'Du hast keine Betriebe';
+
+  @override
+  String get ownerTour6Title => 'Treue: dein Wachstumsmotor';
+
+  @override
+  String get ownerTour6Desc => 'Dein Stempelprogramm bringt Kunden für ihre Belohnung ZURÜCK: mehr Besuche und neue Kunden durch Empfehlungen.';
+
+  @override
+  String get ownerTour6Note => '📈 Treuemitglieder besuchen ~20% häufiger und geben ~20% mehr pro Besuch aus (Circana).\n🔁 Einen neuen Kunden zu gewinnen kostet 5–25× mehr als ihn zu halten (Harvard Business Review).';
 }

@@ -7,7 +7,9 @@ class TourSlide {
   final Color  color;
   final String title;
   final String desc;
-  const TourSlide(this.emoji, this.color, this.title, this.desc);
+  /// Nota opcional (datos + fuente) en letra más pequeña debajo de la descripción.
+  final String? note;
+  const TourSlide(this.emoji, this.color, this.title, this.desc, {this.note});
 }
 
 /// Tour de bienvenida para el CLIENTE (consumidor).
@@ -28,6 +30,8 @@ Future<void> showOwnerTour(BuildContext context) {
   final l = AppLocalizations.of(context);
   final slides = <TourSlide>[
     TourSlide('🤝', const Color(0xFFF26522), l.ownerTour1Title, l.ownerTour1Desc),
+    TourSlide('🎁', const Color(0xFFE8A700), l.ownerTour6Title, l.ownerTour6Desc,
+        note: l.ownerTour6Note),
     TourSlide('🏷️', const Color(0xFFE8302A), l.ownerTour2Title, l.ownerTour2Desc),
     TourSlide('📷', const Color(0xFF00838F), l.ownerTour3Title, l.ownerTour3Desc),
     TourSlide('📣', const Color(0xFF6A4CAF), l.ownerTour4Title, l.ownerTour4Desc),
@@ -103,40 +107,61 @@ class _TourCarouselState extends State<TourCarousel> {
                 itemCount: slides.length,
                 itemBuilder: (_, i) {
                   final s = slides[i];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 130, height: 130,
-                          decoration: BoxDecoration(
-                            color: s.color.withAlpha(28),
-                            shape: BoxShape.circle,
+                  return Center(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 32, vertical: 16),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 120, height: 120,
+                            decoration: BoxDecoration(
+                              color: s.color.withAlpha(28),
+                              shape: BoxShape.circle,
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(s.emoji,
+                                style: const TextStyle(fontSize: 60)),
                           ),
-                          alignment: Alignment.center,
-                          child: Text(s.emoji,
-                              style: const TextStyle(fontSize: 64)),
-                        ),
-                        const SizedBox(height: 36),
-                        Text(
-                          s.title,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 23, fontWeight: FontWeight.w800,
-                            color: AppColors.textDark,
+                          const SizedBox(height: 32),
+                          Text(
+                            s.title,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 23, fontWeight: FontWeight.w800,
+                              color: AppColors.textDark,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 14),
-                        Text(
-                          s.desc,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 15, height: 1.4,
-                            color: Colors.grey.shade700,
+                          const SizedBox(height: 14),
+                          Text(
+                            s.desc,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 15, height: 1.4,
+                              color: Colors.grey.shade700,
+                            ),
                           ),
-                        ),
-                      ],
+                          if (s.note != null) ...[
+                            const SizedBox(height: 18),
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade100,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                s.note!,
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  fontSize: 11.5, height: 1.45,
+                                  color: Colors.grey.shade600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
                     ),
                   );
                 },

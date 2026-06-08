@@ -1134,7 +1134,7 @@
   "ownerTour1Title": "Du bist jetzt ein Promofy-Betrieb!",
   "ownerTour1Desc": "Verwalte alles über den Tab «Mein Betrieb»: deine Lokale, Angebote, Werbung und Statistiken.",
   "ownerTour2Title": "Angebote erstellen",
-  "ownerTour2Desc": "Veröffentliche normale, Blitz- und Geburtstagsangebote und richte dein Treuestempel-Programm ein.",
+  "ownerTour2Desc": "Veröffentliche normale, Blitz- und Geburtstagsangebote, um Kunden anzulocken.",
   "ownerTour3Title": "Einlösungen per QR prüfen",
   "ownerTour3Desc": "Scanne den Code des Kunden, um seine Angebote zu validieren und Treuebesuche zu erfassen.",
   "ownerTour4Title": "Mehr Kunden gewinnen",
@@ -1145,5 +1145,12 @@
   "bandBreakfast": "Frühstück",
   "bandLunch": "Mittagessen",
   "bandDinner": "Abendessen",
-  "bandLateNight": "Spätnacht"
+  "bandLateNight": "Spätnacht",
+  "visitasOwnerLoyaltyTitle": "Treueprogramm",
+  "visitasOwnerLoyaltySubtitle": "Scanne den QR deiner Kunden, um Stempel zu vergeben",
+  "visitasPickEstablishment": "Betrieb auswählen",
+  "visitasNoEstablishments": "Du hast keine Betriebe",
+  "ownerTour6Title": "Treue: dein Wachstumsmotor",
+  "ownerTour6Desc": "Dein Stempelprogramm bringt Kunden für ihre Belohnung ZURÜCK: mehr Besuche und neue Kunden durch Empfehlungen.",
+  "ownerTour6Note": "📈 Treuemitglieder besuchen ~20% häufiger und geben ~20% mehr pro Besuch aus (Circana).\n🔁 Einen neuen Kunden zu gewinnen kostet 5–25× mehr als ihn zu halten (Harvard Business Review)."
 }

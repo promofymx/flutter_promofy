@@ -1794,7 +1794,7 @@
   "ownerTour1Title": "¡Ya eres negocio Promofy!",
   "ownerTour1Desc": "Administra todo desde la pestaña «Mi negocio»: tus locales, promociones, publicidad y estadísticas.",
   "ownerTour2Title": "Crea promociones",
-  "ownerTour2Desc": "Publica promos normales, flash (relámpago) y de cumpleañero, y arma tu programa de sellos de lealtad.",
+  "ownerTour2Desc": "Publica promos normales, flash (relámpago) y de cumpleañero para atraer clientes a tu negocio.",
   "ownerTour3Title": "Valida canjes con QR",
   "ownerTour3Desc": "Escanea el código del cliente para validar sus promociones y registrar sus visitas de lealtad.",
   "ownerTour4Title": "Atrae más clientes",
@@ -1805,5 +1805,12 @@
   "bandBreakfast": "Desayuno",
   "bandLunch": "Comida",
   "bandDinner": "Cena",
-  "bandLateNight": "Madrugada"
+  "bandLateNight": "Madrugada",
+  "visitasOwnerLoyaltyTitle": "Programa de lealtad",
+  "visitasOwnerLoyaltySubtitle": "Escanea el QR de tus clientes para sumar sellos",
+  "visitasPickEstablishment": "Elige el establecimiento",
+  "visitasNoEstablishments": "No tienes establecimientos",
+  "ownerTour6Title": "Lealtad: tu arma para crecer",
+  "ownerTour6Desc": "Tu programa de sellos hace que los clientes REGRESEN por su recompensa: más visitas y más clientes nuevos por recomendación.",
+  "ownerTour6Note": "📈 Los socios de lealtad visitan ~20% más seguido y gastan ~20% más por visita (Circana).\n🔁 Captar un cliente nuevo cuesta de 5 a 25× más que retener uno (Harvard Business Review)."
 }

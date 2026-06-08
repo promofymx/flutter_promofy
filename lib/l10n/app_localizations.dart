@@ -6904,7 +6904,7 @@ abstract class AppLocalizations {
   /// No description provided for @ownerTour2Desc.
   ///
   /// In es, this message translates to:
-  /// **'Publica promos normales, flash (relámpago) y de cumpleañero, y arma tu programa de sellos de lealtad.'**
+  /// **'Publica promos normales, flash (relámpago) y de cumpleañero para atraer clientes a tu negocio.'**
   String get ownerTour2Desc;
 
   /// No description provided for @ownerTour3Title.
@@ -6972,6 +6972,48 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Madrugada'**
   String get bandLateNight;
+
+  /// No description provided for @visitasOwnerLoyaltyTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Programa de lealtad'**
+  String get visitasOwnerLoyaltyTitle;
+
+  /// No description provided for @visitasOwnerLoyaltySubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Escanea el QR de tus clientes para sumar sellos'**
+  String get visitasOwnerLoyaltySubtitle;
+
+  /// No description provided for @visitasPickEstablishment.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige el establecimiento'**
+  String get visitasPickEstablishment;
+
+  /// No description provided for @visitasNoEstablishments.
+  ///
+  /// In es, this message translates to:
+  /// **'No tienes establecimientos'**
+  String get visitasNoEstablishments;
+
+  /// No description provided for @ownerTour6Title.
+  ///
+  /// In es, this message translates to:
+  /// **'Lealtad: tu arma para crecer'**
+  String get ownerTour6Title;
+
+  /// No description provided for @ownerTour6Desc.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu programa de sellos hace que los clientes REGRESEN por su recompensa: más visitas y más clientes nuevos por recomendación.'**
+  String get ownerTour6Desc;
+
+  /// No description provided for @ownerTour6Note.
+  ///
+  /// In es, this message translates to:
+  /// **'📈 Los socios de lealtad visitan ~20% más seguido y gastan ~20% más por visita (Circana).\n🔁 Captar un cliente nuevo cuesta de 5 a 25× más que retener uno (Harvard Business Review).'**
+  String get ownerTour6Note;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

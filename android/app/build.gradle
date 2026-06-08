@@ -55,6 +55,19 @@ android {
     }
 }
 
+// ── Soporte de tamaños de página de 16 KB (Android 15+) ──────────────────────
+// El motor de Flutter y libapp ya están alineados. Solo faltaban las libs nativas
+// del escáner QR (ML Kit barcode + CameraX). Forzamos versiones 16 KB-aligned.
+configurations.all {
+    resolutionStrategy {
+        force 'com.google.mlkit:barcode-scanning:17.3.0'
+        force 'androidx.camera:camera-core:1.4.1'
+        force 'androidx.camera:camera-camera2:1.4.1'
+        force 'androidx.camera:camera-lifecycle:1.4.1'
+        force 'androidx.camera:camera-view:1.4.1'
+    }
+}
+
 flutter {
     source = "../.."
 }

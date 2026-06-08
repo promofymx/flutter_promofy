@@ -72,11 +72,11 @@ class _MainScaffoldState extends State<MainScaffold>
     if (_ownerTourChecked) return;
     _ownerTourChecked = true;
     final prefs = await SharedPreferences.getInstance();
-    if (prefs.getBool('owner_tour_seen_v2') ?? false) return;
+    if (prefs.getBool('owner_tour_seen_v3') ?? false) return;
     _splashShown = true;
     if (!mounted) return;
     await showOwnerTour(context);
-    await prefs.setBool('owner_tour_seen_v2', true);
+    await prefs.setBool('owner_tour_seen_v3', true);
   }
 
   @override

@@ -113,10 +113,16 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
       ),
       body: Stack(
         children: [
-          MobileScanner(
-            controller: _ctrl,
-            onDetect:   _onDetect,
-          ),
+          // Solo renderizamos la cámara mientras NO estamos procesando.
+          // Al quitar el PlatformView del árbol, el teclado del campo de
+          // "Importe de la cuenta" funciona en el bottom-sheet de resultado.
+          if (!_processing)
+            MobileScanner(
+              controller: _ctrl,
+              onDetect:   _onDetect,
+            )
+          else
+            const ColoredBox(color: Colors.black, child: SizedBox.expand()),
           // Marco de escaneo
           Center(
             child: Container(

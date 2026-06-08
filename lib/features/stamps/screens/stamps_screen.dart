@@ -6,8 +6,13 @@ import 'package:promofy/l10n/app_localizations.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/stamp_card_model.dart';
+import '../../../data/models/establishment_model.dart';
+import '../../../data/repositories/business_repository.dart';
+import '../../../data/repositories/loyalty_repository.dart';
 import '../../../features/auth/bloc/auth_bloc.dart';
 import '../../../features/auth/bloc/auth_state.dart';
+import '../../loyalty/cubit/loyalty_cubit.dart';
+import '../../loyalty/screens/qr_scanner_screen.dart';
 import '../cubit/stamps_cubit.dart';
 import '../cubit/stamps_state.dart';
 
@@ -35,6 +40,8 @@ class _StampsScreenState extends State<StampsScreen> {
   Widget build(BuildContext context) {
     final authState = context.read<AuthBloc>().state;
     final userId    = authState is AuthAuthenticated ? authState.user.id : null;
+    final isOwner   = authState is AuthAuthenticated &&
+        authState.profile.isBusinessOwner;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -51,30 +58,101 @@ class _StampsScreenState extends State<StampsScreen> {
             ),
         ],
       ),
-      body: BlocBuilder<StampsCubit, StampsState>(
-        builder: (context, state) {
-          if (state is StampsLoading || state is StampsInitial) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (state is StampsError) {
-            return _ErrorView(
-              message: state.message,
-              onRetry: () => context.read<StampsCubit>().refresh(),
-            );
-          }
-          if (state is StampsLoaded) {
-            if (state.cards.isEmpty) {
-              return _EmptyState(
-                userId:   userId,
-                onQrTap:  userId != null
-                    ? () => _showMyQr(context, userId)
-                    : null,
-              );
-            }
-            return _LoadedBody(cards: state.cards);
-          }
-          return const SizedBox.shrink();
-        },
+      body: Column(
+        children: [
+          if (isOwner && userId != null)
+            _OwnerLoyaltyBanner(
+              onTap: () => _openLoyaltyScan(context, userId),
+            ),
+          Expanded(
+            child: BlocBuilder<StampsCubit, StampsState>(
+              builder: (context, state) {
+                if (state is StampsLoading || state is StampsInitial) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (state is StampsError) {
+                  return _ErrorView(
+                    message: state.message,
+                    onRetry: () => context.read<StampsCubit>().refresh(),
+                  );
+                }
+                if (state is StampsLoaded) {
+                  if (state.cards.isEmpty) {
+                    return _EmptyState(
+                      userId:   userId,
+                      onQrTap:  userId != null
+                          ? () => _showMyQr(context, userId)
+                          : null,
+                    );
+                  }
+                  return _LoadedBody(cards: state.cards);
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Abre el escáner de clientes (lealtad) para el dueño. Elige establecimiento
+  /// si tiene más de uno.
+  Future<void> _openLoyaltyScan(BuildContext context, String userId) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final l = AppLocalizations.of(context);
+    List<EstablishmentModel> ests;
+    try {
+      ests = await BusinessRepository().getMyEstablishments(userId);
+    } catch (_) {
+      messenger.showSnackBar(SnackBar(content: Text(l.visitasNoEstablishments)));
+      return;
+    }
+    if (!context.mounted) return;
+    if (ests.isEmpty) {
+      messenger.showSnackBar(SnackBar(content: Text(l.visitasNoEstablishments)));
+      return;
+    }
+    EstablishmentModel? chosen = ests.length == 1 ? ests.first : null;
+    if (chosen == null) {
+      chosen = await showModalBottomSheet<EstablishmentModel>(
+        context: context,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+        builder: (_) => SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(l.visitasPickEstablishment,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16)),
+              ),
+              ...ests.map((e) => ListTile(
+                    leading: const Icon(Icons.store_outlined,
+                        color: AppColors.primary),
+                    title: Text(e.name),
+                    onTap: () => Navigator.pop(context, e),
+                  )),
+              const SizedBox(height: 8),
+            ],
+          ),
+        ),
+      );
+    }
+    if (chosen == null || !context.mounted) return;
+    final est = chosen;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => BlocProvider(
+          create: (_) => LoyaltyCubit(
+            repository:        LoyaltyRepository(),
+            establishmentId:   est.id,
+            establishmentName: est.name,
+          )..load(),
+          child: const QrScannerScreen(),
+        ),
       ),
     );
   }
@@ -86,6 +164,63 @@ class _StampsScreenState extends State<StampsScreen> {
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (_) => _MyQrSheet(userId: userId),
+    );
+  }
+}
+
+// ── Banner de dueño: acceso rápido al escaneo de clientes ──────────────────────
+class _OwnerLoyaltyBanner extends StatelessWidget {
+  final VoidCallback onTap;
+  const _OwnerLoyaltyBanner({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+      child: Material(
+        color: AppColors.primary,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              children: [
+                Container(
+                  width: 44, height: 44,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withAlpha(40),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.qr_code_scanner,
+                      color: Colors.white, size: 24),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(l.visitasOwnerLoyaltyTitle,
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15)),
+                      const SizedBox(height: 2),
+                      Text(l.visitasOwnerLoyaltySubtitle,
+                          style: TextStyle(
+                              color: Colors.white.withAlpha(220),
+                              fontSize: 12)),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right, color: Colors.white),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

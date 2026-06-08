@@ -1134,7 +1134,7 @@
   "ownerTour1Title": "You're now a Promofy business!",
   "ownerTour1Desc": "Manage everything from the «My business» tab: your venues, promotions, advertising and stats.",
   "ownerTour2Title": "Create promotions",
-  "ownerTour2Desc": "Publish regular, flash and birthday promos, and set up your loyalty stamp program.",
+  "ownerTour2Desc": "Publish regular, flash and birthday promos to attract customers to your business.",
   "ownerTour3Title": "Validate redemptions with QR",
   "ownerTour3Desc": "Scan the customer's code to validate their promotions and register their loyalty visits.",
   "ownerTour4Title": "Attract more customers",
@@ -1145,5 +1145,12 @@
   "bandBreakfast": "Breakfast",
   "bandLunch": "Lunch",
   "bandDinner": "Dinner",
-  "bandLateNight": "Late night"
+  "bandLateNight": "Late night",
+  "visitasOwnerLoyaltyTitle": "Loyalty program",
+  "visitasOwnerLoyaltySubtitle": "Scan your customers' QR to add stamps",
+  "visitasPickEstablishment": "Choose the establishment",
+  "visitasNoEstablishments": "You have no establishments",
+  "ownerTour6Title": "Loyalty: your growth engine",
+  "ownerTour6Desc": "Your stamp program makes customers COME BACK for their reward: more visits and more new customers by word of mouth.",
+  "ownerTour6Note": "📈 Loyalty members visit ~20% more often and spend ~20% more per visit (Circana).\n🔁 Acquiring a new customer costs 5–25× more than retaining one (Harvard Business Review)."
 }

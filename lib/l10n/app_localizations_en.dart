@@ -3699,7 +3699,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ownerTour2Title => 'Create promotions';
 
   @override
-  String get ownerTour2Desc => 'Publish regular, flash and birthday promos, and set up your loyalty stamp program.';
+  String get ownerTour2Desc => 'Publish regular, flash and birthday promos to attract customers to your business.';
 
   @override
   String get ownerTour3Title => 'Validate redemptions with QR';
@@ -3733,4 +3733,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bandLateNight => 'Late night';
+
+  @override
+  String get visitasOwnerLoyaltyTitle => 'Loyalty program';
+
+  @override
+  String get visitasOwnerLoyaltySubtitle => 'Scan your customers\' QR to add stamps';
+
+  @override
+  String get visitasPickEstablishment => 'Choose the establishment';
+
+  @override
+  String get visitasNoEstablishments => 'You have no establishments';
+
+  @override
+  String get ownerTour6Title => 'Loyalty: your growth engine';
+
+  @override
+  String get ownerTour6Desc => 'Your stamp program makes customers COME BACK for their reward: more visits and more new customers by word of mouth.';
+
+  @override
+  String get ownerTour6Note => '📈 Loyalty members visit ~20% more often and spend ~20% more per visit (Circana).\n🔁 Acquiring a new customer costs 5–25× more than retaining one (Harvard Business Review).';
 }

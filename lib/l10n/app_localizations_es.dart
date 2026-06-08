@@ -3699,7 +3699,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get ownerTour2Title => 'Crea promociones';
 
   @override
-  String get ownerTour2Desc => 'Publica promos normales, flash (relámpago) y de cumpleañero, y arma tu programa de sellos de lealtad.';
+  String get ownerTour2Desc => 'Publica promos normales, flash (relámpago) y de cumpleañero para atraer clientes a tu negocio.';
 
   @override
   String get ownerTour3Title => 'Valida canjes con QR';
@@ -3733,4 +3733,25 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get bandLateNight => 'Madrugada';
+
+  @override
+  String get visitasOwnerLoyaltyTitle => 'Programa de lealtad';
+
+  @override
+  String get visitasOwnerLoyaltySubtitle => 'Escanea el QR de tus clientes para sumar sellos';
+
+  @override
+  String get visitasPickEstablishment => 'Elige el establecimiento';
+
+  @override
+  String get visitasNoEstablishments => 'No tienes establecimientos';
+
+  @override
+  String get ownerTour6Title => 'Lealtad: tu arma para crecer';
+
+  @override
+  String get ownerTour6Desc => 'Tu programa de sellos hace que los clientes REGRESEN por su recompensa: más visitas y más clientes nuevos por recomendación.';
+
+  @override
+  String get ownerTour6Note => '📈 Los socios de lealtad visitan ~20% más seguido y gastan ~20% más por visita (Circana).\n🔁 Captar un cliente nuevo cuesta de 5 a 25× más que retener uno (Harvard Business Review).';
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../theme/app_theme.dart';
+import '../../features/onboarding/widgets/welcome_carousel.dart';
 import '../../features/auth/bloc/auth_bloc.dart';
 import '../../features/auth/bloc/auth_state.dart';
 import '../../features/home/cubit/ads_display_cubit.dart';
@@ -51,6 +53,30 @@ class _MainScaffoldState extends State<MainScaffold>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeShowWelcome());
+  }
+
+  /// Muestra el tour de bienvenida la PRIMERA vez (cliente nuevo) y lo marca como visto.
+  Future<void> _maybeShowWelcome() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool('welcome_tour_seen_v2') ?? false) return;
+    _splashShown = true; // no encimar el splash de anuncio la primera vez
+    if (!mounted) return;
+    await showWelcomeCarousel(context);
+    await prefs.setBool('welcome_tour_seen_v2', true);
+  }
+
+  /// Muestra el tour de DUEÑO la primera vez que el usuario es negocio.
+  bool _ownerTourChecked = false;
+  Future<void> _maybeShowOwnerTour() async {
+    if (_ownerTourChecked) return;
+    _ownerTourChecked = true;
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool('owner_tour_seen_v2') ?? false) return;
+    _splashShown = true;
+    if (!mounted) return;
+    await showOwnerTour(context);
+    await prefs.setBool('owner_tour_seen_v2', true);
   }
 
   @override
@@ -125,6 +151,10 @@ class _MainScaffoldState extends State<MainScaffold>
         builder: (context, authState) {
           final isBusinessOwner =
               authState is AuthAuthenticated && authState.profile.isBusinessOwner;
+          if (isBusinessOwner) {
+            WidgetsBinding.instance
+                .addPostFrameCallback((_) => _maybeShowOwnerTour());
+          }
           final isSuperadmin =
               authState is AuthAuthenticated && authState.profile.isSuperadmin;
           final isStaff =

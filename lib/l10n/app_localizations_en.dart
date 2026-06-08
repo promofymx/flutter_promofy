@@ -3646,4 +3646,76 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsMyFavs => 'My favs';
+
+  @override
+  String get tourSkip => 'Skip';
+
+  @override
+  String get tourNext => 'Next';
+
+  @override
+  String get tourStart => 'Get started';
+
+  @override
+  String get tourReplay => 'View tutorial';
+
+  @override
+  String get tour1Title => 'Welcome to Promofy!';
+
+  @override
+  String get tour1Desc => 'Discover the best deals from restaurants and entertainment near you.';
+
+  @override
+  String get tour2Title => 'Explore near you';
+
+  @override
+  String get tour2Desc => 'In Home and Places you\'ll find deals and businesses sorted by distance. Use filters to find exactly what you\'re craving.';
+
+  @override
+  String get tour3Title => 'Flash deals';
+
+  @override
+  String get tour3Desc => 'Limited-time offers. Grab them before they\'re gone!';
+
+  @override
+  String get tour4Title => 'Loyalty stamps';
+
+  @override
+  String get tour4Desc => 'Show your QR code on each visit, collect stamps and earn rewards at your favorite places.';
+
+  @override
+  String get tour5Title => 'Favorites & birthday';
+
+  @override
+  String get tour5Desc => 'Save your favorite deals with the heart and get a special gift on your birthday.';
+
+  @override
+  String get ownerTour1Title => 'You\'re now a Promofy business!';
+
+  @override
+  String get ownerTour1Desc => 'Manage everything from the «My business» tab: your venues, promotions, advertising and stats.';
+
+  @override
+  String get ownerTour2Title => 'Create promotions';
+
+  @override
+  String get ownerTour2Desc => 'Publish regular, flash and birthday promos, and set up your loyalty stamp program.';
+
+  @override
+  String get ownerTour3Title => 'Validate redemptions with QR';
+
+  @override
+  String get ownerTour3Desc => 'Scan the customer\'s code to validate their promotions and register their loyalty visits.';
+
+  @override
+  String get ownerTour4Title => 'Attract more customers';
+
+  @override
+  String get ownerTour4Desc => 'Create ad campaigns (splash, banner, featured and notifications) to reach more people near you.';
+
+  @override
+  String get ownerTour5Title => 'Measure and grow';
+
+  @override
+  String get ownerTour5Desc => 'Check your stats and average ticket, and manage your plan and add-ons whenever you need.';
 }

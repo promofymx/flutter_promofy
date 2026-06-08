@@ -1776,5 +1776,29 @@
       "name": {}
     }
   },
-  "settingsMyFavs": "Mis favs"
+  "settingsMyFavs": "Mis favs",
+  "tourSkip": "Saltar",
+  "tourNext": "Siguiente",
+  "tourStart": "Empezar",
+  "tourReplay": "Ver tutorial",
+  "tour1Title": "¡Bienvenido a Promofy!",
+  "tour1Desc": "Descubre las mejores promociones de restaurantes y entretenimiento cerca de ti.",
+  "tour2Title": "Explora cerca de ti",
+  "tour2Desc": "En Inicio y Lugares encuentras promos y negocios ordenados por distancia. Usa los filtros para hallar justo lo que se te antoja.",
+  "tour3Title": "Promos Relámpago",
+  "tour3Desc": "Ofertas por tiempo limitado. ¡Aprovéchalas antes de que se acaben!",
+  "tour4Title": "Sellos de lealtad",
+  "tour4Desc": "Muestra tu código QR en cada visita, junta sellos y gana recompensas en tus lugares favoritos.",
+  "tour5Title": "Favoritos y cumpleaños",
+  "tour5Desc": "Guarda tus promos favoritas con el corazón y recibe un regalo especial en tu cumpleaños.",
+  "ownerTour1Title": "¡Ya eres negocio Promofy!",
+  "ownerTour1Desc": "Administra todo desde la pestaña «Mi negocio»: tus locales, promociones, publicidad y estadísticas.",
+  "ownerTour2Title": "Crea promociones",
+  "ownerTour2Desc": "Publica promos normales, flash (relámpago) y de cumpleañero, y arma tu programa de sellos de lealtad.",
+  "ownerTour3Title": "Valida canjes con QR",
+  "ownerTour3Desc": "Escanea el código del cliente para validar sus promociones y registrar sus visitas de lealtad.",
+  "ownerTour4Title": "Atrae más clientes",
+  "ownerTour4Desc": "Crea campañas de publicidad (splash, banner, destacada y notificaciones) para llegar a más gente cerca de ti.",
+  "ownerTour5Title": "Mide y crece",
+  "ownerTour5Desc": "Revisa tus estadísticas y ticket promedio, y administra tu plan y complementos cuando lo necesites."
 }

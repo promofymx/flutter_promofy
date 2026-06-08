@@ -6798,6 +6798,150 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Mis favs'**
   String get settingsMyFavs;
+
+  /// No description provided for @tourSkip.
+  ///
+  /// In es, this message translates to:
+  /// **'Saltar'**
+  String get tourSkip;
+
+  /// No description provided for @tourNext.
+  ///
+  /// In es, this message translates to:
+  /// **'Siguiente'**
+  String get tourNext;
+
+  /// No description provided for @tourStart.
+  ///
+  /// In es, this message translates to:
+  /// **'Empezar'**
+  String get tourStart;
+
+  /// No description provided for @tourReplay.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver tutorial'**
+  String get tourReplay;
+
+  /// No description provided for @tour1Title.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Bienvenido a Promofy!'**
+  String get tour1Title;
+
+  /// No description provided for @tour1Desc.
+  ///
+  /// In es, this message translates to:
+  /// **'Descubre las mejores promociones de restaurantes y entretenimiento cerca de ti.'**
+  String get tour1Desc;
+
+  /// No description provided for @tour2Title.
+  ///
+  /// In es, this message translates to:
+  /// **'Explora cerca de ti'**
+  String get tour2Title;
+
+  /// No description provided for @tour2Desc.
+  ///
+  /// In es, this message translates to:
+  /// **'En Inicio y Lugares encuentras promos y negocios ordenados por distancia. Usa los filtros para hallar justo lo que se te antoja.'**
+  String get tour2Desc;
+
+  /// No description provided for @tour3Title.
+  ///
+  /// In es, this message translates to:
+  /// **'Promos Relámpago'**
+  String get tour3Title;
+
+  /// No description provided for @tour3Desc.
+  ///
+  /// In es, this message translates to:
+  /// **'Ofertas por tiempo limitado. ¡Aprovéchalas antes de que se acaben!'**
+  String get tour3Desc;
+
+  /// No description provided for @tour4Title.
+  ///
+  /// In es, this message translates to:
+  /// **'Sellos de lealtad'**
+  String get tour4Title;
+
+  /// No description provided for @tour4Desc.
+  ///
+  /// In es, this message translates to:
+  /// **'Muestra tu código QR en cada visita, junta sellos y gana recompensas en tus lugares favoritos.'**
+  String get tour4Desc;
+
+  /// No description provided for @tour5Title.
+  ///
+  /// In es, this message translates to:
+  /// **'Favoritos y cumpleaños'**
+  String get tour5Title;
+
+  /// No description provided for @tour5Desc.
+  ///
+  /// In es, this message translates to:
+  /// **'Guarda tus promos favoritas con el corazón y recibe un regalo especial en tu cumpleaños.'**
+  String get tour5Desc;
+
+  /// No description provided for @ownerTour1Title.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Ya eres negocio Promofy!'**
+  String get ownerTour1Title;
+
+  /// No description provided for @ownerTour1Desc.
+  ///
+  /// In es, this message translates to:
+  /// **'Administra todo desde la pestaña «Mi negocio»: tus locales, promociones, publicidad y estadísticas.'**
+  String get ownerTour1Desc;
+
+  /// No description provided for @ownerTour2Title.
+  ///
+  /// In es, this message translates to:
+  /// **'Crea promociones'**
+  String get ownerTour2Title;
+
+  /// No description provided for @ownerTour2Desc.
+  ///
+  /// In es, this message translates to:
+  /// **'Publica promos normales, flash (relámpago) y de cumpleañero, y arma tu programa de sellos de lealtad.'**
+  String get ownerTour2Desc;
+
+  /// No description provided for @ownerTour3Title.
+  ///
+  /// In es, this message translates to:
+  /// **'Valida canjes con QR'**
+  String get ownerTour3Title;
+
+  /// No description provided for @ownerTour3Desc.
+  ///
+  /// In es, this message translates to:
+  /// **'Escanea el código del cliente para validar sus promociones y registrar sus visitas de lealtad.'**
+  String get ownerTour3Desc;
+
+  /// No description provided for @ownerTour4Title.
+  ///
+  /// In es, this message translates to:
+  /// **'Atrae más clientes'**
+  String get ownerTour4Title;
+
+  /// No description provided for @ownerTour4Desc.
+  ///
+  /// In es, this message translates to:
+  /// **'Crea campañas de publicidad (splash, banner, destacada y notificaciones) para llegar a más gente cerca de ti.'**
+  String get ownerTour4Desc;
+
+  /// No description provided for @ownerTour5Title.
+  ///
+  /// In es, this message translates to:
+  /// **'Mide y crece'**
+  String get ownerTour5Title;
+
+  /// No description provided for @ownerTour5Desc.
+  ///
+  /// In es, this message translates to:
+  /// **'Revisa tus estadísticas y ticket promedio, y administra tu plan y complementos cuando lo necesites.'**
+  String get ownerTour5Desc;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

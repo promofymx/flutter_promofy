@@ -47,7 +47,7 @@ class AdsDisplayCubit extends Cubit<AdsDisplayState> {
     _repo.recordImpression(campaignId, 'impression').catchError((_) {});
   }
 
-  /// Registra que el usuario tocó el anuncio (clic). Solo estadísticas, sin cobro.
+  /// Registra que el usuario tocó el anuncio (clic).
   void trackClick(String campaignId) {
     _repo.recordImpression(campaignId, 'click').catchError((_) {});
   }

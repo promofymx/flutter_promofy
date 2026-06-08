@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/cubit/locale_cubit.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/category_tree_selector.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../data/models/category_model.dart';
 import '../../../data/models/profile_model.dart';
@@ -168,8 +169,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final rootCats = _categories.where((c) => c.parentId == null).toList()
-      ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -209,34 +208,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(height: 16),
 
             _SectionLabel(AppLocalizations.of(context).settingsMyFavs),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
             if (_categories.isEmpty)
               Text(AppLocalizations.of(context).settingsLoadingCategories,
                   style: TextStyle(fontSize: 12, color: Colors.grey.shade400))
             else
-              ...rootCats.map((root) {
-                final lang = Localizations.localeOf(context).languageCode;
-                final subs = _categories
-                    .where((c) => c.parentId == root.id)
-                    .toList()
-                  ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 14),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _favChip(root, lang, isHeader: true),
-                      if (subs.isNotEmpty) ...[
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8, runSpacing: 8,
-                          children: subs.map((c) => _favChip(c, lang)).toList(),
-                        ),
-                      ],
-                    ],
-                  ),
-                );
-              }),
+              CategoryTreeSelector(
+                categories: _categories,
+                multiSelect: true,
+                selectedIds: _catIds.map((e) => e.toString()).toSet(),
+                langCode: Localizations.localeOf(context).languageCode,
+                onTap: (c) {
+                  final id = int.tryParse(c.id);
+                  if (id == null) return;
+                  setState(() => _catIds.contains(id)
+                      ? _catIds.remove(id)
+                      : _catIds.add(id));
+                },
+              ),
             const SizedBox(height: 18),
 
             SizedBox(
@@ -317,29 +306,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ]),
         ],
       ),
-    );
-  }
-
-  /// Chip seleccionable para "Mis favs". [isHeader] resalta las 4 categorías raíz.
-  Widget _favChip(CategoryModel c, String lang, {bool isHeader = false}) {
-    final id  = int.tryParse(c.id) ?? -1;
-    final sel = _catIds.contains(id);
-    return FilterChip(
-      label: Text(c.localizedName(lang)),
-      selected: sel,
-      onSelected: (_) =>
-          setState(() => sel ? _catIds.remove(id) : _catIds.add(id)),
-      selectedColor: AppColors.primary.withAlpha(isHeader ? 40 : 25),
-      checkmarkColor: AppColors.primary,
-      labelStyle: TextStyle(
-        color: sel ? AppColors.primary : Colors.grey.shade800,
-        fontWeight: isHeader
-            ? FontWeight.w700
-            : (sel ? FontWeight.w600 : FontWeight.normal),
-        fontSize: isHeader ? 13.5 : 13,
-      ),
-      side: BorderSide(color: sel ? AppColors.primary : Colors.grey.shade300),
-      backgroundColor: isHeader ? AppColors.primary.withAlpha(10) : Colors.grey.shade50,
     );
   }
 

@@ -3646,4 +3646,76 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsMyFavs => 'Meine Favs';
+
+  @override
+  String get tourSkip => 'Überspringen';
+
+  @override
+  String get tourNext => 'Weiter';
+
+  @override
+  String get tourStart => 'Los geht\'s';
+
+  @override
+  String get tourReplay => 'Tutorial ansehen';
+
+  @override
+  String get tour1Title => 'Willkommen bei Promofy!';
+
+  @override
+  String get tour1Desc => 'Entdecke die besten Angebote von Restaurants und Unterhaltung in deiner Nähe.';
+
+  @override
+  String get tour2Title => 'Entdecke in deiner Nähe';
+
+  @override
+  String get tour2Desc => 'Unter Start und Orte findest du Angebote und Betriebe nach Entfernung sortiert. Nutze Filter, um genau das zu finden, worauf du Lust hast.';
+
+  @override
+  String get tour3Title => 'Blitzangebote';
+
+  @override
+  String get tour3Desc => 'Zeitlich begrenzte Angebote. Schnapp sie dir, bevor sie weg sind!';
+
+  @override
+  String get tour4Title => 'Treuestempel';
+
+  @override
+  String get tour4Desc => 'Zeige bei jedem Besuch deinen QR-Code, sammle Stempel und erhalte Belohnungen an deinen Lieblingsorten.';
+
+  @override
+  String get tour5Title => 'Favoriten & Geburtstag';
+
+  @override
+  String get tour5Desc => 'Speichere deine Lieblingsangebote mit dem Herz und erhalte ein besonderes Geschenk zu deinem Geburtstag.';
+
+  @override
+  String get ownerTour1Title => 'Du bist jetzt ein Promofy-Betrieb!';
+
+  @override
+  String get ownerTour1Desc => 'Verwalte alles über den Tab «Mein Betrieb»: deine Lokale, Angebote, Werbung und Statistiken.';
+
+  @override
+  String get ownerTour2Title => 'Angebote erstellen';
+
+  @override
+  String get ownerTour2Desc => 'Veröffentliche normale, Blitz- und Geburtstagsangebote und richte dein Treuestempel-Programm ein.';
+
+  @override
+  String get ownerTour3Title => 'Einlösungen per QR prüfen';
+
+  @override
+  String get ownerTour3Desc => 'Scanne den Code des Kunden, um seine Angebote zu validieren und Treuebesuche zu erfassen.';
+
+  @override
+  String get ownerTour4Title => 'Mehr Kunden gewinnen';
+
+  @override
+  String get ownerTour4Desc => 'Erstelle Werbekampagnen (Splash, Banner, Hervorhebung und Benachrichtigungen), um mehr Leute in deiner Nähe zu erreichen.';
+
+  @override
+  String get ownerTour5Title => 'Messen und wachsen';
+
+  @override
+  String get ownerTour5Desc => 'Sieh dir deine Statistiken und den Durchschnittsbon an und verwalte deinen Plan und Add-ons bei Bedarf.';
 }

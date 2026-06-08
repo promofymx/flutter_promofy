@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:promofy/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/category_tree_selector.dart';
 import '../../../data/models/category_model.dart';
 import '../../../data/models/characteristic_model.dart';
 import '../../../data/models/filter_model.dart';
@@ -199,49 +200,19 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       const SizedBox(height: 20),
                     ],
 
-                    // Sección 2: Categoría (solo raíces — sin parent)
-                    if (widget.categories.any((c) => c.parentId == null)) ...[
+                    // Sección 2: Categoría (drill-down jerárquico)
+                    if (widget.categories.isNotEmpty) ...[
                       _SectionTitle(AppLocalizations.of(context).filterSheetSectionCategory),
-                      const SizedBox(height: 10),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: widget.categories
-                            .where((c) => c.parentId == null)
-                            .map((c) {
-                          final active = _draft.categoryId == c.id;
-                          return _SelectableChip(
-                            label: c.localizedName(Localizations.localeOf(context).languageCode),
-                            isActive: active,
-                            // Seleccionar categoría limpia tipo de comida y viceversa
-                            onTap: () => setState(() => _draft =
-                                _draft.copyWith(
-                                    categoryId: active ? null : c.id)),
-                          );
-                        }).toList(),
-                      ),
-                      const SizedBox(height: 20),
-                    ],
-
-                    // Sección 3: Tipo de comida (subcategorías — con parent)
-                    if (widget.categories.any((c) => c.parentId != null)) ...[
-                      _SectionTitle(AppLocalizations.of(context).filterSheetSectionFoodType),
-                      const SizedBox(height: 10),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: widget.categories
-                            .where((c) => c.parentId != null)
-                            .map((c) {
-                          final active = _draft.categoryId == c.id;
-                          return _SelectableChip(
-                            label: c.localizedName(Localizations.localeOf(context).languageCode),
-                            isActive: active,
-                            onTap: () => setState(() => _draft =
-                                _draft.copyWith(
-                                    categoryId: active ? null : c.id)),
-                          );
-                        }).toList(),
+                      const SizedBox(height: 4),
+                      CategoryTreeSelector(
+                        categories: widget.categories,
+                        selectedIds: _draft.categoryId != null
+                            ? {_draft.categoryId!}
+                            : <String>{},
+                        langCode: Localizations.localeOf(context).languageCode,
+                        onTap: (c) => setState(() => _draft = _draft.copyWith(
+                              categoryId: _draft.categoryId == c.id ? null : c.id,
+                            )),
                       ),
                       const SizedBox(height: 20),
                     ],

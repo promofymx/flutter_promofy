@@ -21,6 +21,7 @@ import '../cubit/achievements_cubit.dart';
 import '../cubit/achievements_state.dart';
 import '../../../data/models/user_stats_model.dart';
 import 'settings_screen.dart';
+import '../../onboarding/widgets/welcome_carousel.dart';
 import 'logros_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -203,6 +204,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _JoinTeamCard(onJoin: _showJoinTeamDialog),
                   const SizedBox(height: 16),
                 ],
+
+                OutlinedButton.icon(
+                  onPressed: () => showWelcomeCarousel(context),
+                  icon:  const Icon(Icons.help_outline, color: AppColors.primary),
+                  label: Text(AppLocalizations.of(context).tourReplay,
+                      style: const TextStyle(color: AppColors.primary)),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 52),
+                    side: const BorderSide(color: AppColors.primary),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+                const SizedBox(height: 12),
 
                 OutlinedButton.icon(
                   onPressed: () =>

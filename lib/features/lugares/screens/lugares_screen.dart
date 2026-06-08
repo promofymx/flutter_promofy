@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:promofy/l10n/app_localizations.dart';
+import '../../../core/widgets/category_tree_selector.dart';
 import '../cubit/lugares_cubit.dart';
 import '../cubit/lugares_state.dart';
 import '../../../core/theme/app_theme.dart';
@@ -454,23 +455,17 @@ class _LugaresFilterSheetState extends State<_LugaresFilterSheet> {
                       const SizedBox(height: 20),
                     ],
 
-                    // ── Categoría ─────────────────────────────────────────
+                    // ── Categoría (drill-down jerárquico) ─────────────────
                     if (s.categories.isNotEmpty) ...[
                       _SectionTitle(AppLocalizations.of(context).lugaresSectionCategory),
-                      const SizedBox(height: 10),
-                      Wrap(
-                        spacing: 8, runSpacing: 8,
-                        children: s.categories
-                            .where((c) => c.parentId == null)
-                            .map((c) {
-                          final active = _categoryId == c.id;
-                          return _SelectableChip(
-                            label:    c.localizedName(Localizations.localeOf(context).languageCode),
-                            isActive: active,
-                            onTap: () => setState(() =>
-                                _categoryId = active ? null : c.id),
-                          );
-                        }).toList(),
+                      const SizedBox(height: 4),
+                      CategoryTreeSelector(
+                        categories: s.categories,
+                        selectedIds:
+                            _categoryId != null ? {_categoryId!} : <String>{},
+                        langCode: Localizations.localeOf(context).languageCode,
+                        onTap: (c) => setState(() =>
+                            _categoryId = _categoryId == c.id ? null : c.id),
                       ),
                       const SizedBox(height: 20),
                     ],

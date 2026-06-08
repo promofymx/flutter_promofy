@@ -41,6 +41,7 @@ class EstablishmentsDatasource {
     String? userId,
     int?    filterCategoryId,
     List<int>? filterCharacteristicIds,
+    String? filterTimeBand,
   }) async {
     final rows = await supabase.rpc(
       'get_establishments_by_distance',
@@ -60,6 +61,7 @@ class EstablishmentsDatasource {
                 filterCharacteristicIds.isEmpty)
             ? null
             : filterCharacteristicIds,
+        'filter_time_band':          filterTimeBand,
       },
     );
     return (rows as List)

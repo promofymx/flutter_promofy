@@ -6868,19 +6868,19 @@ abstract class AppLocalizations {
   /// No description provided for @tour4Desc.
   ///
   /// In es, this message translates to:
-  /// **'Muestra tu código QR en cada visita, junta sellos y gana recompensas en tus lugares favoritos.'**
+  /// **'Revisa qué negocios tienen programa de lealtad (no todos lo tienen). Muestra tu código QR en cada visita, junta sellos y gana recompensas.'**
   String get tour4Desc;
 
   /// No description provided for @tour5Title.
   ///
   /// In es, this message translates to:
-  /// **'Favoritos y cumpleaños'**
+  /// **'Favoritos'**
   String get tour5Title;
 
   /// No description provided for @tour5Desc.
   ///
   /// In es, this message translates to:
-  /// **'Guarda tus promos favoritas con el corazón y recibe un regalo especial en tu cumpleaños.'**
+  /// **'Guarda tus promos favoritas con el corazón y entérate de nuevas promos de tus lugares favoritos.'**
   String get tour5Desc;
 
   /// No description provided for @ownerTour1Title.
@@ -6942,6 +6942,36 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Revisa tus estadísticas y ticket promedio, y administra tu plan y complementos cuando lo necesites.'**
   String get ownerTour5Desc;
+
+  /// No description provided for @filterSectionSchedule.
+  ///
+  /// In es, this message translates to:
+  /// **'Horario'**
+  String get filterSectionSchedule;
+
+  /// No description provided for @bandBreakfast.
+  ///
+  /// In es, this message translates to:
+  /// **'Desayuno'**
+  String get bandBreakfast;
+
+  /// No description provided for @bandLunch.
+  ///
+  /// In es, this message translates to:
+  /// **'Comida'**
+  String get bandLunch;
+
+  /// No description provided for @bandDinner.
+  ///
+  /// In es, this message translates to:
+  /// **'Cena'**
+  String get bandDinner;
+
+  /// No description provided for @bandLateNight.
+  ///
+  /// In es, this message translates to:
+  /// **'Madrugada'**
+  String get bandLateNight;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

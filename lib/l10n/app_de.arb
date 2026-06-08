@@ -1128,9 +1128,9 @@
   "tour3Title": "Blitzangebote",
   "tour3Desc": "Zeitlich begrenzte Angebote. Schnapp sie dir, bevor sie weg sind!",
   "tour4Title": "Treuestempel",
-  "tour4Desc": "Zeige bei jedem Besuch deinen QR-Code, sammle Stempel und erhalte Belohnungen an deinen Lieblingsorten.",
-  "tour5Title": "Favoriten & Geburtstag",
-  "tour5Desc": "Speichere deine Lieblingsangebote mit dem Herz und erhalte ein besonderes Geschenk zu deinem Geburtstag.",
+  "tour4Desc": "Sieh nach, welche Betriebe ein Treueprogramm haben (nicht alle). Zeige bei jedem Besuch deinen QR-Code, sammle Stempel und erhalte Belohnungen.",
+  "tour5Title": "Favoriten",
+  "tour5Desc": "Speichere deine Lieblingsangebote mit dem Herz und erfahre von neuen Angeboten deiner Lieblingsorte.",
   "ownerTour1Title": "Du bist jetzt ein Promofy-Betrieb!",
   "ownerTour1Desc": "Verwalte alles über den Tab «Mein Betrieb»: deine Lokale, Angebote, Werbung und Statistiken.",
   "ownerTour2Title": "Angebote erstellen",
@@ -1140,5 +1140,10 @@
   "ownerTour4Title": "Mehr Kunden gewinnen",
   "ownerTour4Desc": "Erstelle Werbekampagnen (Splash, Banner, Hervorhebung und Benachrichtigungen), um mehr Leute in deiner Nähe zu erreichen.",
   "ownerTour5Title": "Messen und wachsen",
-  "ownerTour5Desc": "Sieh dir deine Statistiken und den Durchschnittsbon an und verwalte deinen Plan und Add-ons bei Bedarf."
+  "ownerTour5Desc": "Sieh dir deine Statistiken und den Durchschnittsbon an und verwalte deinen Plan und Add-ons bei Bedarf.",
+  "filterSectionSchedule": "Uhrzeit",
+  "bandBreakfast": "Frühstück",
+  "bandLunch": "Mittagessen",
+  "bandDinner": "Abendessen",
+  "bandLateNight": "Spätnacht"
 }

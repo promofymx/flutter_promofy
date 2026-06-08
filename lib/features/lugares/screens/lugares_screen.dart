@@ -63,12 +63,13 @@ class _LugaresScreenState extends State<LugaresScreen> {
       backgroundColor:    Colors.transparent,
       builder: (_) => _LugaresFilterSheet(
         state:   state,
-        onApply: (categoryId, charIds, dayOfWeek, paymentMethod) {
+        onApply: (categoryId, charIds, dayOfWeek, paymentMethod, timeBand) {
           context.read<LugaresCubit>().applyAdvancedFilters(
             categoryId:        categoryId,
             characteristicIds: charIds,
             dayOfWeek:         dayOfWeek,
             paymentMethod:     paymentMethod,
+            timeBand:          timeBand,
           );
         },
       ),
@@ -296,6 +297,7 @@ class _LugaresFilterSheet extends StatefulWidget {
     List<String> charIds,
     int?         dayOfWeek,
     String?      paymentMethod,
+    String?      timeBand,
   ) onApply;
 
   const _LugaresFilterSheet({required this.state, required this.onApply});
@@ -309,6 +311,10 @@ class _LugaresFilterSheetState extends State<_LugaresFilterSheet> {
   late List<String> _charIds;
   late int?         _dayOfWeek;
   late String?      _paymentMethod;
+  late String?      _timeBand;
+
+  // Franjas horarias: valor que viaja al backend -> etiqueta i18n
+  static const _bands = <String>['desayuno', 'comida', 'cena', 'madrugada'];
 
   static const _days = <int, String>{
     1: 'Lun', 2: 'Mar', 3: 'Mié', 4: 'Jue',
@@ -329,6 +335,18 @@ class _LugaresFilterSheetState extends State<_LugaresFilterSheet> {
     _charIds       = List.from(widget.state.selectedCharacteristicIds);
     _dayOfWeek     = widget.state.dayOfWeek;
     _paymentMethod = widget.state.paymentMethod;
+    _timeBand      = widget.state.timeBand;
+  }
+
+  String _bandLabel(BuildContext c, String band) {
+    final l = AppLocalizations.of(c);
+    switch (band) {
+      case 'desayuno':  return l.bandBreakfast;
+      case 'comida':    return l.bandLunch;
+      case 'cena':      return l.bandDinner;
+      case 'madrugada': return l.bandLateNight;
+      default:          return band;
+    }
   }
 
   int get _advancedCount {
@@ -337,6 +355,7 @@ class _LugaresFilterSheetState extends State<_LugaresFilterSheet> {
     if (_charIds.isNotEmpty) n++;
     if (_dayOfWeek != null) n++;
     if (_paymentMethod != null) n++;
+    if (_timeBand != null) n++;
     return n;
   }
 
@@ -345,6 +364,7 @@ class _LugaresFilterSheetState extends State<_LugaresFilterSheet> {
         _charIds       = [];
         _dayOfWeek     = null;
         _paymentMethod = null;
+        _timeBand      = null;
       });
 
   String _dayLabel(BuildContext context, int day) {
@@ -502,6 +522,23 @@ class _LugaresFilterSheetState extends State<_LugaresFilterSheet> {
                         );
                       }).toList(),
                     ),
+                    const SizedBox(height: 20),
+
+                    // ── Horario (franjas) ──────────────────────────────────
+                    _SectionTitle(AppLocalizations.of(context).filterSectionSchedule),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 8, runSpacing: 8,
+                      children: _bands.map((b) {
+                        final active = _timeBand == b;
+                        return _SelectableChip(
+                          label:    _bandLabel(context, b),
+                          isActive: active,
+                          onTap: () => setState(() =>
+                              _timeBand = active ? null : b),
+                        );
+                      }).toList(),
+                    ),
                     const SizedBox(height: 8),
                   ],
                 ),
@@ -529,6 +566,7 @@ class _LugaresFilterSheetState extends State<_LugaresFilterSheet> {
                       _charIds,
                       _dayOfWeek,
                       _paymentMethod,
+                      _timeBand,
                     );
                   },
                   child: Text(

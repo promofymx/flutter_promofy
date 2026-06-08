@@ -1128,9 +1128,9 @@
   "tour3Title": "Flash deals",
   "tour3Desc": "Limited-time offers. Grab them before they're gone!",
   "tour4Title": "Loyalty stamps",
-  "tour4Desc": "Show your QR code on each visit, collect stamps and earn rewards at your favorite places.",
-  "tour5Title": "Favorites & birthday",
-  "tour5Desc": "Save your favorite deals with the heart and get a special gift on your birthday.",
+  "tour4Desc": "Check which businesses have a loyalty program (not all do). Show your QR code on each visit, collect stamps and earn rewards.",
+  "tour5Title": "Favorites",
+  "tour5Desc": "Save your favorite deals with the heart and find out about new deals from your favorite places.",
   "ownerTour1Title": "You're now a Promofy business!",
   "ownerTour1Desc": "Manage everything from the «My business» tab: your venues, promotions, advertising and stats.",
   "ownerTour2Title": "Create promotions",
@@ -1140,5 +1140,10 @@
   "ownerTour4Title": "Attract more customers",
   "ownerTour4Desc": "Create ad campaigns (splash, banner, featured and notifications) to reach more people near you.",
   "ownerTour5Title": "Measure and grow",
-  "ownerTour5Desc": "Check your stats and average ticket, and manage your plan and add-ons whenever you need."
+  "ownerTour5Desc": "Check your stats and average ticket, and manage your plan and add-ons whenever you need.",
+  "filterSectionSchedule": "Hours",
+  "bandBreakfast": "Breakfast",
+  "bandLunch": "Lunch",
+  "bandDinner": "Dinner",
+  "bandLateNight": "Late night"
 }

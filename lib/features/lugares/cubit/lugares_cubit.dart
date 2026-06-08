@@ -76,6 +76,7 @@ class LugaresCubit extends Cubit<LugaresState> {
                 .whereType<int>()
                 .toList()
             : null,
+        filterTimeBand: s.timeBand,
       );
       final filtered = _applyClientFilters(
         more,
@@ -132,6 +133,7 @@ class LugaresCubit extends Cubit<LugaresState> {
     required List<String> characteristicIds,
     required int?         dayOfWeek,
     required String?      paymentMethod,
+    String?               timeBand,
   }) async {
     if (state is! LugaresLoaded) return;
     final s = currentLoaded;
@@ -141,6 +143,7 @@ class LugaresCubit extends Cubit<LugaresState> {
       selectedCharacteristicIds: characteristicIds,
       dayOfWeek:                 dayOfWeek,
       paymentMethod:             paymentMethod,
+      timeBand:                  timeBand,
     ));
     await _doFetch(page: 0);
   }
@@ -158,6 +161,7 @@ class LugaresCubit extends Cubit<LugaresState> {
       selectedCharacteristicIds: [],
       dayOfWeek:                 null,
       paymentMethod:             null,
+      timeBand:                  null,
     ));
     await _doFetch(page: 0);
   }
@@ -206,6 +210,7 @@ class LugaresCubit extends Cubit<LugaresState> {
     final selectedCharIds        = s?.selectedCharacteristicIds ?? [];
     final dayOfWeek              = s?.dayOfWeek;
     final paymentMethod          = s?.paymentMethod;
+    final timeBand               = s?.timeBand;
 
     try {
       List<EstablishmentModel> items;
@@ -240,6 +245,7 @@ class LugaresCubit extends Cubit<LugaresState> {
                   .whereType<int>()
                   .toList()
               : null,
+          filterTimeBand: timeBand,
         );
         hasMore = items.length == _pageSize;
       }

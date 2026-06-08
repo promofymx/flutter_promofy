@@ -105,6 +105,19 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     }
   }
 
+  static const _bands = <String>['desayuno', 'comida', 'cena', 'madrugada'];
+
+  String _bandLabel(BuildContext c, String band) {
+    final l = AppLocalizations.of(c);
+    switch (band) {
+      case 'desayuno':  return l.bandBreakfast;
+      case 'comida':    return l.bandLunch;
+      case 'cena':      return l.bandDinner;
+      case 'madrugada': return l.bandLateNight;
+      default:          return band;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
@@ -249,6 +262,25 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                           isActive: active,
                           onTap: () => setState(() => _draft = _draft.copyWith(
                                 paymentMethod: active ? null : e.key,
+                              )),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Sección 6: Horario (franjas)
+                    _SectionTitle(AppLocalizations.of(context).filterSectionSchedule),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: _bands.map((b) {
+                        final active = _draft.timeBand == b;
+                        return _SelectableChip(
+                          label: _bandLabel(context, b),
+                          isActive: active,
+                          onTap: () => setState(() => _draft = _draft.copyWith(
+                                timeBand: active ? null : b,
                               )),
                         );
                       }).toList(),

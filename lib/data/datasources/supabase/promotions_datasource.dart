@@ -42,6 +42,7 @@ class PromotionsDatasource {
             : filters.searchQuery,
         'filter_favorites_only':     filterFavoritesOnly || filters.favoritesOnly,
         'filter_establishment_id':   filterEstablishmentId,
+        'filter_time_band':          filters.timeBand,
       },
     );
     return (response as List)

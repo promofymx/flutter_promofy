@@ -3681,13 +3681,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get tour4Title => 'Sellos de lealtad';
 
   @override
-  String get tour4Desc => 'Muestra tu código QR en cada visita, junta sellos y gana recompensas en tus lugares favoritos.';
+  String get tour4Desc => 'Revisa qué negocios tienen programa de lealtad (no todos lo tienen). Muestra tu código QR en cada visita, junta sellos y gana recompensas.';
 
   @override
-  String get tour5Title => 'Favoritos y cumpleaños';
+  String get tour5Title => 'Favoritos';
 
   @override
-  String get tour5Desc => 'Guarda tus promos favoritas con el corazón y recibe un regalo especial en tu cumpleaños.';
+  String get tour5Desc => 'Guarda tus promos favoritas con el corazón y entérate de nuevas promos de tus lugares favoritos.';
 
   @override
   String get ownerTour1Title => '¡Ya eres negocio Promofy!';
@@ -3718,4 +3718,19 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get ownerTour5Desc => 'Revisa tus estadísticas y ticket promedio, y administra tu plan y complementos cuando lo necesites.';
+
+  @override
+  String get filterSectionSchedule => 'Horario';
+
+  @override
+  String get bandBreakfast => 'Desayuno';
+
+  @override
+  String get bandLunch => 'Comida';
+
+  @override
+  String get bandDinner => 'Cena';
+
+  @override
+  String get bandLateNight => 'Madrugada';
 }

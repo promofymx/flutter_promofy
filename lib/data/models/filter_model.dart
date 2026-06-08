@@ -17,6 +17,9 @@ class HomeFilters extends Equatable {
   final int? dayOfWeek; // 1=Lun … 7=Dom (ISO)
   final String? paymentMethod;
 
+  /// Franja horaria: 'desayuno' | 'comida' | 'cena' | 'madrugada'.
+  final String? timeBand;
+
   /// Texto de búsqueda libre (filtrado server-side por nombre de promo/restaurante).
   /// No se muestra en el badge de filtros — tiene su propia barra de búsqueda.
   final String searchQuery;
@@ -30,6 +33,7 @@ class HomeFilters extends Equatable {
     this.characteristicIds = const [],
     this.dayOfWeek,
     this.paymentMethod,
+    this.timeBand,
     this.searchQuery = '',
   });
 
@@ -42,7 +46,8 @@ class HomeFilters extends Equatable {
       categoryId != null ||
       characteristicIds.isNotEmpty ||
       dayOfWeek != null ||
-      paymentMethod != null;
+      paymentMethod != null ||
+      timeBand != null;
 
   /// Total de filtros activos (chips rápidos + avanzados) — para el badge del AppBar.
   /// La búsqueda libre no se cuenta aquí.
@@ -56,6 +61,7 @@ class HomeFilters extends Equatable {
     if (characteristicIds.isNotEmpty) n++;
     if (dayOfWeek != null) n++;
     if (paymentMethod != null) n++;
+    if (timeBand != null) n++;
     return n;
   }
 
@@ -66,6 +72,7 @@ class HomeFilters extends Equatable {
     if (characteristicIds.isNotEmpty) n++;
     if (dayOfWeek != null) n++;
     if (paymentMethod != null) n++;
+    if (timeBand != null) n++;
     return n;
   }
 
@@ -81,6 +88,7 @@ class HomeFilters extends Equatable {
     List<String>? characteristicIds,
     Object? dayOfWeek = _unset,
     Object? paymentMethod = _unset,
+    Object? timeBand = _unset,
     String? searchQuery,
   }) {
     return HomeFilters(
@@ -98,6 +106,9 @@ class HomeFilters extends Equatable {
       paymentMethod: identical(paymentMethod, _unset)
           ? this.paymentMethod
           : paymentMethod as String?,
+      timeBand: identical(timeBand, _unset)
+          ? this.timeBand
+          : timeBand as String?,
       searchQuery:       searchQuery       ?? this.searchQuery,
     );
   }
@@ -112,6 +123,7 @@ class HomeFilters extends Equatable {
         characteristicIds,
         dayOfWeek,
         paymentMethod,
+        timeBand,
         searchQuery,
       ];
 }

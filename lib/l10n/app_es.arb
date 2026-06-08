@@ -1788,9 +1788,9 @@
   "tour3Title": "Promos Relámpago",
   "tour3Desc": "Ofertas por tiempo limitado. ¡Aprovéchalas antes de que se acaben!",
   "tour4Title": "Sellos de lealtad",
-  "tour4Desc": "Muestra tu código QR en cada visita, junta sellos y gana recompensas en tus lugares favoritos.",
-  "tour5Title": "Favoritos y cumpleaños",
-  "tour5Desc": "Guarda tus promos favoritas con el corazón y recibe un regalo especial en tu cumpleaños.",
+  "tour4Desc": "Revisa qué negocios tienen programa de lealtad (no todos lo tienen). Muestra tu código QR en cada visita, junta sellos y gana recompensas.",
+  "tour5Title": "Favoritos",
+  "tour5Desc": "Guarda tus promos favoritas con el corazón y entérate de nuevas promos de tus lugares favoritos.",
   "ownerTour1Title": "¡Ya eres negocio Promofy!",
   "ownerTour1Desc": "Administra todo desde la pestaña «Mi negocio»: tus locales, promociones, publicidad y estadísticas.",
   "ownerTour2Title": "Crea promociones",
@@ -1800,5 +1800,10 @@
   "ownerTour4Title": "Atrae más clientes",
   "ownerTour4Desc": "Crea campañas de publicidad (splash, banner, destacada y notificaciones) para llegar a más gente cerca de ti.",
   "ownerTour5Title": "Mide y crece",
-  "ownerTour5Desc": "Revisa tus estadísticas y ticket promedio, y administra tu plan y complementos cuando lo necesites."
+  "ownerTour5Desc": "Revisa tus estadísticas y ticket promedio, y administra tu plan y complementos cuando lo necesites.",
+  "filterSectionSchedule": "Horario",
+  "bandBreakfast": "Desayuno",
+  "bandLunch": "Comida",
+  "bandDinner": "Cena",
+  "bandLateNight": "Madrugada"
 }

@@ -29,6 +29,7 @@ class LugaresLoaded extends LugaresState {
   final List<String>  selectedCharacteristicIds;
   final int?          dayOfWeek;       // 1=Lun … 7=Dom (ISO)
   final String?       paymentMethod;   // efectivo|tarjeta|transferencia|mercadopago
+  final String?       timeBand;        // desayuno|comida|cena|madrugada
 
   // ── Búsqueda ─────────────────────────────────────────────────────────────
   final String searchQuery;
@@ -49,6 +50,7 @@ class LugaresLoaded extends LugaresState {
     this.selectedCharacteristicIds = const [],
     this.dayOfWeek,
     this.paymentMethod,
+    this.timeBand,
     this.searchQuery               = '',
     this.categories                = const [],
     this.characteristics           = const [],
@@ -66,6 +68,7 @@ class LugaresLoaded extends LugaresState {
     if (hasCharacteristicFilter) n++;
     if (dayOfWeek != null) n++;
     if (paymentMethod != null) n++;
+    if (timeBand != null) n++;
     return n;
   }
 
@@ -103,6 +106,7 @@ class LugaresLoaded extends LugaresState {
     List<String>?              selectedCharacteristicIds,
     Object?                    dayOfWeek                = _sentinel,
     Object?                    paymentMethod            = _sentinel,
+    Object?                    timeBand                 = _sentinel,
     String?                    searchQuery,
     List<CategoryModel>?       categories,
     List<CharacteristicModel>? characteristics,
@@ -126,6 +130,9 @@ class LugaresLoaded extends LugaresState {
       paymentMethod: identical(paymentMethod, _sentinel)
           ? this.paymentMethod
           : paymentMethod as String?,
+      timeBand: identical(timeBand, _sentinel)
+          ? this.timeBand
+          : timeBand as String?,
       searchQuery:              searchQuery              ?? this.searchQuery,
       categories:               categories               ?? this.categories,
       characteristics:          characteristics          ?? this.characteristics,
@@ -137,7 +144,7 @@ class LugaresLoaded extends LugaresState {
         establishments, hasMore, currentPage, isRefreshing,
         flashOnly, openNow, favoritesOnly,
         selectedCategoryId, selectedCharacteristicIds,
-        dayOfWeek, paymentMethod,
+        dayOfWeek, paymentMethod, timeBand,
         searchQuery, categories, characteristics,
       ];
 }

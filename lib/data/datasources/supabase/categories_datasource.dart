@@ -7,6 +7,7 @@ class CategoriesDatasource {
     final response = await supabase
         .from('categories')
         .select()
+        .eq('is_active', true)
         .order('name');
     return (response as List)
         .map((e) => CategoryModel.fromJson(e as Map<String, dynamic>))
@@ -17,6 +18,7 @@ class CategoriesDatasource {
     final response = await supabase
         .from('characteristics')
         .select()
+        .eq('is_active', true)
         .order('name');
     return (response as List)
         .map((e) => CharacteristicModel.fromJson(e as Map<String, dynamic>))

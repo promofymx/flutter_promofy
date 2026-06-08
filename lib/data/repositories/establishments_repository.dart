@@ -41,6 +41,7 @@ class EstablishmentsRepository {
     String? userId,
     int?    filterCategoryId,
     List<int>? filterCharacteristicIds,
+    String? filterTimeBand,
   }) {
     return _datasource.getByDistance(
       lat:                     lat,
@@ -52,6 +53,7 @@ class EstablishmentsRepository {
       userId:                  userId,
       filterCategoryId:        filterCategoryId,
       filterCharacteristicIds: filterCharacteristicIds,
+      filterTimeBand:          filterTimeBand,
     );
   }
 

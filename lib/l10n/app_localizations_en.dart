@@ -3681,13 +3681,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tour4Title => 'Loyalty stamps';
 
   @override
-  String get tour4Desc => 'Show your QR code on each visit, collect stamps and earn rewards at your favorite places.';
+  String get tour4Desc => 'Check which businesses have a loyalty program (not all do). Show your QR code on each visit, collect stamps and earn rewards.';
 
   @override
-  String get tour5Title => 'Favorites & birthday';
+  String get tour5Title => 'Favorites';
 
   @override
-  String get tour5Desc => 'Save your favorite deals with the heart and get a special gift on your birthday.';
+  String get tour5Desc => 'Save your favorite deals with the heart and find out about new deals from your favorite places.';
 
   @override
   String get ownerTour1Title => 'You\'re now a Promofy business!';
@@ -3718,4 +3718,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ownerTour5Desc => 'Check your stats and average ticket, and manage your plan and add-ons whenever you need.';
+
+  @override
+  String get filterSectionSchedule => 'Hours';
+
+  @override
+  String get bandBreakfast => 'Breakfast';
+
+  @override
+  String get bandLunch => 'Lunch';
+
+  @override
+  String get bandDinner => 'Dinner';
+
+  @override
+  String get bandLateNight => 'Late night';
 }

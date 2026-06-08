@@ -200,7 +200,7 @@ async function handleSubscriptionStatus(
     if (newStatus === "authorized") {
       const { data: subRow } = await supabase
         .from("user_subscriptions")
-        .select("plan_id")
+        .select("plan_id, discount_code_id")
         .eq("id", existing.id)
         .single();
 
@@ -209,6 +209,17 @@ async function handleSubscriptionStatus(
           .from("profiles")
           .update({ plan_id: subRow.plan_id, role: "business_owner" })
           .eq("id", existing.user_id);
+      }
+
+      // Registrar el canje del código de descuento (idempotente).
+      if (subRow?.discount_code_id) {
+        const { error: redErr } = await supabase.rpc("record_discount_redemption", {
+          p_code_id:         subRow.discount_code_id,
+          p_user_id:         existing.user_id,
+          p_subscription_id: existing.id,
+        });
+        if (redErr) console.error("record_discount_redemption error:", redErr);
+        else console.log(`Descuento canjeado por ${existing.user_id}`);
       }
     }
 

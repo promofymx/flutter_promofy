@@ -78,6 +78,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginPasswordMinLength => 'At least 6 characters';
 
   @override
+  String get loginReferralLabel => 'Invitation code (optional)';
+
+  @override
   String get loginForgotPassword => 'Forgot your password?';
 
   @override
@@ -914,6 +917,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String get plansSubscribe => 'Subscribe';
 
   @override
+  String get plansHaveDiscountQuestion => 'Have a discount code?';
+
+  @override
+  String get plansDiscountHint => 'Code (optional)';
+
+  @override
+  String get plansApplyCode => 'Apply';
+
+  @override
+  String get plansContinuePayment => 'Continue to payment';
+
+  @override
+  String get plansCancel => 'Cancel';
+
+  @override
+  String get plansDiscountInvalid => 'Invalid or unavailable code.';
+
+  @override
+  String get plansDiscountAlreadyUsed => 'You already used this code.';
+
+  @override
+  String get plansDiscountPerMonth => '/mo';
+
+  @override
+  String get plansDiscountFreeMonthsLabel => 'months free';
+
+  @override
+  String get plansDiscountThen => 'then';
+
+  @override
   String get plansAddonsLabel => 'ADD-ONS';
 
   @override
@@ -951,9 +984,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get plansAddonEstablishmentLabel => 'Additional establishment';
-
-  @override
-  String get plansCancel => 'Cancel';
 
   @override
   String get plansCancelAddonTitle => 'Cancel add-on';
@@ -1258,6 +1288,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileReferralLinkSoon => 'Your referral link will be available shortly.';
+
+  @override
+  String get profileReferralHaveCodeTitle => 'Were you invited?';
+
+  @override
+  String get profileReferralCodeHint => 'Invitation code';
+
+  @override
+  String get profileReferralApply => 'Apply';
+
+  @override
+  String get profileReferralOk => 'Code applied! 🎉';
+
+  @override
+  String get profileReferralAlready => 'You already had an invitation code registered.';
+
+  @override
+  String get profileReferralNotFound => 'Invalid code.';
+
+  @override
+  String get profileReferralSelf => 'You can\'t use your own code.';
+
+  @override
+  String get profileReferralGenericError => 'Couldn\'t apply the code.';
 
   @override
   String get profileAchievementsTitle => 'My Achievements';

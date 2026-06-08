@@ -25,8 +25,17 @@ class PlansRepository {
 
   // ── Pago: suscripción ──────────────────────────────────────────────────────
 
-  Future<Map<String, String>> createSubscription({required int planId}) =>
-      _paymentDs.createSubscription(planId: planId);
+  Future<Map<String, String>> createSubscription({
+    required int planId,
+    String? discountCode,
+  }) =>
+      _paymentDs.createSubscription(planId: planId, discountCode: discountCode);
+
+  Future<Map<String, dynamic>> previewDiscount({
+    required String code,
+    required int planId,
+  }) =>
+      _paymentDs.previewDiscount(code: code, planId: planId);
 
   // ── Pago: add-ons ──────────────────────────────────────────────────────────
 

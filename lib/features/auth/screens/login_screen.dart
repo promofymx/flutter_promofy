@@ -34,6 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _referralController = TextEditingController();
   bool _isSignIn = true;
   bool _obscurePassword = true;
 
@@ -41,7 +42,14 @@ class _LoginScreenState extends State<LoginScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _referralController.dispose();
     super.dispose();
+  }
+
+  /// Código de invitación normalizado (o null si está vacío).
+  String? get _referralCode {
+    final code = _referralController.text.trim().toUpperCase();
+    return code.isEmpty ? null : code;
   }
 
   void _showForgotPasswordDialog() {
@@ -63,6 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
       context.read<AuthBloc>().add(AuthEmailSignUpRequested(
             email: _emailController.text.trim(),
             password: _passwordController.text,
+            referralCode: _referralCode,
           ));
     }
   }
@@ -127,7 +136,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         ? null
                         : () => context
                             .read<AuthBloc>()
-                            .add(AuthGoogleSignInRequested()),
+                            .add(AuthGoogleSignInRequested(
+                              referralCode: _referralCode,
+                            )),
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 52),
                       shape: RoundedRectangleBorder(
@@ -222,6 +233,20 @@ class _LoginScreenState extends State<LoginScreen> {
                             return null;
                           },
                         ),
+                        // Código de invitación (referido) — solo al registrarse
+                        if (!_isSignIn) ...[
+                          const SizedBox(height: 16),
+                          TextFormField(
+                            controller: _referralController,
+                            textCapitalization: TextCapitalization.characters,
+                            decoration: InputDecoration(
+                              labelText: AppLocalizations.of(context)
+                                  .loginReferralLabel,
+                              prefixIcon:
+                                  const Icon(Icons.card_giftcard_outlined),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),

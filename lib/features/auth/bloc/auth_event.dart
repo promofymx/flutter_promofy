@@ -7,7 +7,14 @@ abstract class AuthEvent extends Equatable {
 }
 
 class AuthStarted extends AuthEvent {}
-class AuthGoogleSignInRequested extends AuthEvent {}
+
+class AuthGoogleSignInRequested extends AuthEvent {
+  /// Código de invitación (referido) opcional, capturado en el registro.
+  final String? referralCode;
+  const AuthGoogleSignInRequested({this.referralCode});
+  @override
+  List<Object?> get props => [referralCode];
+}
 
 class AuthEmailSignInRequested extends AuthEvent {
   final String email;
@@ -20,9 +27,15 @@ class AuthEmailSignInRequested extends AuthEvent {
 class AuthEmailSignUpRequested extends AuthEvent {
   final String email;
   final String password;
-  const AuthEmailSignUpRequested({required this.email, required this.password});
+  /// Código de invitación (referido) opcional.
+  final String? referralCode;
+  const AuthEmailSignUpRequested({
+    required this.email,
+    required this.password,
+    this.referralCode,
+  });
   @override
-  List<Object?> get props => [email, password];
+  List<Object?> get props => [email, password, referralCode];
 }
 
 class AuthOnboardingCompleted extends AuthEvent {

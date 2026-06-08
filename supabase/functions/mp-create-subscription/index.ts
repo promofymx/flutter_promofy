@@ -10,6 +10,9 @@ const MP_TOKEN     = Deno.env.get("MERCADOPAGO_ACCESS_TOKEN")!;
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY  = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
+// MercadoPago no permite cobros recurrentes menores a este monto (MXN).
+const MP_MIN_MXN = 10;
+
 const cors = {
   "Access-Control-Allow-Origin":  "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -42,21 +45,120 @@ serve(async (req) => {
 
     if (planErr || !plan) return json({ error: "Plan no encontrado" }, 404);
 
+    // ── 3b. Precio especial asignado al CORREO del cliente (automático) ─────
+    //     El superadmin asigna un descuento a un correo. Si el usuario que se
+    //     suscribe tiene uno asignado y vigente, se aplica solo. Sin códigos
+    //     ni campos visibles para el público.
+    let amount          = Number(plan.price_mxn);
+    let freeTrialMonths = 0;
+    let discountCodeId: string | null = null;
+
+    const email = (user.email ?? "").trim().toLowerCase();
+    if (email) {
+      const { data: dc } = await admin
+        .from("discount_codes")
+        .select("*")
+        .eq("assigned_email", email)
+        .eq("is_active", true)
+        .or(`applies_to_plan_id.is.null,applies_to_plan_id.eq.${plan_id}`)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (dc) {
+        const notExpired = !dc.expires_at || new Date(dc.expires_at) > new Date();
+        const underMax   = dc.max_uses == null || dc.used_count < dc.max_uses;
+
+        // ¿ya lo canjeó este usuario?
+        const { data: red } = await admin
+          .from("discount_code_redemptions")
+          .select("id")
+          .eq("code_id", dc.id)
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (notExpired && underMax && !red) {
+          discountCodeId = dc.id;
+          if (dc.discount_type === "percent") {
+            amount = Math.round(amount * (1 - Math.min(Number(dc.discount_value), 100) / 100) * 100) / 100;
+          } else if (dc.discount_type === "fixed") {
+            amount = Math.max(amount - Number(dc.discount_value), 0);
+          } else if (dc.discount_type === "free_months") {
+            freeTrialMonths = Math.floor(Number(dc.discount_value));
+          }
+
+          // Seguridad: MP no permite cobro recurrente en $0 (salvo free_trial).
+          // MercadoPago no acepta cobros recurrentes menores a $10 MXN.
+          // Si el descuento deja el precio por debajo, se cobra el mínimo ($10).
+          if (freeTrialMonths === 0 && amount < MP_MIN_MXN) {
+            amount = MP_MIN_MXN;
+          }
+        }
+      }
+    }
+
     // ── 4. Verificar si ya hay una suscripción activa o pendiente ──────────
     const { data: existing } = await admin
       .from("user_subscriptions")
-      .select("id, status, plan_id")
+      .select("id, status, plan_id, mp_preapproval_id")
       .eq("user_id", user.id)
       .in("status", ["authorized", "pending"])
       .maybeSingle();
 
     if (existing) {
-      return json({
-        error: existing.status === "authorized"
-          ? "Ya tienes una suscripción activa."
-          : "Ya tienes una suscripción en proceso de pago.",
-        status: existing.status,
-      }, 409);
+      // Ya activa → no se puede volver a suscribir.
+      if (existing.status === "authorized") {
+        return json({
+          error:  "Ya tienes una suscripción activa.",
+          status: "authorized",
+        }, 409);
+      }
+
+      // status === "pending": auto-reparar consultando el estado real en MP.
+      if (existing.mp_preapproval_id) {
+        try {
+          const checkRes = await fetch(
+            `https://api.mercadopago.com/preapproval/${existing.mp_preapproval_id}`,
+            { headers: { "Authorization": `Bearer ${MP_TOKEN}` } },
+          );
+          if (checkRes.ok) {
+            const pre = await checkRes.json();
+
+            // a) Ya fue autorizada en MP (webhook perdido) → sincronizar y avisar.
+            if (pre.status === "authorized") {
+              await admin
+                .from("user_subscriptions")
+                .update({ status: "authorized" })
+                .eq("id", existing.id);
+              return json({
+                error:  "Ya tienes una suscripción activa.",
+                status: "authorized",
+              }, 409);
+            }
+
+            // b) Sigue pendiente, mismo plan Y mismo monto → reanudar el pago.
+            //    Si el monto difiere (p. ej. una preaprobación vieja con precio
+            //    de prueba), NO se reanuda: se descarta y se crea una nueva al
+            //    precio actual del plan.
+            const preAmount = Number(pre?.auto_recurring?.transaction_amount);
+            if (pre.status === "pending" &&
+                pre.init_point &&
+                existing.plan_id === plan_id &&
+                preAmount === amount) {
+              return json({
+                init_point:     pre.init_point as string,
+                preapproval_id: String(existing.mp_preapproval_id),
+              });
+            }
+          }
+        } catch (e) {
+          console.error("MP preapproval check error:", e);
+        }
+      }
+
+      // c) Pendiente cancelado/vencido, de otro plan, o sin poder consultarlo:
+      //    borrar la fila atascada y continuar para crear una nueva.
+      await admin.from("user_subscriptions").delete().eq("id", existing.id);
     }
 
     // ── 5. Crear Preaprobación en MercadoPago (inline auto_recurring) ──────
@@ -67,8 +169,11 @@ serve(async (req) => {
       auto_recurring: {
         frequency:          1,
         frequency_type:     "months",
-        transaction_amount: Number(plan.price_mxn),
+        transaction_amount: amount,
         currency_id:        "MXN",
+        ...(freeTrialMonths > 0
+          ? { free_trial: { frequency: freeTrialMonths, frequency_type: "months" } }
+          : {}),
       },
       external_reference: `sub|${user.id}|${plan_id}`,
       status:             "pending",
@@ -89,7 +194,11 @@ serve(async (req) => {
 
     if (!mpRes.ok) {
       console.error("MP preapproval error:", JSON.stringify(mpData));
-      return json({ error: "Error al crear suscripción en MercadoPago" }, 502);
+      const detail = mpData?.message
+        ?? mpData?.cause?.[0]?.description
+        ?? mpData?.error
+        ?? "error desconocido";
+      return json({ error: `MercadoPago: ${detail}` }, 502);
     }
 
     // ── 6. Guardar suscripción pendiente en DB ─────────────────────────────
@@ -100,6 +209,7 @@ serve(async (req) => {
         plan_id:           plan_id,
         mp_preapproval_id: String(mpData.id),
         status:            "pending",
+        ...(discountCodeId ? { discount_code_id: discountCodeId } : {}),
       });
 
     if (insertErr) {

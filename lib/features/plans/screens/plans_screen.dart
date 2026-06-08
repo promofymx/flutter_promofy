@@ -666,6 +666,8 @@ class _PlanCTA extends StatelessWidget {
   }
 
   void _onSubscribe(BuildContext context) {
+    // El descuento (si lo hay) se aplica automáticamente en el servidor según
+    // el correo del cliente (precio especial asignado desde el superadmin).
     context.read<PlansCubit>().subscribeToPlan(plan.id).catchError((e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

@@ -45,13 +45,20 @@ class PlansCubit extends Cubit<PlansState> {
 
   // ── Iniciar pago: plan (suscripción) ──────────────────────────────────────
 
-  Future<void> subscribeToPlan(int planId) async {
+  /// Previsualiza un código de descuento para un plan.
+  Future<Map<String, dynamic>> previewDiscount(String code, int planId) =>
+      _repo.previewDiscount(code: code, planId: planId);
+
+  Future<void> subscribeToPlan(int planId, {String? discountCode}) async {
     final current = state;
     if (current is! PlansLoaded) return;
 
     emit(current.copyWith(isProcessing: true));
     try {
-      final result = await _repo.createSubscription(planId: planId);
+      final result = await _repo.createSubscription(
+        planId: planId,
+        discountCode: discountCode,
+      );
       emit(PlansPaymentReady(
         checkoutUrl: result['init_point']!,
         type:        'subscription',

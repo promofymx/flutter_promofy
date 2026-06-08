@@ -47,6 +47,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (profile == null || !profile.isOnboardingComplete) {
         emit(AuthNeedsOnboarding(user: user));
       } else {
+        // Reintento de canje del código de invitación si quedó pendiente.
+        await _redeemPendingReferralIfAny();
         final locationShown =
             await _authRepository.hasShownLocationPermission();
         if (!locationShown) {
@@ -66,6 +68,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
     try {
+      // Guardar el código de invitación (si lo hay) para canjearlo cuando
+      // el perfil exista (tras el onboarding).
+      final code = event.referralCode;
+      if (code != null && code.trim().isNotEmpty) {
+        await _authRepository.savePendingReferralCode(code);
+      }
       await _authRepository.signInWithGoogle();
     } catch (e) {
       emit(AuthError(message: 'No se pudo iniciar con Google. $e'));
@@ -111,9 +119,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
     try {
+      // Respaldo: guardar el código para canjearlo tras crear el perfil,
+      // además de enviarlo en la metadata del signUp.
+      final code = event.referralCode;
+      if (code != null && code.trim().isNotEmpty) {
+        await _authRepository.savePendingReferralCode(code);
+      }
       final response = await _authRepository.signUpWithEmail(
         email: event.email,
         password: event.password,
+        referralCode: code,
       );
       if (response.user != null) {
         emit(AuthNeedsOnboarding(user: response.user!));
@@ -138,6 +153,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         birthDate: event.birthDate,
         gender: event.gender,
       );
+      // Canjear el código de invitación ahora que el perfil ya existe.
+      await _redeemPendingReferralIfAny();
       final profile = await _authRepository.getProfile(user.id);
       // Siempre mostrar pantalla de ubicación después del onboarding
       emit(AuthNeedsLocationPermission(user: user, profile: profile!));
@@ -185,6 +202,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     } catch (_) {
       // Fallo silencioso — el estado actual se mantiene intacto.
+    }
+  }
+
+  /// Canjea el código de invitación pendiente si el perfil ya existe.
+  /// Idempotente y silencioso: si falla, se reintenta en el próximo arranque.
+  Future<void> _redeemPendingReferralIfAny() async {
+    final pending = await _authRepository.getPendingReferralCode();
+    if (pending == null || pending.isEmpty) return;
+    try {
+      await _authRepository.linkReferral(pending);
+      await _authRepository.clearPendingReferralCode();
+    } catch (_) {
+      // Se reintenta en el próximo arranque.
     }
   }
 

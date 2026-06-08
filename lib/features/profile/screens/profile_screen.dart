@@ -1695,6 +1695,55 @@ class _ReferralCard extends StatefulWidget {
 
 class _ReferralCardState extends State<_ReferralCard> {
   bool _copied = false;
+  final _redeemController = TextEditingController();
+  bool _redeeming = false;
+
+  @override
+  void dispose() {
+    _redeemController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _redeemCode() async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final code = _redeemController.text.trim().toUpperCase();
+    if (code.isEmpty) return;
+
+    FocusScope.of(context).unfocus();
+    setState(() => _redeeming = true);
+    try {
+      final res = await supabase.rpc('redeem_referral', params: {'p_code': code});
+      final map = (res as Map?) ?? {};
+      final ok = map['ok'] == true;
+      final reason = map['reason']?.toString() ?? 'error';
+
+      final String message;
+      switch (reason) {
+        case 'ok':        message = l10n.profileReferralOk;        break;
+        case 'already':   message = l10n.profileReferralAlready;   break;
+        case 'not_found': message = l10n.profileReferralNotFound;  break;
+        case 'self':      message = l10n.profileReferralSelf;      break;
+        default:          message = l10n.profileReferralGenericError;
+      }
+      if (!mounted) return;
+      if (ok) _redeemController.clear();
+      messenger.showSnackBar(SnackBar(
+        content: Text(message),
+        backgroundColor: ok ? Colors.green.shade700 : Colors.red.shade600,
+        behavior: SnackBarBehavior.floating,
+      ));
+    } catch (_) {
+      if (!mounted) return;
+      messenger.showSnackBar(SnackBar(
+        content: Text(l10n.profileReferralGenericError),
+        backgroundColor: Colors.red.shade600,
+        behavior: SnackBarBehavior.floating,
+      ));
+    } finally {
+      if (mounted) setState(() => _redeeming = false);
+    }
+  }
 
   String get _shareUrl {
     final code = widget.profile.referralCode ?? '';
@@ -1884,6 +1933,57 @@ class _ReferralCardState extends State<_ReferralCard> {
             ),
           ),
         ],
+
+        // ── ¿Te invitaron? Canjear código de invitación ──────────────────
+        const SizedBox(height: 16),
+        const Divider(height: 1),
+        const SizedBox(height: 14),
+        Text(
+          AppLocalizations.of(context).profileReferralHaveCodeTitle,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textDark,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _redeemController,
+                textCapitalization: TextCapitalization.characters,
+                enabled: !_redeeming,
+                decoration: InputDecoration(
+                  hintText: AppLocalizations.of(context).profileReferralCodeHint,
+                  prefixIcon: const Icon(Icons.card_giftcard_outlined, size: 20),
+                  isDense: true,
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                ),
+                onSubmitted: (_) => _redeeming ? null : _redeemCode(),
+              ),
+            ),
+            const SizedBox(width: 8),
+            ElevatedButton(
+              onPressed: _redeeming ? null : _redeemCode,
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(0, 48),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+              ),
+              child: _redeeming
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white),
+                    )
+                  : Text(AppLocalizations.of(context).profileReferralApply,
+                      style: const TextStyle(fontWeight: FontWeight.w600)),
+            ),
+          ],
+        ),
       ],
     );
   }

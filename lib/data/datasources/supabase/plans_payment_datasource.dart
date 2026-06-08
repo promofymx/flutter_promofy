@@ -1,9 +1,23 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../main.dart';
 import '../../models/subscription_model.dart';
 
 /// Datasource para operaciones de pago: llama Edge Functions de MercadoPago
 /// y consulta el estado de suscripción del usuario autenticado.
 class PlansPaymentDatasource {
+
+  /// Extrae el mensaje de error legible que devuelve la Edge Function
+  /// (campo `error` del JSON) cuando responde con un status != 2xx.
+  /// Evita mostrar al usuario el `FunctionException(...)` crudo.
+  String _functionError(Object e, String fallback) {
+    if (e is FunctionException) {
+      final details = e.details;
+      if (details is Map && details['error'] != null) {
+        return details['error'].toString();
+      }
+    }
+    return fallback;
+  }
 
   // ── Estado de suscripción ──────────────────────────────────────────────────
 
@@ -14,24 +28,47 @@ class PlansPaymentDatasource {
 
   // ── Crear suscripción (Edge Function) ─────────────────────────────────────
 
+  /// Previsualiza un código de descuento para un plan (sin canjearlo).
+  /// Devuelve el json del RPC: {ok, reason, type, value, original_price,
+  /// final_price, free_months, description}.
+  Future<Map<String, dynamic>> previewDiscount({
+    required String code,
+    required int planId,
+  }) async {
+    final res = await supabase.rpc('preview_discount_code', params: {
+      'p_code':    code.trim().toUpperCase(),
+      'p_plan_id': planId,
+    });
+    return (res as Map?)?.cast<String, dynamic>() ?? {'ok': false};
+  }
+
   /// Llama a mp-create-subscription y devuelve el init_point para abrir en WebView.
-  Future<Map<String, String>> createSubscription({required int planId}) async {
-    final result = await supabase.functions.invoke(
-      'mp-create-subscription',
-      body: {'plan_id': planId},
-    );
+  Future<Map<String, String>> createSubscription({
+    required int planId,
+    String? discountCode,
+  }) async {
+    try {
+      final code = discountCode?.trim().toUpperCase();
+      final result = await supabase.functions.invoke(
+        'mp-create-subscription',
+        body: {
+          'plan_id': planId,
+          if (code != null && code.isNotEmpty) 'discount_code': code,
+        },
+      );
 
-    if (result.status != 200) {
-      final err = (result.data as Map<String, dynamic>?)?['error']
-          ?? 'Error al iniciar pago';
-      throw Exception(err);
+      final data = result.data as Map<String, dynamic>;
+      // La función puede responder 200 con un error lógico en el cuerpo.
+      if (data['init_point'] == null) {
+        throw Exception(data['error']?.toString() ?? 'No se pudo iniciar el pago.');
+      }
+      return {
+        'init_point':     data['init_point']     as String,
+        'preapproval_id': data['preapproval_id'] as String,
+      };
+    } on FunctionException catch (e) {
+      throw Exception(_functionError(e, 'No se pudo iniciar el pago.'));
     }
-
-    final data = result.data as Map<String, dynamic>;
-    return {
-      'init_point':     data['init_point']     as String,
-      'preapproval_id': data['preapproval_id'] as String,
-    };
   }
 
   // ── Crear preferencia add-on (Edge Function) ───────────────────────────────
@@ -64,20 +101,24 @@ class PlansPaymentDatasource {
   Future<Map<String, String>> createAddonSubscription({
     required String addOnType,
   }) async {
-    final result = await supabase.functions.invoke(
-      'mp-create-addon-subscription',
-      body: {'add_on_type': addOnType},
-    );
-    if (result.status != 200) {
-      final err = (result.data as Map<String, dynamic>?)?['error']
-          ?? 'Error al iniciar la suscripción del complemento';
-      throw Exception(err);
+    try {
+      final result = await supabase.functions.invoke(
+        'mp-create-addon-subscription',
+        body: {'add_on_type': addOnType},
+      );
+      final data = result.data as Map<String, dynamic>;
+      if (data['init_point'] == null) {
+        throw Exception(data['error']?.toString()
+            ?? 'No se pudo iniciar la suscripción del complemento.');
+      }
+      return {
+        'init_point':     data['init_point']     as String,
+        'preapproval_id': data['preapproval_id'] as String,
+      };
+    } on FunctionException catch (e) {
+      throw Exception(
+          _functionError(e, 'No se pudo iniciar la suscripción del complemento.'));
     }
-    final data = result.data as Map<String, dynamic>;
-    return {
-      'init_point':     data['init_point']     as String,
-      'preapproval_id': data['preapproval_id'] as String,
-    };
   }
 
   /// Cancela la suscripción de un add-on.

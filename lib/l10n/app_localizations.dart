@@ -235,6 +235,12 @@ abstract class AppLocalizations {
   /// **'Mínimo 6 caracteres'**
   String get loginPasswordMinLength;
 
+  /// No description provided for @loginReferralLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Código de invitación (opcional)'**
+  String get loginReferralLabel;
+
   /// No description provided for @loginForgotPassword.
   ///
   /// In es, this message translates to:
@@ -1759,6 +1765,66 @@ abstract class AppLocalizations {
   /// **'Suscribirme'**
   String get plansSubscribe;
 
+  /// No description provided for @plansHaveDiscountQuestion.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Tienes un código de descuento?'**
+  String get plansHaveDiscountQuestion;
+
+  /// No description provided for @plansDiscountHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Código (opcional)'**
+  String get plansDiscountHint;
+
+  /// No description provided for @plansApplyCode.
+  ///
+  /// In es, this message translates to:
+  /// **'Aplicar'**
+  String get plansApplyCode;
+
+  /// No description provided for @plansContinuePayment.
+  ///
+  /// In es, this message translates to:
+  /// **'Continuar al pago'**
+  String get plansContinuePayment;
+
+  /// No description provided for @plansCancel.
+  ///
+  /// In es, this message translates to:
+  /// **'Cancelar'**
+  String get plansCancel;
+
+  /// No description provided for @plansDiscountInvalid.
+  ///
+  /// In es, this message translates to:
+  /// **'Código no válido o no disponible.'**
+  String get plansDiscountInvalid;
+
+  /// No description provided for @plansDiscountAlreadyUsed.
+  ///
+  /// In es, this message translates to:
+  /// **'Ya usaste este código.'**
+  String get plansDiscountAlreadyUsed;
+
+  /// No description provided for @plansDiscountPerMonth.
+  ///
+  /// In es, this message translates to:
+  /// **'/mes'**
+  String get plansDiscountPerMonth;
+
+  /// No description provided for @plansDiscountFreeMonthsLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'meses gratis'**
+  String get plansDiscountFreeMonthsLabel;
+
+  /// No description provided for @plansDiscountThen.
+  ///
+  /// In es, this message translates to:
+  /// **'luego'**
+  String get plansDiscountThen;
+
   /// No description provided for @plansAddonsLabel.
   ///
   /// In es, this message translates to:
@@ -1836,12 +1902,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Establecimiento adicional'**
   String get plansAddonEstablishmentLabel;
-
-  /// No description provided for @plansCancel.
-  ///
-  /// In es, this message translates to:
-  /// **'Cancelar'**
-  String get plansCancel;
 
   /// No description provided for @plansCancelAddonTitle.
   ///
@@ -2418,6 +2478,54 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Tu link de referido estará disponible en breve.'**
   String get profileReferralLinkSoon;
+
+  /// No description provided for @profileReferralHaveCodeTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Te invitaron?'**
+  String get profileReferralHaveCodeTitle;
+
+  /// No description provided for @profileReferralCodeHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Código de invitación'**
+  String get profileReferralCodeHint;
+
+  /// No description provided for @profileReferralApply.
+  ///
+  /// In es, this message translates to:
+  /// **'Aplicar'**
+  String get profileReferralApply;
+
+  /// No description provided for @profileReferralOk.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Código aplicado! 🎉'**
+  String get profileReferralOk;
+
+  /// No description provided for @profileReferralAlready.
+  ///
+  /// In es, this message translates to:
+  /// **'Ya tenías un código de invitación registrado.'**
+  String get profileReferralAlready;
+
+  /// No description provided for @profileReferralNotFound.
+  ///
+  /// In es, this message translates to:
+  /// **'Código no válido.'**
+  String get profileReferralNotFound;
+
+  /// No description provided for @profileReferralSelf.
+  ///
+  /// In es, this message translates to:
+  /// **'No puedes usar tu propio código.'**
+  String get profileReferralSelf;
+
+  /// No description provided for @profileReferralGenericError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo aplicar el código.'**
+  String get profileReferralGenericError;
 
   /// No description provided for @profileAchievementsTitle.
   ///

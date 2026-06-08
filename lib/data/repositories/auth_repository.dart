@@ -64,12 +64,47 @@ class AuthRepository {
   Future<AuthResponse> signUpWithEmail({
     required String email,
     required String password,
+    String? referralCode,
   }) async {
+    final code = referralCode?.trim().toUpperCase();
     return await supabase.auth.signUp(
       email: email,
       password: password,
       emailRedirectTo: 'http://localhost:3000',
+      // El trigger handle_referral_from_signup() lee 'referring_code' del
+      // raw_user_meta_data y crea el registro en referrals al crear el perfil.
+      data: (code != null && code.isNotEmpty)
+          ? {'referring_code': code}
+          : null,
     );
+  }
+
+  // ── Referidos ──────────────────────────────────────────────────
+  /// Vincula al usuario activo con quien lo refirió (RPC SECURITY DEFINER).
+  /// Idempotente: si ya tiene referidor o el código no existe, no hace nada.
+  Future<void> linkReferral(String referrerCode) async {
+    final code = referrerCode.trim().toUpperCase();
+    if (code.isEmpty) return;
+    await supabase.rpc('link_referral', params: {'p_referrer_code': code});
+  }
+
+  /// Guarda el código de invitación para canjearlo tras completar el perfil
+  /// (cubre tanto registro con correo como con Google).
+  Future<void> savePendingReferralCode(String code) async {
+    final clean = code.trim().toUpperCase();
+    if (clean.isEmpty) return;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('pending_referral_code', clean);
+  }
+
+  Future<String?> getPendingReferralCode() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('pending_referral_code');
+  }
+
+  Future<void> clearPendingReferralCode() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('pending_referral_code');
   }
 
   Future<void> signOut() async => await supabase.auth.signOut();

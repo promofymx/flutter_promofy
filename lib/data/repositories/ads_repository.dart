@@ -29,6 +29,14 @@ class AdsRepository {
 
   Future<AdCreditModel?> getCredits(String estId) => _ds.getCredits(estId);
 
+  Future<double> getWalletCredits() => _ds.getWalletCredits();
+
+  Future<Map<String, dynamic>> applyWalletCredit({
+    required String establishmentId,
+    required double amount,
+  }) =>
+      _ds.applyWalletCredit(establishmentId: establishmentId, amount: amount);
+
   Future<List<AdCreditTxnModel>> getTransactions(String estId) =>
       _ds.getTransactions(estId);
 

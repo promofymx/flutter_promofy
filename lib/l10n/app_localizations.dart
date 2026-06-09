@@ -1387,6 +1387,120 @@ abstract class AppLocalizations {
   /// **'Ocurrió un error inesperado.'**
   String get qrErrorUnexpected;
 
+  /// No description provided for @qrErrorMinTicket.
+  ///
+  /// In es, this message translates to:
+  /// **'El consumo no alcanza el mínimo del programa.'**
+  String get qrErrorMinTicket;
+
+  /// No description provided for @qrErrorAlreadyToday.
+  ///
+  /// In es, this message translates to:
+  /// **'Este cliente ya registró un sello hoy.'**
+  String get qrErrorAlreadyToday;
+
+  /// No description provided for @qrErrorTooSoon.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no puede registrar otro sello. Intenta más tarde.'**
+  String get qrErrorTooSoon;
+
+  /// No description provided for @qrErrorRewardExpired.
+  ///
+  /// In es, this message translates to:
+  /// **'La recompensa ya venció.'**
+  String get qrErrorRewardExpired;
+
+  /// No description provided for @qrTicketAmountTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Monto del consumo'**
+  String get qrTicketAmountTitle;
+
+  /// No description provided for @qrTicketCancel.
+  ///
+  /// In es, this message translates to:
+  /// **'Cancelar'**
+  String get qrTicketCancel;
+
+  /// No description provided for @qrTicketConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'Registrar'**
+  String get qrTicketConfirm;
+
+  /// No description provided for @qrMinTicketHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Consumo mínimo para sellar: \${amount}'**
+  String qrMinTicketHint(Object amount);
+
+  /// No description provided for @qrMinTicketError.
+  ///
+  /// In es, this message translates to:
+  /// **'El consumo debe ser de al menos \${amount}.'**
+  String qrMinTicketError(Object amount);
+
+  /// No description provided for @loyaltyRulesTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Reglas (opcional)'**
+  String get loyaltyRulesTitle;
+
+  /// No description provided for @loyaltyRulesSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Activa solo las que necesites. Deja en blanco o 0 para desactivar una regla.'**
+  String get loyaltyRulesSubtitle;
+
+  /// No description provided for @loyaltyRuleOnePerDay.
+  ///
+  /// In es, this message translates to:
+  /// **'Máximo 1 sello por día por cliente'**
+  String get loyaltyRuleOnePerDay;
+
+  /// No description provided for @loyaltyRuleMinTicket.
+  ///
+  /// In es, this message translates to:
+  /// **'Consumo mínimo para sellar'**
+  String get loyaltyRuleMinTicket;
+
+  /// No description provided for @loyaltyRuleMinHours.
+  ///
+  /// In es, this message translates to:
+  /// **'Tiempo mínimo entre sellos'**
+  String get loyaltyRuleMinHours;
+
+  /// No description provided for @loyaltyRuleStampValidity.
+  ///
+  /// In es, this message translates to:
+  /// **'Vigencia de los sellos en curso'**
+  String get loyaltyRuleStampValidity;
+
+  /// No description provided for @loyaltyRuleRewardValidity.
+  ///
+  /// In es, this message translates to:
+  /// **'Vigencia de la recompensa'**
+  String get loyaltyRuleRewardValidity;
+
+  /// No description provided for @loyaltyRuleOffHint.
+  ///
+  /// In es, this message translates to:
+  /// **'0 = sin límite'**
+  String get loyaltyRuleOffHint;
+
+  /// No description provided for @loyaltyRuleHoursSuffix.
+  ///
+  /// In es, this message translates to:
+  /// **'horas'**
+  String get loyaltyRuleHoursSuffix;
+
+  /// No description provided for @loyaltyRuleDaysSuffix.
+  ///
+  /// In es, this message translates to:
+  /// **'días'**
+  String get loyaltyRuleDaysSuffix;
+
   /// No description provided for @qrCouldNotRegister.
   ///
   /// In es, this message translates to:
@@ -3300,6 +3414,72 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Recargar'**
   String get bizTopUp;
+
+  /// No description provided for @bizWalletTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Cartera Promofy'**
+  String get bizWalletTitle;
+
+  /// No description provided for @bizWalletUse.
+  ///
+  /// In es, this message translates to:
+  /// **'Usar'**
+  String get bizWalletUse;
+
+  /// No description provided for @bizWalletDialogTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Usar créditos de cartera'**
+  String get bizWalletDialogTitle;
+
+  /// No description provided for @bizWalletDialogDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Mueve crédito de tu cartera al saldo de publicidad de este local. Ese saldo sí se gasta en tus anuncios.'**
+  String get bizWalletDialogDesc;
+
+  /// No description provided for @bizWalletAll.
+  ///
+  /// In es, this message translates to:
+  /// **'Todo'**
+  String get bizWalletAll;
+
+  /// No description provided for @bizWalletApply.
+  ///
+  /// In es, this message translates to:
+  /// **'Aplicar'**
+  String get bizWalletApply;
+
+  /// No description provided for @bizWalletCancel.
+  ///
+  /// In es, this message translates to:
+  /// **'Cancelar'**
+  String get bizWalletCancel;
+
+  /// No description provided for @bizWalletInvalid.
+  ///
+  /// In es, this message translates to:
+  /// **'Monto inválido.'**
+  String get bizWalletInvalid;
+
+  /// No description provided for @bizWalletInsufficient.
+  ///
+  /// In es, this message translates to:
+  /// **'No tienes suficiente saldo en la cartera.'**
+  String get bizWalletInsufficient;
+
+  /// No description provided for @bizWalletError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo aplicar el crédito.'**
+  String get bizWalletError;
+
+  /// No description provided for @bizWalletApplied.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Listo! Crédito aplicado al saldo del local.'**
+  String get bizWalletApplied;
 
   /// No description provided for @bizNoActiveCampaigns.
   ///

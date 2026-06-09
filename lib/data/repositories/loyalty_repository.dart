@@ -30,6 +30,11 @@ class LoyaltyRepository {
     required String   rewardDescription,
     required DateTime startsAt,
     required DateTime endsAt,
+    bool   onePerDay          = false,
+    double minTicketMxn       = 0,
+    int    minHoursBetween    = 0,
+    int    stampValidityDays  = 0,
+    int    rewardValidityDays = 0,
   }) =>
       _datasource.createProgram(
         establishmentId:   establishmentId,
@@ -39,6 +44,11 @@ class LoyaltyRepository {
         rewardDescription: rewardDescription,
         startsAt:          startsAt,
         endsAt:            endsAt,
+        onePerDay:          onePerDay,
+        minTicketMxn:       minTicketMxn,
+        minHoursBetween:    minHoursBetween,
+        stampValidityDays:  stampValidityDays,
+        rewardValidityDays: rewardValidityDays,
       );
 
   Future<void> deactivateProgram(String programId) =>
@@ -47,10 +57,12 @@ class LoyaltyRepository {
   Future<Map<String, dynamic>> recordVisit({
     required String programId,
     required String clientId,
+    double? ticketAmount,
   }) =>
       _datasource.recordVisit(
-        programId: programId,
-        clientId:  clientId,
+        programId:    programId,
+        clientId:     clientId,
+        ticketAmount: ticketAmount,
       );
 
   Future<Map<String, dynamic>> claimReward({

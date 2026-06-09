@@ -52,6 +52,25 @@ class AdsDatasource {
     return AdCreditModel.fromJson(row);
   }
 
+  /// Saldo de la cartera del usuario (referidos + promo de lanzamiento).
+  Future<double> getWalletCredits() async {
+    final res = await supabase.rpc('get_my_wallet_credits');
+    return (res as num?)?.toDouble() ?? 0;
+  }
+
+  /// Aplica saldo de la cartera del usuario al saldo de publicidad de un local.
+  /// Devuelve el json del RPC: {ok, error?, wallet?, balance?}.
+  Future<Map<String, dynamic>> applyWalletCredit({
+    required String establishmentId,
+    required double amount,
+  }) async {
+    final res = await supabase.rpc('apply_wallet_credit', params: {
+      'p_establishment_id': establishmentId,
+      'p_amount':           amount,
+    });
+    return (res as Map?)?.cast<String, dynamic>() ?? {'ok': false};
+  }
+
   Future<List<AdCreditTxnModel>> getTransactions(
       String establishmentId) async {
     final rows = await supabase

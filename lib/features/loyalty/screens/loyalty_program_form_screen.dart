@@ -24,10 +24,21 @@ class _LoyaltyProgramFormScreenState extends State<LoyaltyProgramFormScreen> {
   DateTime? _endsAt;
   bool _saving            = false;
 
+  // ── Reglas (opcionales) ──
+  bool _onePerDay         = false;
+  final _minTicketCtrl    = TextEditingController();   // vacío/0 = sin regla
+  final _minHoursCtrl     = TextEditingController();
+  final _stampDaysCtrl    = TextEditingController();
+  final _rewardDaysCtrl   = TextEditingController();
+
   @override
   void dispose() {
     _visitsCtrl.dispose();
     _rewardCtrl.dispose();
+    _minTicketCtrl.dispose();
+    _minHoursCtrl.dispose();
+    _stampDaysCtrl.dispose();
+    _rewardDaysCtrl.dispose();
     super.dispose();
   }
 
@@ -77,6 +88,11 @@ class _LoyaltyProgramFormScreenState extends State<LoyaltyProgramFormScreen> {
       rewardDescription: _rewardCtrl.text.trim(),
       startsAt:          _startsAt,
       endsAt:            _endsAt!,
+      onePerDay:          _onePerDay,
+      minTicketMxn:       double.tryParse(_minTicketCtrl.text.trim()) ?? 0,
+      minHoursBetween:    int.tryParse(_minHoursCtrl.text.trim()) ?? 0,
+      stampValidityDays:  int.tryParse(_stampDaysCtrl.text.trim()) ?? 0,
+      rewardValidityDays: int.tryParse(_rewardDaysCtrl.text.trim()) ?? 0,
     );
 
     if (!mounted) return;
@@ -229,6 +245,83 @@ class _LoyaltyProgramFormScreenState extends State<LoyaltyProgramFormScreen> {
                   ),
                 ],
               ),
+              const SizedBox(height: 28),
+
+              // ── Reglas (opcionales) ───────────────────────────────
+              Row(
+                children: [
+                  const Icon(Icons.tune, size: 18, color: AppColors.textDark),
+                  const SizedBox(width: 8),
+                  Text(
+                    AppLocalizations.of(context).loyaltyRulesTitle,
+                    style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textDark),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                AppLocalizations.of(context).loyaltyRulesSubtitle,
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade600, height: 1.3),
+              ),
+              const SizedBox(height: 12),
+
+              // Máx 1 sello por día
+              SwitchListTile.adaptive(
+                value: _onePerDay,
+                onChanged: (v) => setState(() => _onePerDay = v),
+                contentPadding: EdgeInsets.zero,
+                activeColor: AppColors.primary,
+                title: Text(
+                  AppLocalizations.of(context).loyaltyRuleOnePerDay,
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                ),
+              ),
+              const Divider(height: 8),
+              const SizedBox(height: 8),
+
+              // Consumo mínimo
+              _RuleNumberField(
+                controller: _minTicketCtrl,
+                label:      AppLocalizations.of(context).loyaltyRuleMinTicket,
+                hint:       AppLocalizations.of(context).loyaltyRuleOffHint,
+                icon:       Icons.attach_money,
+                prefix:     '\$',
+                decimals:   true,
+              ),
+              const SizedBox(height: 12),
+
+              // Horas entre sellos
+              _RuleNumberField(
+                controller: _minHoursCtrl,
+                label:      AppLocalizations.of(context).loyaltyRuleMinHours,
+                hint:       AppLocalizations.of(context).loyaltyRuleOffHint,
+                icon:       Icons.schedule,
+                suffix:     AppLocalizations.of(context).loyaltyRuleHoursSuffix,
+              ),
+              const SizedBox(height: 12),
+
+              // Vigencia de sellos
+              _RuleNumberField(
+                controller: _stampDaysCtrl,
+                label:      AppLocalizations.of(context).loyaltyRuleStampValidity,
+                hint:       AppLocalizations.of(context).loyaltyRuleOffHint,
+                icon:       Icons.timelapse,
+                suffix:     AppLocalizations.of(context).loyaltyRuleDaysSuffix,
+              ),
+              const SizedBox(height: 12),
+
+              // Vigencia de recompensa
+              _RuleNumberField(
+                controller: _rewardDaysCtrl,
+                label:      AppLocalizations.of(context).loyaltyRuleRewardValidity,
+                hint:       AppLocalizations.of(context).loyaltyRuleOffHint,
+                icon:       Icons.hourglass_bottom,
+                suffix:     AppLocalizations.of(context).loyaltyRuleDaysSuffix,
+              ),
+
               const SizedBox(height: 32),
 
               // ── Botón ─────────────────────────────────────────────
@@ -257,6 +350,56 @@ class _LoyaltyProgramFormScreenState extends State<LoyaltyProgramFormScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+// Campo numérico para una regla (vacío/0 = regla apagada).
+class _RuleNumberField extends StatelessWidget {
+  final TextEditingController controller;
+  final String   label;
+  final String   hint;
+  final IconData icon;
+  final String?  prefix;
+  final String?  suffix;
+  final bool     decimals;
+
+  const _RuleNumberField({
+    required this.controller,
+    required this.label,
+    required this.hint,
+    required this.icon,
+    this.prefix,
+    this.suffix,
+    this.decimals = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label,
+            style: const TextStyle(
+                fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.textDark)),
+        const SizedBox(height: 6),
+        TextFormField(
+          controller:   controller,
+          keyboardType: TextInputType.numberWithOptions(decimal: decimals),
+          inputFormatters: [
+            decimals
+                ? FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))
+                : FilteringTextInputFormatter.digitsOnly,
+          ],
+          decoration: InputDecoration(
+            hintText:   hint,
+            prefixIcon: Icon(icon, size: 20),
+            prefixText: prefix,
+            suffixText: suffix,
+            isDense:    true,
+          ),
+        ),
+      ],
     );
   }
 }

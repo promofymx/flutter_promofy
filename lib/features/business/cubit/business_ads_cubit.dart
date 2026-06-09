@@ -28,6 +28,7 @@ class BusinessAdsCubit extends Cubit<BusinessAdsState> {
         _repo.getTransactions(_establishmentId),
         _repo.getPricing(),
         _repo.getTotalUserCount(),
+        _repo.getWalletCredits(),
       ]);
 
       emit(BusinessAdsLoaded(
@@ -36,6 +37,7 @@ class BusinessAdsCubit extends Cubit<BusinessAdsState> {
         transactions:   (results[2] as List).cast(),
         pricing:        (results[3] as List).cast(),
         totalUserCount: results[4] as int,
+        walletMxn:      (results[5] as num).toDouble(),
       ));
     } catch (e) {
       emit(BusinessAdsError(e.toString()));
@@ -94,6 +96,19 @@ class BusinessAdsCubit extends Cubit<BusinessAdsState> {
         if (st is BusinessAdsLoaded) emit(st.copyWith(campaigns: refreshed));
       } catch (_) {/* sin interrumpir el flujo */}
     }
+  }
+
+  // ── Aplicar crédito de cartera a este local ────────────────────────────────
+
+  /// Mueve [amount] de la cartera del usuario al saldo de publicidad de este
+  /// establecimiento. Devuelve el resultado del RPC y recarga si tuvo éxito.
+  Future<Map<String, dynamic>> applyWalletCredit(double amount) async {
+    final res = await _repo.applyWalletCredit(
+      establishmentId: _establishmentId,
+      amount:          amount,
+    );
+    if (res['ok'] == true) await load();
+    return res;
   }
 
   // ── Pausar / reanudar campaña ──────────────────────────────────────────────

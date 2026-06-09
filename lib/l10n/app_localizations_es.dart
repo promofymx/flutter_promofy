@@ -712,6 +712,67 @@ class AppLocalizationsEs extends AppLocalizations {
   String get qrErrorUnexpected => 'Ocurrió un error inesperado.';
 
   @override
+  String get qrErrorMinTicket => 'El consumo no alcanza el mínimo del programa.';
+
+  @override
+  String get qrErrorAlreadyToday => 'Este cliente ya registró un sello hoy.';
+
+  @override
+  String get qrErrorTooSoon => 'Aún no puede registrar otro sello. Intenta más tarde.';
+
+  @override
+  String get qrErrorRewardExpired => 'La recompensa ya venció.';
+
+  @override
+  String get qrTicketAmountTitle => 'Monto del consumo';
+
+  @override
+  String get qrTicketCancel => 'Cancelar';
+
+  @override
+  String get qrTicketConfirm => 'Registrar';
+
+  @override
+  String qrMinTicketHint(Object amount) {
+    return 'Consumo mínimo para sellar: \$$amount';
+  }
+
+  @override
+  String qrMinTicketError(Object amount) {
+    return 'El consumo debe ser de al menos \$$amount.';
+  }
+
+  @override
+  String get loyaltyRulesTitle => 'Reglas (opcional)';
+
+  @override
+  String get loyaltyRulesSubtitle => 'Activa solo las que necesites. Deja en blanco o 0 para desactivar una regla.';
+
+  @override
+  String get loyaltyRuleOnePerDay => 'Máximo 1 sello por día por cliente';
+
+  @override
+  String get loyaltyRuleMinTicket => 'Consumo mínimo para sellar';
+
+  @override
+  String get loyaltyRuleMinHours => 'Tiempo mínimo entre sellos';
+
+  @override
+  String get loyaltyRuleStampValidity => 'Vigencia de los sellos en curso';
+
+  @override
+  String get loyaltyRuleRewardValidity => 'Vigencia de la recompensa';
+
+  @override
+  String get loyaltyRuleOffHint => '0 = sin límite';
+
+  @override
+  String get loyaltyRuleHoursSuffix => 'horas';
+
+  @override
+  String get loyaltyRuleDaysSuffix => 'días';
+
+  @override
   String get qrCouldNotRegister => 'No se pudo registrar';
 
   @override
@@ -1733,6 +1794,39 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get bizTopUp => 'Recargar';
+
+  @override
+  String get bizWalletTitle => 'Cartera Promofy';
+
+  @override
+  String get bizWalletUse => 'Usar';
+
+  @override
+  String get bizWalletDialogTitle => 'Usar créditos de cartera';
+
+  @override
+  String get bizWalletDialogDesc => 'Mueve crédito de tu cartera al saldo de publicidad de este local. Ese saldo sí se gasta en tus anuncios.';
+
+  @override
+  String get bizWalletAll => 'Todo';
+
+  @override
+  String get bizWalletApply => 'Aplicar';
+
+  @override
+  String get bizWalletCancel => 'Cancelar';
+
+  @override
+  String get bizWalletInvalid => 'Monto inválido.';
+
+  @override
+  String get bizWalletInsufficient => 'No tienes suficiente saldo en la cartera.';
+
+  @override
+  String get bizWalletError => 'No se pudo aplicar el crédito.';
+
+  @override
+  String get bizWalletApplied => '¡Listo! Crédito aplicado al saldo del local.';
 
   @override
   String get bizNoActiveCampaigns => 'Sin campañas activas';

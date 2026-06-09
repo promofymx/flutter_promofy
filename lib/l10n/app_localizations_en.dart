@@ -712,6 +712,67 @@ class AppLocalizationsEn extends AppLocalizations {
   String get qrErrorUnexpected => 'An unexpected error occurred.';
 
   @override
+  String get qrErrorMinTicket => 'The purchase doesn\'t meet the program\'s minimum.';
+
+  @override
+  String get qrErrorAlreadyToday => 'This customer already earned a stamp today.';
+
+  @override
+  String get qrErrorTooSoon => 'Can\'t add another stamp yet. Try again later.';
+
+  @override
+  String get qrErrorRewardExpired => 'The reward has expired.';
+
+  @override
+  String get qrTicketAmountTitle => 'Purchase amount';
+
+  @override
+  String get qrTicketCancel => 'Cancel';
+
+  @override
+  String get qrTicketConfirm => 'Register';
+
+  @override
+  String qrMinTicketHint(Object amount) {
+    return 'Minimum purchase to earn a stamp: \$$amount';
+  }
+
+  @override
+  String qrMinTicketError(Object amount) {
+    return 'The purchase must be at least \$$amount.';
+  }
+
+  @override
+  String get loyaltyRulesTitle => 'Rules (optional)';
+
+  @override
+  String get loyaltyRulesSubtitle => 'Enable only what you need. Leave blank or 0 to turn a rule off.';
+
+  @override
+  String get loyaltyRuleOnePerDay => 'Max 1 stamp per day per customer';
+
+  @override
+  String get loyaltyRuleMinTicket => 'Minimum purchase to earn a stamp';
+
+  @override
+  String get loyaltyRuleMinHours => 'Minimum time between stamps';
+
+  @override
+  String get loyaltyRuleStampValidity => 'Validity of in-progress stamps';
+
+  @override
+  String get loyaltyRuleRewardValidity => 'Reward validity';
+
+  @override
+  String get loyaltyRuleOffHint => '0 = no limit';
+
+  @override
+  String get loyaltyRuleHoursSuffix => 'hours';
+
+  @override
+  String get loyaltyRuleDaysSuffix => 'days';
+
+  @override
   String get qrCouldNotRegister => 'Could not register';
 
   @override
@@ -1733,6 +1794,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bizTopUp => 'Top up';
+
+  @override
+  String get bizWalletTitle => 'Promofy wallet';
+
+  @override
+  String get bizWalletUse => 'Use';
+
+  @override
+  String get bizWalletDialogTitle => 'Use wallet credits';
+
+  @override
+  String get bizWalletDialogDesc => 'Move credit from your wallet to this venue\'s advertising balance. That balance is what gets spent on your ads.';
+
+  @override
+  String get bizWalletAll => 'All';
+
+  @override
+  String get bizWalletApply => 'Apply';
+
+  @override
+  String get bizWalletCancel => 'Cancel';
+
+  @override
+  String get bizWalletInvalid => 'Invalid amount.';
+
+  @override
+  String get bizWalletInsufficient => 'You don\'t have enough wallet balance.';
+
+  @override
+  String get bizWalletError => 'Couldn\'t apply the credit.';
+
+  @override
+  String get bizWalletApplied => 'Done! Credit applied to the venue\'s balance.';
 
   @override
   String get bizNoActiveCampaigns => 'No active campaigns';

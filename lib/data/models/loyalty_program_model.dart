@@ -11,6 +11,12 @@ class LoyaltyProgramModel extends Equatable {
   final DateTime endsAt;
   final bool     isActive;
   final DateTime createdAt;
+  // ── Reglas configurables (0/false = regla apagada) ──
+  final bool   onePerDay;          // máx. 1 sello por día por cliente
+  final double minTicketMxn;       // consumo mínimo para sellar
+  final int    minHoursBetween;    // horas mínimas entre sellos
+  final int    stampValidityDays;  // vencen los sellos en curso
+  final int    rewardValidityDays; // vence la recompensa lista
 
   const LoyaltyProgramModel({
     required this.id,
@@ -23,6 +29,11 @@ class LoyaltyProgramModel extends Equatable {
     required this.endsAt,
     required this.isActive,
     required this.createdAt,
+    this.onePerDay          = false,
+    this.minTicketMxn       = 0,
+    this.minHoursBetween    = 0,
+    this.stampValidityDays  = 0,
+    this.rewardValidityDays = 0,
   });
 
   bool get isExpired  => DateTime.now().isAfter(endsAt);
@@ -50,6 +61,11 @@ class LoyaltyProgramModel extends Equatable {
       endsAt:    DateTime.parse(json['ends_at']   as String).toLocal(),
       isActive:  (json['is_active'] as bool?) ?? true,
       createdAt: DateTime.parse(json['created_at'] as String).toLocal(),
+      onePerDay:          (json['one_per_day'] as bool?) ?? false,
+      minTicketMxn:       (json['min_ticket_mxn'] as num?)?.toDouble() ?? 0,
+      minHoursBetween:    (json['min_hours_between'] as int?) ?? 0,
+      stampValidityDays:  (json['stamp_validity_days'] as int?) ?? 0,
+      rewardValidityDays: (json['reward_validity_days'] as int?) ?? 0,
     );
   }
 
@@ -57,5 +73,7 @@ class LoyaltyProgramModel extends Equatable {
   List<Object?> get props => [
         id, establishmentId, visitsRequired, rewardDescription,
         startsAt, endsAt, isActive,
+        onePerDay, minTicketMxn, minHoursBetween,
+        stampValidityDays, rewardValidityDays,
       ];
 }

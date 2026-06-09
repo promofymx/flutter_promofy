@@ -57,6 +57,11 @@ class LoyaltyCubit extends Cubit<LoyaltyState> {
     required String   rewardDescription,
     required DateTime startsAt,
     required DateTime endsAt,
+    bool   onePerDay          = false,
+    double minTicketMxn       = 0,
+    int    minHoursBetween    = 0,
+    int    stampValidityDays  = 0,
+    int    rewardValidityDays = 0,
   }) async {
     final prev = state;
     emit(LoyaltySaving());
@@ -69,6 +74,11 @@ class LoyaltyCubit extends Cubit<LoyaltyState> {
         rewardDescription: rewardDescription,
         startsAt:          startsAt,
         endsAt:            endsAt,
+        onePerDay:          onePerDay,
+        minTicketMxn:       minTicketMxn,
+        minHoursBetween:    minHoursBetween,
+        stampValidityDays:  stampValidityDays,
+        rewardValidityDays: rewardValidityDays,
       );
       emit(LoyaltyLoaded(program: program));
       return true;
@@ -97,14 +107,16 @@ class LoyaltyCubit extends Cubit<LoyaltyState> {
 
   Future<void> recordVisit({
     required String clientId,
+    double? ticketAmount,
   }) async {
     final s = state;
     if (s is! LoyaltyLoaded || s.program == null) return;
 
     try {
       final result = await _repo.recordVisit(
-        programId: s.program!.id,
-        clientId:  clientId,
+        programId:    s.program!.id,
+        clientId:     clientId,
+        ticketAmount: ticketAmount,
       );
       final ok = result['ok'] as bool? ?? false;
       emit(LoyaltyScanResult(

@@ -712,6 +712,67 @@ class AppLocalizationsDe extends AppLocalizations {
   String get qrErrorUnexpected => 'Ein unerwarteter Fehler ist aufgetreten.';
 
   @override
+  String get qrErrorMinTicket => 'Der Einkauf erreicht den Mindestbetrag des Programms nicht.';
+
+  @override
+  String get qrErrorAlreadyToday => 'Dieser Kunde hat heute bereits einen Stempel erhalten.';
+
+  @override
+  String get qrErrorTooSoon => 'Noch kein weiterer Stempel möglich. Versuche es später.';
+
+  @override
+  String get qrErrorRewardExpired => 'Die Belohnung ist abgelaufen.';
+
+  @override
+  String get qrTicketAmountTitle => 'Einkaufsbetrag';
+
+  @override
+  String get qrTicketCancel => 'Abbrechen';
+
+  @override
+  String get qrTicketConfirm => 'Erfassen';
+
+  @override
+  String qrMinTicketHint(Object amount) {
+    return 'Mindesteinkauf für einen Stempel: \$$amount';
+  }
+
+  @override
+  String qrMinTicketError(Object amount) {
+    return 'Der Einkauf muss mindestens \$$amount betragen.';
+  }
+
+  @override
+  String get loyaltyRulesTitle => 'Regeln (optional)';
+
+  @override
+  String get loyaltyRulesSubtitle => 'Aktiviere nur, was du brauchst. Leer oder 0 schaltet eine Regel aus.';
+
+  @override
+  String get loyaltyRuleOnePerDay => 'Max. 1 Stempel pro Tag pro Kunde';
+
+  @override
+  String get loyaltyRuleMinTicket => 'Mindesteinkauf für einen Stempel';
+
+  @override
+  String get loyaltyRuleMinHours => 'Mindestzeit zwischen Stempeln';
+
+  @override
+  String get loyaltyRuleStampValidity => 'Gültigkeit laufender Stempel';
+
+  @override
+  String get loyaltyRuleRewardValidity => 'Gültigkeit der Belohnung';
+
+  @override
+  String get loyaltyRuleOffHint => '0 = kein Limit';
+
+  @override
+  String get loyaltyRuleHoursSuffix => 'Stunden';
+
+  @override
+  String get loyaltyRuleDaysSuffix => 'Tage';
+
+  @override
   String get qrCouldNotRegister => 'Konnte nicht erfasst werden';
 
   @override
@@ -1733,6 +1794,39 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get bizTopUp => 'Aufladen';
+
+  @override
+  String get bizWalletTitle => 'Promofy-Guthaben';
+
+  @override
+  String get bizWalletUse => 'Nutzen';
+
+  @override
+  String get bizWalletDialogTitle => 'Guthaben verwenden';
+
+  @override
+  String get bizWalletDialogDesc => 'Übertrage Guthaben aus deinem Konto auf das Werbebudget dieses Lokals. Dieses Budget wird für deine Anzeigen verwendet.';
+
+  @override
+  String get bizWalletAll => 'Alles';
+
+  @override
+  String get bizWalletApply => 'Anwenden';
+
+  @override
+  String get bizWalletCancel => 'Abbrechen';
+
+  @override
+  String get bizWalletInvalid => 'Ungültiger Betrag.';
+
+  @override
+  String get bizWalletInsufficient => 'Du hast nicht genug Guthaben.';
+
+  @override
+  String get bizWalletError => 'Guthaben konnte nicht angewendet werden.';
+
+  @override
+  String get bizWalletApplied => 'Fertig! Guthaben dem Budget des Lokals gutgeschrieben.';
 
   @override
   String get bizNoActiveCampaigns => 'Keine aktiven Kampagnen';

@@ -214,6 +214,25 @@
   "qrErrorProgramInactive": "El programa está inactivo o venció.",
   "qrErrorNetwork": "Error de conexión. Intenta de nuevo.",
   "qrErrorUnexpected": "Ocurrió un error inesperado.",
+  "qrErrorMinTicket": "El consumo no alcanza el mínimo del programa.",
+  "qrErrorAlreadyToday": "Este cliente ya registró un sello hoy.",
+  "qrErrorTooSoon": "Aún no puede registrar otro sello. Intenta más tarde.",
+  "qrErrorRewardExpired": "La recompensa ya venció.",
+  "qrTicketAmountTitle": "Monto del consumo",
+  "qrTicketCancel": "Cancelar",
+  "qrTicketConfirm": "Registrar",
+  "qrMinTicketHint": "Consumo mínimo para sellar: ${amount}",
+  "qrMinTicketError": "El consumo debe ser de al menos ${amount}.",
+  "loyaltyRulesTitle": "Reglas (opcional)",
+  "loyaltyRulesSubtitle": "Activa solo las que necesites. Deja en blanco o 0 para desactivar una regla.",
+  "loyaltyRuleOnePerDay": "Máximo 1 sello por día por cliente",
+  "loyaltyRuleMinTicket": "Consumo mínimo para sellar",
+  "loyaltyRuleMinHours": "Tiempo mínimo entre sellos",
+  "loyaltyRuleStampValidity": "Vigencia de los sellos en curso",
+  "loyaltyRuleRewardValidity": "Vigencia de la recompensa",
+  "loyaltyRuleOffHint": "0 = sin límite",
+  "loyaltyRuleHoursSuffix": "horas",
+  "loyaltyRuleDaysSuffix": "días",
   "qrCouldNotRegister": "No se pudo registrar",
   "qrRewardWonTitle": "¡Premio ganado! 🎉",
   "qrRewardWonMessage": "El cliente completó {visits} visitas. ¡Es momento de entregarle su regalo!",
@@ -534,6 +553,17 @@
   "bizAvailableCredit": "Crédito disponible",
   "bizReachableBanner": "≈ {count} personas alcanzables (banner)",
   "bizTopUp": "Recargar",
+  "bizWalletTitle": "Cartera Promofy",
+  "bizWalletUse": "Usar",
+  "bizWalletDialogTitle": "Usar créditos de cartera",
+  "bizWalletDialogDesc": "Mueve crédito de tu cartera al saldo de publicidad de este local. Ese saldo sí se gasta en tus anuncios.",
+  "bizWalletAll": "Todo",
+  "bizWalletApply": "Aplicar",
+  "bizWalletCancel": "Cancelar",
+  "bizWalletInvalid": "Monto inválido.",
+  "bizWalletInsufficient": "No tienes suficiente saldo en la cartera.",
+  "bizWalletError": "No se pudo aplicar el crédito.",
+  "bizWalletApplied": "¡Listo! Crédito aplicado al saldo del local.",
   "bizNoActiveCampaigns": "Sin campañas activas",
   "bizOngoingCampaigns": "Campañas en curso",
   "bizSpent": "Gastado: {amount}",
@@ -1251,6 +1281,16 @@
   "@qrVisitsLeft": {
     "placeholders": {
       "count": {}
+    }
+  },
+  "@qrMinTicketHint": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "@qrMinTicketError": {
+    "placeholders": {
+      "amount": {}
     }
   },
   "@qrVisitsCount": {

@@ -48,18 +48,99 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
     await _ctrl.stop();
     if (!mounted) return;
 
-    await context.read<LoyaltyCubit>().recordVisit(clientId: raw);
+    // Si el programa exige consumo mínimo, pedir el monto ANTES de sellar.
+    final st      = context.read<LoyaltyCubit>().state;
+    final program = st is LoyaltyLoaded ? st.program : null;
+    double? ticketAmount;
+    if (program != null && program.minTicketMxn > 0) {
+      ticketAmount = await _askTicketAmount(program.minTicketMxn);
+      if (!mounted) return;
+      if (ticketAmount == null) {
+        // Canceló → reanudar escáner.
+        setState(() => _processing = false);
+        await _ctrl.start();
+        return;
+      }
+    }
+
+    await context.read<LoyaltyCubit>().recordVisit(
+          clientId:     raw,
+          ticketAmount: ticketAmount,
+        );
     if (!mounted) return;
 
-    // Mostramos el bottom-sheet de resultado
+    // Mostramos el bottom-sheet de resultado. Si ya capturamos el monto
+    // (consumo mínimo), no lo volvemos a pedir.
     final result = context.read<LoyaltyCubit>().state;
     if (result is LoyaltyScanResult) {
-      await _showResult(result);
+      await _showResult(result, askTicket: ticketAmount == null);
     }
 
     if (!mounted) return;
     context.read<LoyaltyCubit>().dismissScanResult();
     Navigator.of(context).pop();
+  }
+
+  /// Diálogo para capturar el monto del ticket (regla de consumo mínimo).
+  /// Devuelve el monto (>= [min]) o null si se cancela.
+  Future<double?> _askTicketAmount(double min) async {
+    final ctrl = TextEditingController();
+    final l10n = AppLocalizations.of(context);
+    return showDialog<double>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) {
+        String? error;
+        return StatefulBuilder(
+          builder: (ctx, setLocal) => AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: Text(l10n.qrTicketAmountTitle,
+                style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l10n.qrMinTicketHint(min.toStringAsFixed(min == min.roundToDouble() ? 0 : 2)),
+                    style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
+                const SizedBox(height: 12),
+                TextField(
+                  controller:   ctrl,
+                  autofocus:    true,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+                  ],
+                  decoration: InputDecoration(
+                    prefixText: '\$ ',
+                    hintText:   '0.00',
+                    errorText:  error,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: Text(l10n.qrTicketCancel),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  final amount = double.tryParse(ctrl.text.trim());
+                  if (amount == null || amount < min) {
+                    setLocal(() => error = l10n.qrMinTicketError(
+                        min.toStringAsFixed(min == min.roundToDouble() ? 0 : 2)));
+                    return;
+                  }
+                  Navigator.of(ctx).pop(amount);
+                },
+                child: Text(l10n.qrTicketConfirm),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void _showInvalidQrSnack() {
@@ -71,7 +152,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
     );
   }
 
-  Future<void> _showResult(LoyaltyScanResult r) async {
+  Future<void> _showResult(LoyaltyScanResult r, {bool askTicket = true}) async {
     // Capturamos el context antes del await para poder leer StatsCubit
     // desde dentro del builder del modal (que vive en una ruta separada).
     final statsCubit = context.read<StatsCubit>();
@@ -85,7 +166,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
       ),
       builder: (_) => _ScanResultSheet(
         result: r,
-        onTicketSaved: (r.ok && r.visitId != null)
+        onTicketSaved: (askTicket && r.ok && r.visitId != null)
             ? (amount) => statsCubit.updateVisitTicket(
                   visitId: r.visitId!,
                   amount:  amount,
@@ -184,6 +265,14 @@ class _ScanResultSheet extends StatelessWidget {
         return l10n.qrErrorProgramInactive;
       case 'network_error':
         return l10n.qrErrorNetwork;
+      case 'min_ticket':
+        return l10n.qrErrorMinTicket;
+      case 'already_today':
+        return l10n.qrErrorAlreadyToday;
+      case 'too_soon':
+        return l10n.qrErrorTooSoon;
+      case 'reward_expired':
+        return l10n.qrErrorRewardExpired;
       default:
         return l10n.qrErrorUnexpected;
     }

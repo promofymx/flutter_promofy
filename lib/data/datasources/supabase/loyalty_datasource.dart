@@ -37,16 +37,26 @@ class LoyaltyDatasource {
     required String   rewardDescription,
     required DateTime startsAt,
     required DateTime endsAt,
+    bool   onePerDay          = false,
+    double minTicketMxn       = 0,
+    int    minHoursBetween    = 0,
+    int    stampValidityDays  = 0,
+    int    rewardValidityDays = 0,
   }) async {
     final row = await supabase
         .from('loyalty_programs')
         .insert({
-          'establishment_id':   establishmentId,
-          'visits_required':    visitsRequired,
-          'reward_description': rewardDescription,
-          'starts_at':          startsAt.toUtc().toIso8601String(),
-          'ends_at':            endsAt.toUtc().toIso8601String(),
-          'is_active':          true,
+          'establishment_id':     establishmentId,
+          'visits_required':      visitsRequired,
+          'reward_description':   rewardDescription,
+          'starts_at':            startsAt.toUtc().toIso8601String(),
+          'ends_at':              endsAt.toUtc().toIso8601String(),
+          'is_active':            true,
+          'one_per_day':          onePerDay,
+          'min_ticket_mxn':       minTicketMxn,
+          'min_hours_between':    minHoursBetween,
+          'stamp_validity_days':  stampValidityDays,
+          'reward_validity_days': rewardValidityDays,
         })
         .select()
         .single();
@@ -74,12 +84,14 @@ class LoyaltyDatasource {
   Future<Map<String, dynamic>> recordVisit({
     required String programId,
     required String clientId,
+    double? ticketAmount,
   }) async {
     final result = await supabase.rpc(
       'record_loyalty_visit',
       params: {
         'p_program_id': programId,
         'p_client_id':  clientId,
+        if (ticketAmount != null) 'p_ticket_amount': ticketAmount,
       },
     );
     final data = result as Map<String, dynamic>;

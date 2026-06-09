@@ -24,6 +24,8 @@ class BusinessAdsLoaded extends BusinessAdsState {
   final List<AdCreditTxnModel>  transactions;
   final List<AdPricingModel>    pricing;
   final int                     totalUserCount;
+  /// Saldo de la cartera del usuario (referidos + promo), aplicable a un local.
+  final double                  walletMxn;
 
   const BusinessAdsLoaded({
     required this.credit,
@@ -31,6 +33,7 @@ class BusinessAdsLoaded extends BusinessAdsState {
     required this.transactions,
     required this.pricing,
     required this.totalUserCount,
+    this.walletMxn = 0,
   });
 
   /// Campañas activas o pausadas (en curso).
@@ -51,6 +54,7 @@ class BusinessAdsLoaded extends BusinessAdsState {
     AdCreditModel?         credit,
     List<AdCampaignModel>? campaigns,
     List<AdCreditTxnModel>? transactions,
+    double?                walletMxn,
   }) {
     return BusinessAdsLoaded(
       credit:         credit       ?? this.credit,
@@ -58,12 +62,13 @@ class BusinessAdsLoaded extends BusinessAdsState {
       transactions:   transactions ?? this.transactions,
       pricing:        pricing,
       totalUserCount: totalUserCount,
+      walletMxn:      walletMxn    ?? this.walletMxn,
     );
   }
 
   @override
   List<Object?> get props =>
-      [credit, campaigns, transactions, pricing, totalUserCount];
+      [credit, campaigns, transactions, pricing, totalUserCount, walletMxn];
 }
 
 class BusinessAdsError extends BusinessAdsState {

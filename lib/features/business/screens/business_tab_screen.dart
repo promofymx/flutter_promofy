@@ -2445,6 +2445,10 @@ class _AdsLoadedBody extends StatelessWidget {
         mainAxisSize:       MainAxisSize.min,
         children: [
           _AdBalanceCard(state: state, onTopUp: onTopUp),
+          if (state.walletMxn > 0) ...[
+            const SizedBox(height: 12),
+            _WalletCreditCard(walletMxn: state.walletMxn),
+          ],
           const SizedBox(height: 12),
           _ActiveCampaignsList(state: state),
           if (state.transactions.isNotEmpty) ...[
@@ -2469,6 +2473,191 @@ class _AdsLoadedBody extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+// ── Tarjeta de cartera: aplicar créditos al saldo de este local ───────────────
+
+class _WalletCreditCard extends StatelessWidget {
+  final double walletMxn;
+  const _WalletCreditCard({required this.walletMxn});
+
+  @override
+  Widget build(BuildContext context) {
+    final fmt = NumberFormat.currency(locale: 'es_MX', symbol: '\$');
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color:        const Color(0xFFE8F5E9),
+        borderRadius: BorderRadius.circular(14),
+        border:       Border.all(color: const Color(0xFFA5D6A7)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.card_giftcard, color: Color(0xFF2E7D32)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(AppLocalizations.of(context).bizWalletTitle,
+                    style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF2E7D32),
+                        fontWeight: FontWeight.w600)),
+                Text(fmt.format(walletMxn),
+                    style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textDark)),
+              ],
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final cubit = context.read<BusinessAdsCubit>();
+              showDialog<void>(
+                context: context,
+                builder: (_) =>
+                    _UseWalletDialog(cubit: cubit, walletMxn: walletMxn),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF2E7D32),
+              foregroundColor: Colors.white,
+              minimumSize: Size.zero,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            child: Text(AppLocalizations.of(context).bizWalletUse,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _UseWalletDialog extends StatefulWidget {
+  final BusinessAdsCubit cubit;
+  final double           walletMxn;
+  const _UseWalletDialog({required this.cubit, required this.walletMxn});
+
+  @override
+  State<_UseWalletDialog> createState() => _UseWalletDialogState();
+}
+
+class _UseWalletDialogState extends State<_UseWalletDialog> {
+  final _ctrl = TextEditingController();
+  bool _saving = false;
+  String? _error;
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _apply() async {
+    final l = AppLocalizations.of(context);
+    final amount = double.tryParse(_ctrl.text.trim().replaceAll(',', '.'));
+    if (amount == null || amount <= 0) {
+      setState(() => _error = l.bizWalletInvalid);
+      return;
+    }
+    if (amount > widget.walletMxn) {
+      setState(() => _error = l.bizWalletInsufficient);
+      return;
+    }
+    FocusScope.of(context).unfocus();
+    setState(() { _saving = true; _error = null; });
+    final messenger = ScaffoldMessenger.of(context);
+    final res = await widget.cubit.applyWalletCredit(amount);
+    if (!mounted) return;
+    setState(() => _saving = false);
+    if (res['ok'] == true) {
+      Navigator.of(context).pop();
+      messenger.showSnackBar(SnackBar(
+        content:         Text(l.bizWalletApplied),
+        backgroundColor: Colors.green.shade700,
+        behavior:        SnackBarBehavior.floating,
+      ));
+    } else {
+      setState(() => _error = res['error'] == 'insufficient_wallet'
+          ? l.bizWalletInsufficient
+          : l.bizWalletError);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l   = AppLocalizations.of(context);
+    final fmt = NumberFormat.currency(locale: 'es_MX', symbol: '\$');
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      title: Text(l.bizWalletDialogTitle,
+          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('${l.bizWalletDialogDesc} (${fmt.format(widget.walletMxn)})',
+              style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller:   _ctrl,
+                  autofocus:    true,
+                  enabled:      !_saving,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+                  ],
+                  decoration: InputDecoration(
+                    prefixText: '\$ ',
+                    hintText:   '0.00',
+                    errorText:  _error,
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              TextButton(
+                onPressed: _saving
+                    ? null
+                    : () => _ctrl.text = widget.walletMxn.toStringAsFixed(2),
+                child: Text(l.bizWalletAll),
+              ),
+            ],
+          ),
+        ],
+      ),
+      actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      actions: [
+        TextButton(
+          onPressed: _saving ? null : () => Navigator.of(context).pop(),
+          child: Text(l.bizWalletCancel),
+        ),
+        ElevatedButton(
+          onPressed: _saving ? null : _apply,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF2E7D32),
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10)),
+          ),
+          child: _saving
+              ? const SizedBox(
+                  width: 18, height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+              : Text(l.bizWalletApply),
+        ),
+      ],
     );
   }
 }

@@ -30,6 +30,7 @@ import 'promo_form_screen.dart';
 import 'register_business_screen.dart';
 import '../widgets/photos_section.dart';
 import '../widgets/stats_section.dart';
+import 'audience_screen.dart';
 import '../../loyalty/cubit/loyalty_cubit.dart';
 import '../../loyalty/screens/qr_scanner_screen.dart';
 import '../../loyalty/widgets/loyalty_section.dart';
@@ -272,9 +273,32 @@ class _LoadedBody extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          if (state.isSubscriptionActive)
-            StatsSection(establishmentId: est.id)
-          else
+          if (state.isSubscriptionActive) ...[
+            StatsSection(establishmentId: est.id),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => AudienceScreen(
+                      establishmentId:   est.id,
+                      establishmentName: est.name,
+                    ),
+                  ),
+                ),
+                icon:  const Icon(Icons.insights_outlined, size: 18),
+                label: const Text('Mi audiencia'),
+                style: OutlinedButton.styleFrom(
+                  minimumSize:     const Size(double.infinity, 46),
+                  foregroundColor: AppColors.primary,
+                  side:            const BorderSide(color: AppColors.primary),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+            ),
+          ] else
             const _SubscriptionGate(),
           const SizedBox(height: 24),
 

@@ -10,6 +10,9 @@
 		<string>$(DEVELOPMENT_LANGUAGE)</string>
 		<key>CFBundleDisplayName</key>
 		<string>Promofy</string>
+		<!-- Google Sign-In (iOS): client id de iOS del GoogleService-Info.plist -->
+		<key>GIDClientID</key>
+		<string>612781804475-5ouer3rm0f090i8jbr8uqp8c1nrm99i6.apps.googleusercontent.com</string>
 		<key>CFBundleExecutable</key>
 		<string>$(EXECUTABLE_NAME)</string>
 		<key>CFBundleIdentifier</key>

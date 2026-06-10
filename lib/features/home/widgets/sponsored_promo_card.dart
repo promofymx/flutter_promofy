@@ -81,12 +81,22 @@ class _SponsoredImageSection extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             ad.displayPhotoUrl != null
-                ? CachedNetworkImage(
-                    imageUrl: ad.displayPhotoUrl!,
-                    fit: BoxFit.cover,
-                    placeholder: (_, __) => const _SponsoredPlaceholder(),
-                    errorWidget: (_, __, ___) =>
-                        const _SponsoredPlaceholder(),
+                ? Container(
+                    // Promo → foto a sangre (cover). Establecimiento → logo
+                    // contenido sobre fondo claro (no recortado).
+                    color: ad.isPromotionAd ? null : Colors.grey.shade50,
+                    padding: ad.isPromotionAd
+                        ? EdgeInsets.zero
+                        : const EdgeInsets.all(16),
+                    child: CachedNetworkImage(
+                      imageUrl: ad.displayPhotoUrl!,
+                      width:  double.infinity,
+                      height: double.infinity,
+                      fit: ad.isPromotionAd ? BoxFit.cover : BoxFit.contain,
+                      placeholder: (_, __) => const _SponsoredPlaceholder(),
+                      errorWidget: (_, __, ___) =>
+                          const _SponsoredPlaceholder(),
+                    ),
                   )
                 : const _SponsoredPlaceholder(),
 

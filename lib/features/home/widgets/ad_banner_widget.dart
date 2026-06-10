@@ -80,12 +80,20 @@ class _AdBannerCardState extends State<_AdBannerCard> {
                 width: 80,
                 height: 72,
                 child: ad.displayPhotoUrl != null
-                    ? CachedNetworkImage(
-                        imageUrl: ad.displayPhotoUrl!,
-                        fit: BoxFit.cover,
-                        placeholder: (_, __) => const _BannerPlaceholder(),
-                        errorWidget: (_, __, ___) =>
-                            const _BannerPlaceholder(),
+                    ? Container(
+                        color: ad.isPromotionAd ? null : Colors.grey.shade50,
+                        padding: ad.isPromotionAd
+                            ? EdgeInsets.zero
+                            : const EdgeInsets.all(8),
+                        child: CachedNetworkImage(
+                          imageUrl: ad.displayPhotoUrl!,
+                          width:  double.infinity,
+                          height: double.infinity,
+                          fit: ad.isPromotionAd ? BoxFit.cover : BoxFit.contain,
+                          placeholder: (_, __) => const _BannerPlaceholder(),
+                          errorWidget: (_, __, ___) =>
+                              const _BannerPlaceholder(),
+                        ),
                       )
                     : const _BannerPlaceholder(),
               ),

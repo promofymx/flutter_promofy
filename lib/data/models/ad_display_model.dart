@@ -7,6 +7,7 @@ class AdDisplayModel extends Equatable {
   final String  establishmentId;
   final String  establishmentName;
   final String? photoUrl;         // foto del establecimiento
+  final String? logoUrl;          // logo del establecimiento
   final String  format;           // splash | featured_list | banner
   final double  score;            // relevance score 0–100
 
@@ -20,6 +21,7 @@ class AdDisplayModel extends Equatable {
     required this.establishmentId,
     required this.establishmentName,
     this.photoUrl,
+    this.logoUrl,
     required this.format,
     this.score = 0,
     this.promotionId,
@@ -31,10 +33,14 @@ class AdDisplayModel extends Equatable {
   bool get isPromotionAd => promotionId != null;
 
   /// Título a mostrar: nombre de la promo si existe, si no el negocio.
-  String get displayTitle => promotionName ?? establishmentName;
+  String get displayTitle => isPromotionAd
+      ? (promotionName ?? establishmentName)
+      : establishmentName;
 
-  /// Foto a mostrar: prioriza la foto de la promo sobre la del negocio.
-  String? get displayPhotoUrl => promotionPhotoUrl ?? photoUrl;
+  /// Imagen "hero": promo → foto de la promo; establecimiento → logo.
+  String? get displayPhotoUrl => isPromotionAd
+      ? (promotionPhotoUrl ?? photoUrl)
+      : (logoUrl ?? photoUrl);
 
   factory AdDisplayModel.fromJson(Map<String, dynamic> json) {
     // Soporta tanto el resultado plano del RPC como el antiguo JOIN anidado
@@ -48,6 +54,8 @@ class AdDisplayModel extends Equatable {
                           ?? 'Negocio')           as String,
       photoUrl:          (json['photo_url']
                           ?? est?['photo_url'])   as String?,
+      logoUrl:           (json['logo_url']
+                          ?? est?['logo_url'])    as String?,
       score:            (json['score']            as num?)?.toDouble() ?? 0,
       promotionId:       json['promotion_id']       as String?,
       promotionName:     json['promotion_name']     as String?,
@@ -57,7 +65,7 @@ class AdDisplayModel extends Equatable {
 
   @override
   List<Object?> get props => [
-    id, establishmentId, establishmentName, photoUrl, format, score,
+    id, establishmentId, establishmentName, photoUrl, logoUrl, format, score,
     promotionId, promotionName, promotionPhotoUrl,
   ];
 }

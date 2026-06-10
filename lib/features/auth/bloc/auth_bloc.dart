@@ -15,6 +15,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         super(AuthInitial()) {
     on<AuthStarted>(_onAuthStarted);
     on<AuthGoogleSignInRequested>(_onGoogleSignIn);
+    on<AuthAppleSignInRequested>(_onAppleSignIn);
     on<AuthEmailSignInRequested>(_onEmailSignIn);
     on<AuthEmailSignUpRequested>(_onEmailSignUp);
     on<AuthOnboardingCompleted>(_onOnboardingCompleted);
@@ -77,6 +78,28 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await _authRepository.signInWithGoogle();
     } catch (e) {
       emit(AuthError(message: 'No se pudo iniciar con Google. $e'));
+    }
+  }
+
+  Future<void> _onAppleSignIn(
+    AuthAppleSignInRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+    try {
+      final code = event.referralCode;
+      if (code != null && code.trim().isNotEmpty) {
+        await _authRepository.savePendingReferralCode(code);
+      }
+      await _authRepository.signInWithApple();
+    } catch (e) {
+      // El usuario puede cancelar el diálogo de Apple; no lo tratamos como error.
+      final msg = e.toString();
+      if (msg.contains('canceled') || msg.contains('cancelled')) {
+        emit(const AuthUnauthenticated());
+        return;
+      }
+      emit(AuthError(message: 'No se pudo iniciar con Apple. $e'));
     }
   }
 

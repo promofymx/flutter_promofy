@@ -16,6 +16,14 @@ class AuthGoogleSignInRequested extends AuthEvent {
   List<Object?> get props => [referralCode];
 }
 
+class AuthAppleSignInRequested extends AuthEvent {
+  /// Código de invitación (referido) opcional, capturado en el registro.
+  final String? referralCode;
+  const AuthAppleSignInRequested({this.referralCode});
+  @override
+  List<Object?> get props => [referralCode];
+}
+
 class AuthEmailSignInRequested extends AuthEvent {
   final String email;
   final String password;

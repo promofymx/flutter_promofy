@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
@@ -166,6 +168,25 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
                   ),
+
+                  // Botón Apple (requerido por Apple en iOS si hay login de
+                  // terceros como Google). Solo se muestra en iOS.
+                  if (Platform.isIOS) ...[
+                    const SizedBox(height: 12),
+                    SignInWithAppleButton(
+                      onPressed: isLoading
+                          ? () {}
+                          : () => context.read<AuthBloc>().add(
+                                AuthAppleSignInRequested(
+                                  referralCode: _referralCode,
+                                ),
+                              ),
+                      text:         'Continuar con Apple',
+                      style:        SignInWithAppleButtonStyle.black,
+                      height:       52,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ],
 
                   const SizedBox(height: 24),
 

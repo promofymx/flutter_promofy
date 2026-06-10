@@ -6,6 +6,12 @@
 	<key>aps-environment</key>
 	<string>production</string>
 
+	<!-- Sign in with Apple (requerido por la regla 4.8 al ofrecer Google) -->
+	<key>com.apple.developer.applesignin</key>
+	<array>
+		<string>Default</string>
+	</array>
+
 	<!-- Universal Links — para que promofy.fun abra la app directamente -->
 	<key>com.apple.developer.associated-domains</key>
 	<array>

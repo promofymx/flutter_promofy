@@ -21,16 +21,12 @@ workflows:
       xcode: latest
       cocoapods: default
 
-      # ── Code signing (firma automática con la integración de arriba) ──
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: mx.promofy.app
+      # NOTA: NO usamos el bloque `ios_signing` a propósito. Esa "firma
+      # automática" corre antes de los scripts y falla porque no puede crear
+      # el certificado desde cero. En su lugar, el paso "Configurar code
+      # signing" hace la firma manual: crea el cert (con CERTIFICATE_PRIVATE_KEY)
+      # y el provisioning profile vía la integración "Promofy ASC".
 
-      # ── Secrets (configura en Codemagic → Environment variables) ──────
-      # APP_STORE_CONNECT_ISSUER_ID       → App Store Connect API
-      # APP_STORE_CONNECT_KEY_IDENTIFIER  → App Store Connect API
-      # APP_STORE_CONNECT_PRIVATE_KEY     → App Store Connect API (.p8)
-      # CERTIFICATE_PRIVATE_KEY           → Tu private key del certificado
       vars:
         BUNDLE_ID: mx.promofy.app
         XCODE_WORKSPACE: ios/Runner.xcworkspace

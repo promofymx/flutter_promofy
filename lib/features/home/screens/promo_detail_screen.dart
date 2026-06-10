@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:promofy/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/report_sheet.dart';
 import '../../../data/models/promotion_model.dart';
 import '../../../data/repositories/promotions_repository.dart';
 import '../../../data/repositories/stats_repository.dart';
@@ -107,6 +108,32 @@ class _PromoDetailScreenState extends State<PromoDetailScreen> {
                 icon: const Icon(Icons.arrow_back),
                 onPressed: _pop,
               ),
+              actions: [
+                PopupMenuButton<String>(
+                  icon: const Icon(Icons.more_vert, color: Colors.white),
+                  onSelected: (v) {
+                    if (v == 'report') {
+                      showReportSheet(
+                        context,
+                        contentType: 'promotion',
+                        contentId:   promo.id,
+                      );
+                    }
+                  },
+                  itemBuilder: (_) => const [
+                    PopupMenuItem(
+                      value: 'report',
+                      child: Row(
+                        children: [
+                          Icon(Icons.flag_outlined, size: 18, color: Colors.black54),
+                          SizedBox(width: 10),
+                          Text('Reportar'),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
               flexibleSpace: FlexibleSpaceBar(
                 background: Stack(
                   fit: StackFit.expand,

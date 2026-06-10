@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:promofy/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/report_sheet.dart';
 import '../../../data/models/establishment_model.dart';
 import '../../../data/models/loyalty_program_model.dart';
 import '../../../data/models/promotion_model.dart';
@@ -79,6 +80,32 @@ class _LoadedView extends StatelessWidget {
             pinned:          true,
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
+            actions: [
+              PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert, color: Colors.white),
+                onSelected: (v) {
+                  if (v == 'report') {
+                    showReportSheet(
+                      context,
+                      contentType: 'establishment',
+                      contentId:   establishment.id,
+                    );
+                  }
+                },
+                itemBuilder: (_) => const [
+                  PopupMenuItem(
+                    value: 'report',
+                    child: Row(
+                      children: [
+                        Icon(Icons.flag_outlined, size: 18, color: Colors.black54),
+                        SizedBox(width: 10),
+                        Text('Reportar'),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
             flexibleSpace: FlexibleSpaceBar(
               background: Stack(
                 fit: StackFit.expand,

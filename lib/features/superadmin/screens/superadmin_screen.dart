@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/app_theme.dart';
 import 'package:intl/intl.dart';
+import 'admin_analytics_screen.dart';
 import '../../../data/models/ad_pricing_model.dart';
 import '../../../data/models/addon_pricing_model.dart';
 import '../../../data/models/admin_establishment_entry.dart';
@@ -138,6 +139,15 @@ class _Dashboard extends StatelessWidget {
               ),
         ),
         const SizedBox(height: 16),
+
+        _DashTile(
+          icon:     Icons.insights_outlined,
+          color:    const Color(0xFFF26522),
+          title:    'Analítica',
+          subtitle: 'Demografía, tipos de negocio y descargas',
+          onTap:    () => _push(context, const AdminAnalyticsScreen()),
+        ),
+        const SizedBox(height: 12),
 
         _DashTile(
           icon:     Icons.workspace_premium_outlined,

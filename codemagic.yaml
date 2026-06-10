@@ -13,7 +13,13 @@ workflows:
       xcode: latest
       cocoapods: default
 
-      # ── Code signing (configura en Codemagic → Teams → Code signing) ──
+      # ── Integración App Store Connect ──────────────────────────────────
+      # Créala en Codemagic con EXACTAMENTE este nombre: "Promofy ASC"
+      # (Settings → Integrations → Developer Portal → App Store Connect API key)
+      integrations:
+        app_store_connect: Promofy ASC
+
+      # ── Code signing (firma automática con la integración de arriba) ──
       ios_signing:
         distribution_type: app_store
         bundle_identifier: mx.promofy.app

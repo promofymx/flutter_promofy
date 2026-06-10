@@ -58,6 +58,24 @@ class NotificationService {
 
   Future<void> saveToken(String userId) async {
     try {
+      // En iOS, getToken() requiere que el token de APNs ya esté disponible.
+      // Al iniciar sesión suele NO estarlo todavía → getToken() devuelve null y
+      // el dispositivo nunca se registra (no llegan push). Esperamos a que APNs
+      // esté listo (con reintentos) antes de pedir el token FCM.
+      if (!kIsWeb && Platform.isIOS) {
+        var apns  = await _messaging.getAPNSToken();
+        var tries = 0;
+        while (apns == null && tries < 8) {
+          await Future<void>.delayed(const Duration(seconds: 1));
+          apns = await _messaging.getAPNSToken();
+          tries++;
+        }
+        if (apns == null) {
+          debugPrint('⚠️ APNs token no disponible; no se registró push en iOS');
+          return;
+        }
+      }
+
       final token = kIsWeb
           ? await _messaging.getToken(
               vapidKey: 'YOUR_VAPID_KEY', // reemplazar en Phase web

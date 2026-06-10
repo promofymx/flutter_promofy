@@ -14,6 +14,9 @@ workflows:
       app_store_connect: Promofy ASC
 
     environment:
+      # Grupo de variables seguras en Codemagic (contiene CERTIFICATE_PRIVATE_KEY)
+      groups:
+        - appstore
       flutter: stable
       xcode: latest
       cocoapods: default

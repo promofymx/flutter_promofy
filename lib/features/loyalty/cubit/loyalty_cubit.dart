@@ -23,6 +23,7 @@ class LoyaltyCubit extends Cubit<LoyaltyState> {
   // ── Carga ─────────────────────────────────────────────────────────────────
 
   Future<void> load() async {
+    if (isClosed) return;
     emit(LoyaltyLoading());
     try {
       final program = await _repo.getActiveProgram(
@@ -30,9 +31,11 @@ class LoyaltyCubit extends Cubit<LoyaltyState> {
         establishmentName: _establishmentName,
         establishmentLogo: _establishmentLogo,
       );
+      if (isClosed) return;
       emit(LoyaltyLoaded(program: program));
       if (program != null) _loadCards(program.id);
     } catch (_) {
+      if (isClosed) return;
       emit(const LoyaltyError('No se pudo cargar el programa de lealtad.'));
     }
   }
@@ -40,11 +43,13 @@ class LoyaltyCubit extends Cubit<LoyaltyState> {
   Future<void> _loadCards(String programId) async {
     try {
       final cards = await _repo.getCardsForProgram(programId);
+      if (isClosed) return;
       final s = state;
       if (s is LoyaltyLoaded) {
         emit(s.copyWith(cards: cards, cardsLoaded: true));
       }
     } catch (_) {
+      if (isClosed) return;
       final s = state;
       if (s is LoyaltyLoaded) emit(s.copyWith(cardsLoaded: true));
     }
@@ -118,6 +123,7 @@ class LoyaltyCubit extends Cubit<LoyaltyState> {
         clientId:     clientId,
         ticketAmount: ticketAmount,
       );
+      if (isClosed) return;
       final ok = result['ok'] as bool? ?? false;
       emit(LoyaltyScanResult(
         ok:             ok,
@@ -129,6 +135,7 @@ class LoyaltyCubit extends Cubit<LoyaltyState> {
         rewardReady:    (result['reward_ready']   as bool?) ?? false,
       ));
     } catch (_) {
+      if (isClosed) return;
       emit(const LoyaltyScanResult(ok: false, error: 'network_error'));
     }
   }

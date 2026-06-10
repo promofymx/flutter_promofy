@@ -77,7 +77,9 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
     }
 
     if (!mounted) return;
-    context.read<LoyaltyCubit>().dismissScanResult();
+    // No llamamos load() aquí: la pantalla se va a cerrar y el cubit se
+    // destruye, lo que provocaba "Cannot emit after close". El panel padre
+    // refresca sus datos por su cuenta al volver.
     Navigator.of(context).pop();
   }
 

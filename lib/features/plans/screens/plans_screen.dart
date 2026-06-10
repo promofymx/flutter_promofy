@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:promofy/l10n/app_localizations.dart';
@@ -640,6 +642,10 @@ class _PlanCTA extends StatelessWidget {
       );
     }
 
+    // En iOS NO se muestra la compra de planes (regla 3.1.1 de Apple). El dueño
+    // contrata/mejora su plan desde la web; aquí solo ve la información.
+    if (Platform.isIOS) return const SizedBox.shrink();
+
     return ElevatedButton.icon(
       onPressed: isProcessing
           ? null
@@ -688,6 +694,8 @@ class _AddOnsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // En iOS no se ofrecen add-ons de pago (regla 3.1.1 de Apple).
+    if (Platform.isIOS) return const SizedBox.shrink();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

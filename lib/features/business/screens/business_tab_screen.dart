@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -2705,18 +2706,21 @@ class _AdBalanceCard extends StatelessWidget {
               ],
             ),
           ),
-          ElevatedButton(
-            onPressed: onTopUp,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: const Color(0xFF006064),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              minimumSize: Size.zero, // override theme's Size(∞, 52) — button is inside a Row
+          // En iOS NO se muestra la recarga (regla 3.1.1 de Apple: cobros de
+          // bienes digitales deben ir por IAP). El dueño recarga desde la web.
+          if (!Platform.isIOS)
+            ElevatedButton(
+              onPressed: onTopUp,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: const Color(0xFF006064),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                minimumSize: Size.zero, // override theme's Size(∞, 52) — button is inside a Row
+              ),
+              child: Text(AppLocalizations.of(context).bizTopUp,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
             ),
-            child: Text(AppLocalizations.of(context).bizTopUp,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-          ),
         ],
       ),
     );

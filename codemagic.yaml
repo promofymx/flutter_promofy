@@ -17,7 +17,7 @@ workflows:
       # Grupo de variables seguras en Codemagic (contiene CERTIFICATE_PRIVATE_KEY)
       groups:
         - appstore
-      flutter: stable
+      flutter: 3.27.4
       xcode: latest
       cocoapods: default
 
@@ -83,7 +83,7 @@ workflows:
     instance_type: linux_x2
 
     environment:
-      flutter: stable
+      flutter: 3.27.4
 
       # ── Secrets (configura en Codemagic → Environment variables) ──────
       # ⚠️ NUNCA pongas los valores reales aquí — defínelos en

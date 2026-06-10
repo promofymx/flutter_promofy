@@ -63,6 +63,8 @@ class LoyaltyScanResult extends LoyaltyState {
   final int?    lifetimeVisits;
   final int?    visitsRequired;
   final bool    rewardReady;
+  /// true = resultado de un CANJE de recompensa (no una visita normal).
+  final bool    isReward;
 
   const LoyaltyScanResult({
     required this.ok,
@@ -72,8 +74,10 @@ class LoyaltyScanResult extends LoyaltyState {
     this.lifetimeVisits,
     this.visitsRequired,
     this.rewardReady = false,
+    this.isReward    = false,
   });
 
   @override
-  List<Object?> get props => [ok, error, visitId, programVisits, rewardReady];
+  List<Object?> get props =>
+      [ok, error, visitId, programVisits, rewardReady, isReward];
 }

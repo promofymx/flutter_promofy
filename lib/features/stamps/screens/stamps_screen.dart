@@ -920,7 +920,11 @@ class _RedemptionQrSheet extends StatelessWidget {
                         ),
                       ),
                       child: QrImageView(
-                        data:    card.id,
+                        // QR de CANJE: prefijo "claim:" + userId del cliente para
+                        // que el escáner lo distinga de un sello normal y llame a
+                        // claim_loyalty_reward (antes mandaba card.id como cliente
+                        // y fallaba la llave foránea).
+                        data:    'claim:${card.userId}',
                         version: QrVersions.auto,
                         size:    200,
                         errorCorrectionLevel: QrErrorCorrectLevel.M,

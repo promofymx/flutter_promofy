@@ -185,6 +185,38 @@ class LoyaltyCubit extends Cubit<LoyaltyState> {
     } catch (_) {}
   }
 
+  // ── Canjear recompensa al escanear el QR "claim:<userId>" ─────────────────
+
+  /// Igual que claimReward pero emite LoyaltyScanResult para mostrar el
+  /// resultado en el bottom-sheet del escáner.
+  Future<void> claimRewardByScan(String clientId) async {
+    final s = await ensureLoaded();
+    if (s is! LoyaltyLoaded || s.program == null) {
+      if (isClosed) return;
+      emit(const LoyaltyScanResult(
+          ok: false, error: 'program_inactive', isReward: true));
+      return;
+    }
+    try {
+      final result = await _repo.claimReward(
+        programId: s.program!.id,
+        clientId:  clientId,
+      );
+      if (isClosed) return;
+      final ok = result['ok'] as bool? ?? false;
+      emit(LoyaltyScanResult(
+        ok:       ok,
+        error:    ok ? null : result['error'] as String?,
+        isReward: true,
+      ));
+      if (ok) _loadCards(s.program!.id);
+    } catch (_) {
+      if (isClosed) return;
+      emit(const LoyaltyScanResult(
+          ok: false, error: 'network_error', isReward: true));
+    }
+  }
+
   // ── Recargar programa al cambiar establecimiento ──────────────────────────
 
   Future<void> reload({

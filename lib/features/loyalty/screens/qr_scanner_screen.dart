@@ -34,12 +34,15 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
     final raw     = barcode?.rawValue;
     if (raw == null || raw.isEmpty) return;
 
-    // El QR del cliente contiene solo su userId (UUID)
+    // El QR de SELLO trae el userId (UUID). El QR de CANJE trae "claim:<userId>".
+    final isClaim = raw.startsWith('claim:');
+    final value   = isClaim ? raw.substring(6) : raw;
+
     final uuidRegex = RegExp(
         r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$',
         caseSensitive: false);
 
-    if (!uuidRegex.hasMatch(raw)) {
+    if (!uuidRegex.hasMatch(value)) {
       _showInvalidQrSnack();
       return;
     }
@@ -47,6 +50,19 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
     setState(() => _processing = true);
     await _ctrl.stop();
     if (!mounted) return;
+
+    // ── Canje de recompensa ──────────────────────────────────────────────
+    if (isClaim) {
+      await context.read<LoyaltyCubit>().claimRewardByScan(value);
+      if (!mounted) return;
+      final r = context.read<LoyaltyCubit>().state;
+      if (r is LoyaltyScanResult) {
+        await _showResult(r, askTicket: false);
+      }
+      if (!mounted) return;
+      Navigator.of(context).pop();
+      return;
+    }
 
     // El QR puede leerse antes de que load() termine: esperamos a que el
     // programa esté disponible antes de decidir si pedir el monto mínimo.
@@ -285,6 +301,13 @@ class _ScanResultSheet extends StatelessWidget {
         return l10n.qrErrorTooSoon;
       case 'reward_expired':
         return l10n.qrErrorRewardExpired;
+      // Errores específicos del canje de recompensa.
+      case 'already_claimed':
+        return 'Esta recompensa ya fue canjeada.';
+      case 'not_enough_visits':
+        return 'El cliente aún no completa los sellos necesarios.';
+      case 'card_not_found':
+        return 'No se encontró la tarjeta de este cliente.';
       default:
         return l10n.qrErrorUnexpected;
     }
@@ -297,8 +320,18 @@ class _ScanResultSheet extends StatelessWidget {
       return _Sheet(
         icon:    Icons.error_outline,
         color:   Colors.red,
-        title:   l10n.qrCouldNotRegister,
+        title:   result.isReward ? 'No se pudo canjear' : l10n.qrCouldNotRegister,
         message: _errorMessage(context, result.error),
+      );
+    }
+
+    // Canje de recompensa exitoso.
+    if (result.isReward) {
+      return _Sheet(
+        icon:    Icons.redeem,
+        color:   Colors.amber.shade700,
+        title:   '¡Recompensa entregada!',
+        message: 'El cliente canjeó su premio. ¡Disfrútenlo!',
       );
     }
 

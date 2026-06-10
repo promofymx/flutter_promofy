@@ -42,17 +42,24 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
           }
           if (snap.hasError || !snap.hasData) {
             return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.error_outline, color: Colors.grey.shade400, size: 34),
-                  const SizedBox(height: 10),
-                  const Text('No se pudo cargar la analítica.'),
-                  TextButton(
-                    onPressed: () => setState(() => _future = _repo.getAnalytics()),
-                    child: const Text('Reintentar'),
-                  ),
-                ],
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.error_outline, color: Colors.grey.shade400, size: 34),
+                    const SizedBox(height: 10),
+                    const Text('No se pudo cargar la analítica.'),
+                    const SizedBox(height: 8),
+                    Text('${snap.error}',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 11, color: Colors.red.shade400)),
+                    TextButton(
+                      onPressed: () => setState(() => _future = _repo.getAnalytics()),
+                      child: const Text('Reintentar'),
+                    ),
+                  ],
+                ),
               ),
             );
           }

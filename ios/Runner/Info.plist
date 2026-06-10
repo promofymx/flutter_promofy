@@ -51,6 +51,11 @@
 		<true/>
 		<key>UILaunchStoryboardName</key>
 		<string>LaunchScreen</string>
+		<!-- Storyboard principal: monta el FlutterViewController como root.
+		     SIN esta clave la ventana se queda sin rootViewController y la app
+		     se ve NEGRA tras el splash. -->
+		<key>UIMainStoryboardFile</key>
+		<string>Main</string>
 		<key>UISupportedInterfaceOrientations</key>
 		<array>
 			<string>UIInterfaceOrientationPortrait</string>

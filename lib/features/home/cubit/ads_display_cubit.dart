@@ -11,9 +11,16 @@ class AdsDisplayCubit extends Cubit<AdsDisplayState> {
       : _repo = repository ?? AdsRepository(),
         super(const AdsDisplayState());
 
+  /// Última ubicación conocida del usuario (se usa para enriquecer la promo
+  /// anunciada en la card patrocinada: distancia real, etc.).
+  double? lastLat;
+  double? lastLng;
+
   /// Carga anuncios rankeados por relevancia.
   /// Pasa [lat] y [lng] cuando estén disponibles para activar el factor distancia.
   Future<void> load({double? lat, double? lng}) async {
+    lastLat = lat;
+    lastLng = lng;
     try {
       final ads = await _repo.getAdsForUser(lat: lat, lng: lng, limit: 10);
       final splashAds   = ads.where((a) => a.format == 'splash').toList();

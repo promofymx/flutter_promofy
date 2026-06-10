@@ -187,6 +187,26 @@ serve(async (req) => {
       );
     }
 
+    // Campanita in-app: mapear tokens → user_ids (en lotes) y guardar la notif.
+    try {
+      const ids = new Set<string>();
+      for (let i = 0; i < tokens.length; i += 150) {
+        const chunk = tokens.slice(i, i + 150);
+        const { data: ut } = await admin
+          .from('device_tokens').select('user_id').in('token', chunk);
+        for (const r of (ut ?? []) as { user_id: string }[]) ids.add(r.user_id);
+      }
+      if (ids.size > 0) {
+        await admin.rpc('enqueue_user_notifications', {
+          p_user_ids: [...ids],
+          p_title:    title,
+          p_body:     body,
+          p_type:     'broadcast',
+          p_data:     {},
+        });
+      }
+    } catch (_) { /* no crítico */ }
+
     const sa = JSON.parse(Deno.env.get('FIREBASE_SERVICE_ACCOUNT')!) as {
       project_id: string; client_email: string; private_key: string;
     };

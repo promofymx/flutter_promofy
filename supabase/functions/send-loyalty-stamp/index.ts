@@ -247,6 +247,17 @@ serve(async (req) => {
         : `Llevas ${program_visits} de ${visits_required} sellos.`;
     }
 
+    // Campanita in-app para el cliente.
+    try {
+      await admin.rpc('enqueue_user_notifications', {
+        p_user_ids: [client_id],
+        p_title:    title,
+        p_body:     body,
+        p_type:     'loyalty_stamp',
+        p_data:     { program_id, reward_ready: !!reward_ready },
+      });
+    } catch (_) { /* no crítico */ }
+
     // 5) Credenciales Firebase y envío
     const serviceAccount = JSON.parse(
       Deno.env.get('FIREBASE_SERVICE_ACCOUNT')!,

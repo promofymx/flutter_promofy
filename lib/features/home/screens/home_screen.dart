@@ -20,6 +20,7 @@ import '../../../data/models/characteristic_model.dart';
 import '../../../data/models/filter_model.dart';
 import '../../../data/models/promotion_model.dart';
 import '../../../core/services/notification_service.dart';
+import '../../../core/widgets/notification_bell.dart';
 import '../../../features/auth/bloc/auth_bloc.dart';
 import '../../../features/auth/bloc/auth_state.dart';
 
@@ -403,12 +404,8 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         ),
 
-        // Notificaciones
-        IconButton(
-          icon: const Icon(Icons.notifications_outlined,
-              color: AppColors.textDark),
-          onPressed: () {},
-        ),
+        // Notificaciones (campanita con badge de no-leídos)
+        const NotificationBell(),
       ],
     );
   }

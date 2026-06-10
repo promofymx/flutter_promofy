@@ -110,6 +110,26 @@ serve(async (req) => {
     const title = `📣 ${est.name}`;
     const body  = c.name as string;
 
+    // Campanita in-app: mapear los tokens enviados → user_ids (en lotes).
+    try {
+      const ids = new Set<string>();
+      for (let i = 0; i < batch.length; i += 150) {
+        const chunk = batch.slice(i, i + 150);
+        const { data: ut } = await admin
+          .from('device_tokens').select('user_id').in('token', chunk);
+        for (const r of (ut ?? []) as { user_id: string }[]) ids.add(r.user_id);
+      }
+      if (ids.size > 0) {
+        await admin.rpc('enqueue_user_notifications', {
+          p_user_ids: [...ids],
+          p_title:    title,
+          p_body:     body,
+          p_type:     'ad',
+          p_data:     { campaign_id, establishment_id: c.establishment_id },
+        });
+      }
+    } catch (_) { /* no crítico */ }
+
     // Log
     const { data: logRow } = await admin.from('notification_logs').insert({
       title, body, target_type: 'ad_push', sent_count: 0, failed_count: 0,

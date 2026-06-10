@@ -213,6 +213,19 @@ serve(async (req) => {
     if (favErr) throw favErr;
     const userIds = (favs ?? []).map((f: { user_id: string }) => f.user_id);
 
+    // Campanita in-app: guardar la notificación para cada destinatario.
+    if (userIds.length > 0) {
+      try {
+        await admin.rpc('enqueue_user_notifications', {
+          p_user_ids: userIds,
+          p_title:    notifTitle,
+          p_body:     notifBody,
+          p_type:     'new_promo',
+          p_data:     { establishment_id, promo_id },
+        });
+      } catch (_) { /* no crítico */ }
+    }
+
     // 2) Tokens de dispositivo de esos usuarios
     const { data: tokens, error: tokensError } = userIds.length === 0
       ? { data: [] as { token: string }[], error: null }

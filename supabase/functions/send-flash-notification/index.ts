@@ -199,6 +199,19 @@ serve(async (req) => {
       ? `${promo_description.substring(0, 77)}...`
       : promo_description;
 
+    // Campanita in-app: guardar la notificación para cada usuario destinatario.
+    if (userIds.length > 0) {
+      try {
+        await admin.rpc('enqueue_user_notifications', {
+          p_user_ids: userIds,
+          p_title:    notifTitle,
+          p_body:     notifBody,
+          p_type:     'flash_promo',
+          p_data:     { establishment_id },
+        });
+      } catch (_) { /* no crítico */ }
+    }
+
     // Insertar log primero para obtener el ID (se incluye en payload FCM)
     let logId = '';
     try {

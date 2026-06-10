@@ -183,30 +183,41 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     );
 
+    // Sin embed (no depende de una FK formal): 2 consultas simples.
     const { data: prog, error: progErr } = await admin
       .from('loyalty_programs')
-      .select('id, establishment_id, establishments!inner(name, owner_id)')
+      .select('id, establishment_id')
       .eq('id', program_id)
       .single();
     if (progErr || !prog) {
+      console.error('programa no encontrado', progErr);
       return new Response(
         JSON.stringify({ error: 'programa no encontrado' }),
         { status: 404, headers: { 'Content-Type': 'application/json' } },
       );
     }
 
-    // El embed puede venir como objeto o arreglo según la relación
-    const est = Array.isArray((prog as Record<string, unknown>).establishments)
-      ? (prog as { establishments: { name: string; owner_id: string }[] }).establishments[0]
-      : (prog as { establishments: { name: string; owner_id: string } }).establishments;
+    const { data: est, error: estErr } = await admin
+      .from('establishments')
+      .select('name, owner_id')
+      .eq('id', prog.establishment_id)
+      .single();
+    if (estErr || !est) {
+      console.error('establecimiento no encontrado', estErr);
+      return new Response(
+        JSON.stringify({ error: 'establecimiento no encontrado' }),
+        { status: 404, headers: { 'Content-Type': 'application/json' } },
+      );
+    }
 
-    if (!est || est.owner_id !== callerId) {
+    if (est.owner_id !== callerId) {
+      console.error('no autorizado', { callerId, owner: est.owner_id });
       return new Response(
         JSON.stringify({ error: 'no autorizado' }),
         { status: 403, headers: { 'Content-Type': 'application/json' } },
       );
     }
-    const establishmentName = est.name ?? 'tu lugar favorito';
+    const establishmentName = (est.name as string | null) ?? 'tu lugar favorito';
 
     // 3) Tokens del cliente
     const { data: tokens, error: tokErr } = await admin

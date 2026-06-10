@@ -106,59 +106,77 @@ serve(async (req) => {
       .maybeSingle();
 
     if (existing) {
-      // Ya activa → no se puede volver a suscribir.
       if (existing.status === "authorized") {
-        return json({
-          error:  "Ya tienes una suscripción activa.",
-          status: "authorized",
-        }, 409);
-      }
-
-      // status === "pending": auto-reparar consultando el estado real en MP.
-      if (existing.mp_preapproval_id) {
-        try {
-          const checkRes = await fetch(
-            `https://api.mercadopago.com/preapproval/${existing.mp_preapproval_id}`,
-            { headers: { "Authorization": `Bearer ${MP_TOKEN}` } },
-          );
-          if (checkRes.ok) {
-            const pre = await checkRes.json();
-
-            // a) Ya fue autorizada en MP (webhook perdido) → sincronizar y avisar.
-            if (pre.status === "authorized") {
-              await admin
-                .from("user_subscriptions")
-                .update({ status: "authorized" })
-                .eq("id", existing.id);
-              return json({
-                error:  "Ya tienes una suscripción activa.",
-                status: "authorized",
-              }, 409);
-            }
-
-            // b) Sigue pendiente, mismo plan Y mismo monto → reanudar el pago.
-            //    Si el monto difiere (p. ej. una preaprobación vieja con precio
-            //    de prueba), NO se reanuda: se descarta y se crea una nueva al
-            //    precio actual del plan.
-            const preAmount = Number(pre?.auto_recurring?.transaction_amount);
-            if (pre.status === "pending" &&
-                pre.init_point &&
-                existing.plan_id === plan_id &&
-                preAmount === amount) {
-              return json({
-                init_point:     pre.init_point as string,
-                preapproval_id: String(existing.mp_preapproval_id),
-              });
-            }
-          }
-        } catch (e) {
-          console.error("MP preapproval check error:", e);
+        // Mismo plan → no hay nada que cambiar.
+        if (existing.plan_id === plan_id) {
+          return json({
+            error:  "Ya tienes este plan activo.",
+            status: "authorized",
+          }, 409);
         }
-      }
+        // Plan DISTINTO = CAMBIO DE PLAN: cancelar la preaprobación actual en
+        // MercadoPago y borrar la fila; abajo se crea la nueva. (Sin prorrateo.)
+        if (existing.mp_preapproval_id) {
+          try {
+            await fetch(
+              `https://api.mercadopago.com/preapproval/${existing.mp_preapproval_id}`,
+              {
+                method:  "PUT",
+                headers: {
+                  "Authorization": `Bearer ${MP_TOKEN}`,
+                  "Content-Type":  "application/json",
+                },
+                body: JSON.stringify({ status: "cancelled" }),
+              },
+            );
+          } catch (e) {
+            console.error("MP cancel (cambio de plan) error:", e);
+          }
+        }
+        await admin.from("user_subscriptions").delete().eq("id", existing.id);
+      } else {
+        // status === "pending": auto-reparar consultando el estado real en MP.
+        if (existing.mp_preapproval_id) {
+          try {
+            const checkRes = await fetch(
+              `https://api.mercadopago.com/preapproval/${existing.mp_preapproval_id}`,
+              { headers: { "Authorization": `Bearer ${MP_TOKEN}` } },
+            );
+            if (checkRes.ok) {
+              const pre = await checkRes.json();
 
-      // c) Pendiente cancelado/vencido, de otro plan, o sin poder consultarlo:
-      //    borrar la fila atascada y continuar para crear una nueva.
-      await admin.from("user_subscriptions").delete().eq("id", existing.id);
+              // a) Ya autorizada en MP (webhook perdido) → sincronizar y avisar.
+              if (pre.status === "authorized") {
+                await admin
+                  .from("user_subscriptions")
+                  .update({ status: "authorized" })
+                  .eq("id", existing.id);
+                return json({
+                  error:  "Ya tienes una suscripción activa.",
+                  status: "authorized",
+                }, 409);
+              }
+
+              // b) Sigue pendiente, mismo plan Y mismo monto → reanudar el pago.
+              const preAmount = Number(pre?.auto_recurring?.transaction_amount);
+              if (pre.status === "pending" &&
+                  pre.init_point &&
+                  existing.plan_id === plan_id &&
+                  preAmount === amount) {
+                return json({
+                  init_point:     pre.init_point as string,
+                  preapproval_id: String(existing.mp_preapproval_id),
+                });
+              }
+            }
+          } catch (e) {
+            console.error("MP preapproval check error:", e);
+          }
+        }
+
+        // c) Pendiente cancelado/vencido, de otro plan, o sin consultar: borrar.
+        await admin.from("user_subscriptions").delete().eq("id", existing.id);
+      }
     }
 
     // ── 5. Crear Preaprobación en MercadoPago (inline auto_recurring) ──────

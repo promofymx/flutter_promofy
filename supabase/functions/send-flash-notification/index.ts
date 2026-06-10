@@ -162,13 +162,31 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     );
 
-    // 1) Usuarios que tienen el establecimiento como favorito
+    // 1) Usuarios que tienen el ESTABLECIMIENTO como favorito
     const { data: favs, error: favErr } = await admin
       .from('user_favorite_establishments')
       .select('user_id')
       .eq('establishment_id', establishment_id);
     if (favErr) throw favErr;
-    const userIds = (favs ?? []).map((f: { user_id: string }) => f.user_id);
+
+    // 1b) + usuarios que favoritearon una PROMO de este establecimiento
+    const { data: promos } = await admin
+      .from('promotions')
+      .select('id')
+      .eq('establishment_id', establishment_id);
+    const promoIds = (promos ?? []).map((p: { id: string }) => p.id);
+    const { data: promoFavs } = promoIds.length === 0
+      ? { data: [] as { user_id: string }[] }
+      : await admin
+          .from('user_favorite_promotions')
+          .select('user_id')
+          .in('promotion_id', promoIds);
+
+    // Unir ambos grupos y deduplicar
+    const userIds = [...new Set([
+      ...(favs ?? []).map((f: { user_id: string }) => f.user_id),
+      ...(promoFavs ?? []).map((f: { user_id: string }) => f.user_id),
+    ])];
 
     // 2) Tokens de dispositivo de esos usuarios
     const { data: tokens, error } = userIds.length === 0

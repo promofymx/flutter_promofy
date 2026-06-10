@@ -1,5 +1,6 @@
 import '../datasources/supabase/membership_plans_datasource.dart';
 import '../datasources/supabase/plans_payment_datasource.dart';
+import '../models/addon_pricing_model.dart';
 import '../models/membership_plan_model.dart';
 import '../models/subscription_model.dart';
 
@@ -17,6 +18,11 @@ class PlansRepository {
   // ── Planes ─────────────────────────────────────────────────────────────────
 
   Future<List<MembershipPlanModel>> getPlans() => _plansDs.getPlans();
+
+  // ── Precios de add-ons (configurables por el admin) ────────────────────────
+
+  Future<List<AddonPricingModel>> getAddonPricing() =>
+      _plansDs.getAddonPricing();
 
   // ── Suscripción actual ─────────────────────────────────────────────────────
 

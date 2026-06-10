@@ -108,14 +108,40 @@ class LoyaltyCubit extends Cubit<LoyaltyState> {
     }
   }
 
+  // ── Espera a que load() resuelva ─────────────────────────────────────────
+
+  /// El escáner puede leer el QR ANTES de que load() haya terminado de traer
+  /// el programa (race condition). Espera a que el estado deje de ser
+  /// Loading/Initial (máx. [timeout]) y devuelve el estado resultante.
+  Future<LoyaltyState> ensureLoaded({
+    Duration timeout = const Duration(seconds: 8),
+  }) async {
+    var s = state;
+    final deadline = DateTime.now().add(timeout);
+    while ((s is LoyaltyLoading || s is LoyaltyInitial) &&
+        DateTime.now().isBefore(deadline)) {
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      if (isClosed) return state;
+      s = state;
+    }
+    return s;
+  }
+
   // ── Registrar visita (tras escanear QR del cliente) ──────────────────────
 
   Future<void> recordVisit({
     required String clientId,
     double? ticketAmount,
   }) async {
-    final s = state;
-    if (s is! LoyaltyLoaded || s.program == null) return;
+    final s = await ensureLoaded();
+
+    if (s is! LoyaltyLoaded || s.program == null) {
+      // Ya cargó pero no hay programa activo (o falló la carga): avisamos en vez
+      // de cerrar en silencio.
+      if (isClosed) return;
+      emit(const LoyaltyScanResult(ok: false, error: 'program_inactive'));
+      return;
+    }
 
     try {
       final result = await _repo.recordVisit(

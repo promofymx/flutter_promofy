@@ -19,6 +19,7 @@ class PlansCubit extends Cubit<PlansState> {
         _repo.getMySubscription(),
         _repo.getMyAddOns(),
         _repo.getMyAddonSubscriptions(),
+        _repo.getAddonPricing(),
       ]);
 
       emit(PlansLoaded(
@@ -26,6 +27,7 @@ class PlansCubit extends Cubit<PlansState> {
         subscription:       results[1] as dynamic,
         addOns:             results[2] as dynamic,
         addonSubscriptions: results[3] as List<Map<String, dynamic>>,
+        addonPricing:       results[4] as dynamic,
       ));
     } catch (e) {
       emit(PlansError('No se pudieron cargar los planes: $e'));

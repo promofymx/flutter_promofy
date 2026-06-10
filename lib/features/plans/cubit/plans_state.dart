@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../../data/models/addon_pricing_model.dart';
 import '../../../data/models/membership_plan_model.dart';
 import '../../../data/models/subscription_model.dart';
 
@@ -23,6 +24,8 @@ class PlansLoaded extends PlansState {
   final List<AddOnPurchaseModel>  addOns;
   /// Add-ons activos como suscripción mensual (filas de add_on_subscriptions).
   final List<Map<String, dynamic>> addonSubscriptions;
+  /// Precios configurables de add-ons (tabla addon_pricing).
+  final List<AddonPricingModel>   addonPricing;
   /// true mientras se espera respuesta de una Edge Function de pago.
   final bool                      isProcessing;
 
@@ -31,14 +34,24 @@ class PlansLoaded extends PlansState {
     required this.subscription,
     this.addOns             = const [],
     this.addonSubscriptions = const [],
+    this.addonPricing       = const [],
     this.isProcessing       = false,
   });
+
+  /// Precio mensual (MXN) de un add-on por tipo, o null si no está configurado.
+  double? priceForAddon(String type) {
+    for (final p in addonPricing) {
+      if (p.type == type) return p.priceMxn;
+    }
+    return null;
+  }
 
   PlansLoaded copyWith({
     List<MembershipPlanModel>?  plans,
     UserSubscriptionData?       subscription,
     List<AddOnPurchaseModel>?   addOns,
     List<Map<String, dynamic>>? addonSubscriptions,
+    List<AddonPricingModel>?    addonPricing,
     bool?                       isProcessing,
   }) {
     return PlansLoaded(
@@ -46,13 +59,14 @@ class PlansLoaded extends PlansState {
       subscription:       subscription       ?? this.subscription,
       addOns:             addOns             ?? this.addOns,
       addonSubscriptions: addonSubscriptions ?? this.addonSubscriptions,
+      addonPricing:       addonPricing       ?? this.addonPricing,
       isProcessing:       isProcessing       ?? this.isProcessing,
     );
   }
 
   @override
   List<Object?> get props =>
-      [plans, subscription, addOns, addonSubscriptions, isProcessing];
+      [plans, subscription, addOns, addonSubscriptions, addonPricing, isProcessing];
 }
 
 /// Se emite cuando la URL de pago está lista → la pantalla abre el WebView.

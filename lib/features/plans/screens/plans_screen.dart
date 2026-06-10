@@ -733,18 +733,37 @@ class _AddOnsSection extends StatelessWidget {
           icon:        Icons.store_outlined,
           title:       AppLocalizations.of(context).plansAddonEstablishmentTitle,
           description: AppLocalizations.of(context).plansAddonEstablishmentDesc,
-          price:       AppLocalizations.of(context).plansAddonEstablishmentPrice,
+          price:       _addonPrice(
+            context,
+            'extra_establishment',
+            AppLocalizations.of(context).plansAddonEstablishmentPrice,
+          ),
           addOnType:   'extra_establishment',
         ),
         _AddOnTile(
           icon:        Icons.local_offer_outlined,
           title:       AppLocalizations.of(context).plansAddonPromotionTitle,
           description: AppLocalizations.of(context).plansAddonPromotionDesc,
-          price:       AppLocalizations.of(context).plansAddonPromotionPrice,
+          price:       _addonPrice(
+            context,
+            'extra_promotion',
+            AppLocalizations.of(context).plansAddonPromotionPrice,
+          ),
           addOnType:   'extra_promotion',
         ),
       ],
     );
+  }
+
+  /// Precio dinámico del add-on desde la tabla addon_pricing (configurable por
+  /// el admin). Si no está disponible, usa el texto por defecto de localización.
+  String _addonPrice(BuildContext context, String type, String fallback) {
+    final state = context.watch<PlansCubit>().state;
+    if (state is PlansLoaded) {
+      final price = state.priceForAddon(type);
+      if (price != null) return '\$${price.toStringAsFixed(0)} MXN/mes';
+    }
+    return fallback;
   }
 }
 

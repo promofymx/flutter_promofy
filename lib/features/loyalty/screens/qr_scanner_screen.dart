@@ -48,8 +48,10 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
     await _ctrl.stop();
     if (!mounted) return;
 
-    // Si el programa exige consumo mínimo, pedir el monto ANTES de sellar.
-    final st      = context.read<LoyaltyCubit>().state;
+    // El QR puede leerse antes de que load() termine: esperamos a que el
+    // programa esté disponible antes de decidir si pedir el monto mínimo.
+    final st      = await context.read<LoyaltyCubit>().ensureLoaded();
+    if (!mounted) return;
     final program = st is LoyaltyLoaded ? st.program : null;
     double? ticketAmount;
     if (program != null && program.minTicketMxn > 0) {
@@ -157,7 +159,15 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
   Future<void> _showResult(LoyaltyScanResult r, {bool askTicket = true}) async {
     // Capturamos el context antes del await para poder leer StatsCubit
     // desde dentro del builder del modal (que vive en una ruta separada).
-    final statsCubit = context.read<StatsCubit>();
+    // StatsCubit puede NO estar disponible en esta ruta (se provee por debajo
+    // del Navigator): en ese caso el sheet igual se muestra, solo sin la opción
+    // de guardar el importe del ticket.
+    StatsCubit? statsCubit;
+    try {
+      statsCubit = context.read<StatsCubit>();
+    } catch (_) {
+      statsCubit = null;
+    }
 
     await showModalBottomSheet<void>(
       context:       context,
@@ -168,8 +178,8 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
       ),
       builder: (_) => _ScanResultSheet(
         result: r,
-        onTicketSaved: (askTicket && r.ok && r.visitId != null)
-            ? (amount) => statsCubit.updateVisitTicket(
+        onTicketSaved: (askTicket && r.ok && r.visitId != null && statsCubit != null)
+            ? (amount) => statsCubit!.updateVisitTicket(
                   visitId: r.visitId!,
                   amount:  amount,
                 )

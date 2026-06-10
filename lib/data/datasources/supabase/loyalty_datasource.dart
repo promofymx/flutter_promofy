@@ -103,6 +103,21 @@ class LoyaltyDatasource {
             .rpc('update_user_visit_stats', params: {'p_user_id': clientId})
             .catchError((_) {}),
       );
+      // Notificar al cliente con un push "Visita registrada" (fire-and-forget).
+      unawaited(() async {
+        try {
+          await supabase.functions.invoke(
+            'send-loyalty-stamp',
+            body: {
+              'program_id':      programId,
+              'client_id':       clientId,
+              'program_visits':  data['program_visits'],
+              'visits_required': data['visits_required'],
+              'reward_ready':    data['reward_ready'] ?? false,
+            },
+          );
+        } catch (_) {/* notificación no crítica */}
+      }());
     }
     return data;
   }

@@ -12,11 +12,8 @@
 		<string>Default</string>
 	</array>
 
-	<!-- Universal Links — para que promofy.fun abra la app directamente -->
-	<key>com.apple.developer.associated-domains</key>
-	<array>
-		<string>applinks:promofy.fun</string>
-		<string>applinks:www.promofy.fun</string>
-	</array>
+	<!-- Universal Links (Associated Domains): se reactivan después de habilitar
+	     la capability en el App ID y regenerar el perfil. Quitados por ahora
+	     para que el perfil de firma coincida con el entitlements. -->
 </dict>
 </plist>

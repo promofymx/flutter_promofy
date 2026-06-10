@@ -132,7 +132,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   const SizedBox(height: 40),
 
-                  // Botón Google
+                  // Botón Google — OCULTO en iOS por un bug del SDK de Google
+                  // (nonce incompatible con Supabase). En iOS se usa Apple/correo;
+                  // se reactivará en una próxima versión. En Android queda igual.
+                  if (!Platform.isIOS)
                   OutlinedButton(
                     onPressed: isLoading
                         ? null

@@ -21,6 +21,7 @@ class AudienceScreen extends StatefulWidget {
 
 class _AudienceScreenState extends State<AudienceScreen> {
   late Future<AudienceStats> _future;
+  int _selected = 0; // 0=local, 1=promos, 2=lealtad
 
   @override
   void initState() {
@@ -63,30 +64,34 @@ class _AudienceScreenState extends State<AudienceScreen> {
                 }));
           }
           final s = snap.data!;
+          final groups = <(String, IconData, String, String, AudienceGroup)>[
+            ('Local',   Icons.store_outlined,
+             'Favoritos del local',
+             'Personas que marcaron tu negocio como favorito', s.establishmentFavorites),
+            ('Promos',  Icons.local_offer_outlined,
+             'Favoritos de tus promos',
+             'Personas que guardaron alguna promoción tuya',   s.promoFavorites),
+            ('Lealtad', Icons.card_giftcard_outlined,
+             'Clientes recurrentes',
+             'Quienes participan en tu programa de lealtad',    s.loyalty),
+          ];
+          final g = groups[_selected];
           return ListView(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
             children: [
               const _Intro(),
               const SizedBox(height: 16),
-              _AudienceCard(
-                title:    'Favoritos del local',
-                subtitle: 'Personas que marcaron tu negocio como favorito',
-                icon:     Icons.store_outlined,
-                group:    s.establishmentFavorites,
+              _GroupSelector(
+                labels:   [for (final x in groups) x.$1],
+                selected: _selected,
+                onSelect: (i) => setState(() => _selected = i),
               ),
               const SizedBox(height: 16),
               _AudienceCard(
-                title:    'Favoritos de tus promos',
-                subtitle: 'Personas que guardaron alguna promoción tuya',
-                icon:     Icons.local_offer_outlined,
-                group:    s.promoFavorites,
-              ),
-              const SizedBox(height: 16),
-              _AudienceCard(
-                title:    'Clientes recurrentes',
-                subtitle: 'Quienes participan en tu programa de lealtad',
-                icon:     Icons.card_giftcard_outlined,
-                group:    s.loyalty,
+                title:    g.$3,
+                subtitle: g.$4,
+                icon:     g.$2,
+                group:    g.$5,
               ),
             ],
           );
@@ -117,6 +122,59 @@ class _Intro extends StatelessWidget {
               style: TextStyle(fontSize: 12, color: Colors.grey.shade700, height: 1.4),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Selector de grupo (Local / Promos / Lealtad) ────────────────────────────
+class _GroupSelector extends StatelessWidget {
+  final List<String>      labels;
+  final int               selected;
+  final ValueChanged<int> onSelect;
+  const _GroupSelector({
+    required this.labels,
+    required this.selected,
+    required this.onSelect,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color:        Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withAlpha(10), blurRadius: 6, offset: const Offset(0, 2)),
+        ],
+      ),
+      child: Row(
+        children: [
+          for (var i = 0; i < labels.length; i++)
+            Expanded(
+              child: GestureDetector(
+                onTap: () => onSelect(i),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  padding:  const EdgeInsets.symmetric(vertical: 9),
+                  decoration: BoxDecoration(
+                    color:        i == selected ? AppColors.primary : Colors.transparent,
+                    borderRadius: BorderRadius.circular(9),
+                  ),
+                  child: Text(
+                    labels[i],
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize:   13,
+                      fontWeight: FontWeight.w600,
+                      color:      i == selected ? Colors.white : Colors.grey.shade600,
+                    ),
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );

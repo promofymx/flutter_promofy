@@ -56,6 +56,8 @@ flutter_launcher_icons:
   ios: true
   image_path: "assets/images/logo.png"
   background_color: "#F26522"
+  # Fondo naranja en iOS al quitar transparencia (antes se aplanaba a blanco).
+  background_color_ios: "#F26522"
   remove_alpha_channel: true
   remove_alpha_ios: true
   adaptive_icon_background: "#F26522"

@@ -10,6 +10,43 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY  = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") ?? "";
+const FROM_EMAIL     = "Promofy <hola@promofy.fun>";
+
+// ── Email (Resend) ────────────────────────────────────────────────────────────
+async function sendEmail(to: string, subject: string, html: string): Promise<boolean> {
+  if (!RESEND_API_KEY) return false;
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${RESEND_API_KEY}`,
+        "Content-Type":  "application/json",
+      },
+      body: JSON.stringify({ from: FROM_EMAIL, to, subject, html }),
+    });
+    if (!res.ok) { console.error("Resend error:", res.status, await res.text()); return false; }
+    return true;
+  } catch (e) {
+    console.error("sendEmail error:", e);
+    return false;
+  }
+}
+
+function renewalEmailHtml(name: string): string {
+  const hi = name ? `Hola ${name},` : "Hola,";
+  return `
+  <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;color:#1a1a1a">
+    <h2 style="color:#F26522">Tu membresía Promofy vence pronto 🔔</h2>
+    <p>${hi}</p>
+    <p>Tu membresía está por terminar en <strong>aproximadamente 5 días</strong>.
+       Para no perder tus beneficios, asegúrate de tener saldo disponible en tu método de pago
+       para que se renueve automáticamente.</p>
+    <p>Si quieres revisar o cambiar tu plan, entra a tu panel en
+       <a href="https://promofy.fun/planes" style="color:#F26522">promofy.fun</a>.</p>
+    <p style="color:#888;font-size:12px;margin-top:24px">Promofy · Promociones que sí funcionan</p>
+  </div>`;
+}
 
 // ── FCM helpers (reutilizados del patrón broadcast) ───────────────────────────
 
@@ -131,7 +168,40 @@ serve(async (req) => {
     }
 
     const userIds = subs.map((s: { user_id: string }) => s.user_id);
+    const nameById: Record<string, string> = {};
+    for (const s of subs as { user_id: string; profiles?: { display_name?: string } | { display_name?: string }[] }[]) {
+      const p = Array.isArray(s.profiles) ? s.profiles[0] : s.profiles;
+      nameById[s.user_id] = p?.display_name ?? "";
+    }
     console.log(`notify-renewal: ${userIds.length} suscripciones próximas a vencer`);
+
+    const title = "Tu membresía vence en 5 días 🔔";
+    const body  = "Asegúrate de tener tu saldo disponible para que se renueve automáticamente.";
+
+    // ── 1b. Campanita in-app + correo (Resend) ────────────────────────────────
+    try {
+      await admin.rpc("enqueue_user_notifications", {
+        p_user_ids: userIds,
+        p_title:    title,
+        p_body:     body,
+        p_type:     "renewal_reminder",
+        p_data:     {},
+      });
+    } catch (e) { console.error("enqueue_user_notifications error:", e); }
+
+    // Correos: resolver email de cada usuario vía auth admin y enviar con Resend.
+    let emailed = 0;
+    for (const uid of userIds) {
+      try {
+        const { data: u } = await admin.auth.admin.getUserById(uid);
+        const email = u?.user?.email;
+        if (email) {
+          const ok = await sendEmail(email, "Tu membresía Promofy vence pronto", renewalEmailHtml(nameById[uid]));
+          if (ok) emailed++;
+        }
+      } catch (e) { console.error("email lookup/send error:", e); }
+    }
+    console.log(`notify-renewal: emails enviados=${emailed}`);
 
     // ── 2. Tokens de esos usuarios ────────────────────────────────────────────
     const { data: tokens, error: tokErr } = await admin
@@ -153,9 +223,6 @@ serve(async (req) => {
     };
     const accessToken = await getAccessToken(sa);
     const projectId   = sa.project_id;
-
-    const title = "Tu membresía vence en 5 días 🔔";
-    const body  = "Asegúrate de tener tu saldo disponible para que se renueve automáticamente.";
 
     let sent = 0, failed = 0;
     for (const { token } of tokens as { user_id: string; token: string }[]) {

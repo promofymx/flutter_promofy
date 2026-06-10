@@ -1,8 +1,23 @@
 import '../../main.dart';
 import '../models/admin_analytics_model.dart';
+import '../models/audience_stats_model.dart';
 
-/// Analítica de superadmin (Fase 2).
+/// Analítica de superadmin (Fase 2 y 3).
 class AdminAnalyticsRepository {
+  // ── Fase 3: Geo ────────────────────────────────────────────────────────────
+  Future<GeoStats> getGeoStats() async {
+    final res = await supabase.rpc('get_admin_geo_stats');
+    final map = (res as Map).cast<String, dynamic>();
+    if (map['error'] != null) throw Exception(map['error'].toString());
+    return GeoStats.fromJson(map);
+  }
+
+  Future<AudienceGroup> getStateDemographics(String state) async {
+    final res = await supabase.rpc('get_admin_state_demographics',
+        params: {'p_state': state});
+    return AudienceGroup.fromJson((res as Map).cast<String, dynamic>());
+  }
+
   Future<AdminAnalytics> getAnalytics() async {
     final res = await supabase.rpc('get_admin_analytics');
     final map = (res as Map).cast<String, dynamic>();

@@ -15,12 +15,14 @@ class AdminAnalyticsScreen extends StatefulWidget {
 class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
   final _repo = AdminAnalyticsRepository();
   late Future<AdminAnalytics> _future;
+  late Future<GeoStats>       _geo;
   int _demo = 0; // 0=descargas, 1=activos
 
   @override
   void initState() {
     super.initState();
     _future = _repo.getAnalytics();
+    _geo    = _repo.getGeoStats();
   }
 
   @override
@@ -95,6 +97,9 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
                   onTap: (id, name) => _openBreakdown(id!, name, 'visits'),
                 ),
               ),
+              const SizedBox(height: 16),
+              // ── Descargas por estado (Geo) ──────────────────────────────
+              _GeoCard(geoFuture: _geo, onState: _openStateDemographics),
             ],
           );
         },
@@ -114,6 +119,103 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen> {
         title:  typeName,
         metric: metric,
         future: _repo.getTypeBreakdown(categoryId, metric),
+      ),
+    );
+  }
+
+  void _openStateDemographics(String state) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => _StateSheet(
+        state:  state,
+        future: _repo.getStateDemographics(state),
+      ),
+    );
+  }
+}
+
+// ─── Geo: descargas por estado ───────────────────────────────────────────────
+class _GeoCard extends StatelessWidget {
+  final Future<GeoStats>      geoFuture;
+  final void Function(String) onState;
+  const _GeoCard({required this.geoFuture, required this.onState});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<GeoStats>(
+      future: geoFuture,
+      builder: (context, snap) {
+        return _Card(
+          title:    'Descargas por estado',
+          subtitle: snap.hasData
+              ? '${snap.data!.country} · ${snap.data!.total} descargas · toca un estado'
+              : 'México',
+          child: !snap.hasData
+              ? const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+                )
+              : RankingBars(
+                  items: [
+                    for (final s in snap.data!.states)
+                      (name: s.state, count: s.count, id: 0)
+                  ],
+                  onTap: (_, name) => onState(name),
+                ),
+        );
+      },
+    );
+  }
+}
+
+class _StateSheet extends StatelessWidget {
+  final String                state;
+  final Future<AudienceGroup> future;
+  const _StateSheet({required this.state, required this.future});
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(width: 40, height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                      color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2))),
+            ),
+            Row(
+              children: [
+                const Icon(Icons.place_outlined, color: AppColors.primary, size: 20),
+                const SizedBox(width: 8),
+                Text(state,
+                    style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: AppColors.textDark)),
+              ],
+            ),
+            const SizedBox(height: 14),
+            FutureBuilder<AudienceGroup>(
+              future: future,
+              builder: (context, snap) {
+                if (!snap.hasData) {
+                  return const Padding(
+                    padding: EdgeInsets.all(24),
+                    child: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+                  );
+                }
+                return _DemoBody(group: snap.data!);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -38,3 +38,21 @@ class AdminAnalytics {
     );
   }
 }
+
+/// Descargas por geografía (País → Estado).
+class GeoStats {
+  final String country;
+  final int    total;
+  final List<({String state, int count})> states;
+
+  const GeoStats({required this.country, required this.total, required this.states});
+
+  factory GeoStats.fromJson(Map<String, dynamic> j) => GeoStats(
+        country: j['country'] as String? ?? 'México',
+        total:   (j['total'] as num?)?.toInt() ?? 0,
+        states: (j['states'] as List? ?? []).map((e) {
+          final m = (e as Map);
+          return (state: m['state'] as String? ?? '—', count: (m['count'] as num?)?.toInt() ?? 0);
+        }).toList(),
+      );
+}

@@ -210,19 +210,26 @@ class AuthRepository {
     });
   }
 
-  /// Guarda nombre, radio de búsqueda, tipos preferidos y categorías favoritas.
+  /// Guarda nombre, radio de búsqueda, tipos preferidos, categorías favoritas y
+  /// (opcional) fecha de nacimiento y sexo — editables desde Perfil.
   Future<void> updateSettings({
     required String       userId,
     required String       fullName,
     required int          searchRadiusKm,
     required List<String> preferredTypes,
     List<int>             favoriteCategoryIds = const [],
+    DateTime?             birthDate,
+    String?               gender,
   }) async {
     await supabase.from('profiles').update({
       'full_name':             fullName,
       'search_radius_km':      searchRadiusKm,
       'preferred_types':       preferredTypes,
       'favorite_category_ids': favoriteCategoryIds,
+      if (birthDate != null)
+        'birth_date':
+            '${birthDate.year}-${birthDate.month.toString().padLeft(2, '0')}-${birthDate.day.toString().padLeft(2, '0')}',
+      if (gender != null) 'gender': gender,
       'updated_at':            DateTime.now().toIso8601String(),
     }).eq('id', userId);
   }

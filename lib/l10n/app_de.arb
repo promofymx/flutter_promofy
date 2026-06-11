@@ -443,6 +443,7 @@
   "profileEnterSixCharCode": "Gib den 6-stelligen Code ein, den dir der Administrator gegeben hat.",
   "profileWillUpdateOnContinue": "Dein Profil wird beim Fortfahren aktualisiert.",
   "settingsName": "Name",
+  "settingsPersonalizePrompt": "✨ Vervollständige Geburtsdatum und Geschlecht für personalisierte Angebote.",
   "settingsNameHint": "Dein vollständiger Name",
   "settingsNameEmpty": "Der Name darf nicht leer sein.",
   "settingsSearchRadius": "Suchradius",

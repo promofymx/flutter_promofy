@@ -2749,6 +2749,12 @@ abstract class AppLocalizations {
   /// **'Nombre'**
   String get settingsName;
 
+  /// No description provided for @settingsPersonalizePrompt.
+  ///
+  /// In es, this message translates to:
+  /// **'✨ Para promos personalizadas, completa tu fecha de nacimiento y sexo.'**
+  String get settingsPersonalizePrompt;
+
   /// No description provided for @settingsNameHint.
   ///
   /// In es, this message translates to:

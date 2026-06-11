@@ -30,6 +30,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   int          _radius   = 25;
   Set<String>  _types     = {};
   Set<int>     _catIds    = {};
+  DateTime?    _birthDate;
+  String?      _gender;
   bool         _saving    = false;
   List<CategoryModel> _categories = [];
 
@@ -42,8 +44,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _radius        = widget.profile.searchRadiusKm;
     _types         = Set<String>.from(widget.profile.preferredTypes);
     _catIds        = Set<int>.from(widget.profile.favoriteCategoryIds);
+    _birthDate     = widget.profile.birthDate;
+    _gender        = widget.profile.gender;
     _loadCategories();
   }
+
+  Future<void> _selectDate() async {
+    final now = DateTime.now();
+    final maxDate = DateTime(now.year - 18, now.month, now.day);
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _birthDate ?? DateTime(now.year - 25),
+      firstDate: DateTime(1920),
+      lastDate: maxDate,
+      helpText: AppLocalizations.of(context).onboardingMustBeAdult,
+      confirmText: AppLocalizations.of(context).onboardingConfirm,
+      cancelText: AppLocalizations.of(context).onboardingCancel,
+      builder: (context, child) => Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: const ColorScheme.light(primary: AppColors.primary),
+        ),
+        child: child!,
+      ),
+    );
+    if (picked != null) setState(() => _birthDate = picked);
+  }
+
+  String _formatDate(DateTime d) =>
+      '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';
 
   @override
   void dispose() {
@@ -60,10 +88,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _save() async {
     final name = _nameCtrl.text.trim();
-    if (name.isEmpty) {
-      _snack(AppLocalizations.of(context).settingsNameEmpty);
-      return;
-    }
     setState(() => _saving = true);
     try {
       await AuthRepository().updateSettings(
@@ -72,6 +96,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         searchRadiusKm:      _radius,
         preferredTypes:      _types.toList(),
         favoriteCategoryIds: _catIds.toList(),
+        birthDate:           _birthDate,
+        gender:              _gender,
       );
       if (!mounted) return;
       context.read<HomeBloc>().add(HomeRadiusChanged(radiusKm: _radius));
@@ -187,6 +213,74 @@ class _SettingsScreenState extends State<SettingsScreen> {
               textCapitalization: TextCapitalization.words,
               decoration: _inputDeco(AppLocalizations.of(context).settingsNameHint),
             ),
+            const SizedBox(height: 16),
+
+            // Invitación a completar datos para promos personalizadas
+            if (_birthDate == null || _gender == null) ...[
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withAlpha(20),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.primary.withAlpha(60)),
+                ),
+                child: Text(
+                  AppLocalizations.of(context).settingsPersonalizePrompt,
+                  style: const TextStyle(
+                      fontSize: 13,
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+
+            // Fecha de nacimiento
+            _SectionLabel(AppLocalizations.of(context).onboardingBirthQuestion),
+            const SizedBox(height: 8),
+            GestureDetector(
+              onTap: _selectDate,
+              child: Container(
+                width: double.infinity,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: Row(children: [
+                  const Icon(Icons.calendar_today_outlined,
+                      size: 18, color: Colors.grey),
+                  const SizedBox(width: 12),
+                  Text(
+                    _birthDate != null
+                        ? _formatDate(_birthDate!)
+                        : AppLocalizations.of(context).onboardingSelectBirthDate,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: _birthDate != null
+                          ? AppColors.textDark
+                          : Colors.grey,
+                    ),
+                  ),
+                ]),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Sexo
+            _SectionLabel(AppLocalizations.of(context).onboardingGenderQuestion),
+            const SizedBox(height: 8),
+            Wrap(spacing: 8, runSpacing: 8, children: [
+              _genderChip('male',
+                  AppLocalizations.of(context).onboardingGenderMale),
+              _genderChip('female',
+                  AppLocalizations.of(context).onboardingGenderFemale),
+              _genderChip('prefer_not_to_say',
+                  AppLocalizations.of(context).onboardingGenderPreferNot),
+            ]),
             const SizedBox(height: 16),
 
             _SectionLabel(AppLocalizations.of(context).settingsSearchRadius),
@@ -306,6 +400,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ]),
         ],
       ),
+    );
+  }
+
+  Widget _genderChip(String value, String label) {
+    final sel = _gender == value;
+    return ChoiceChip(
+      label: Text(label),
+      selected: sel,
+      onSelected: (_) => setState(() => _gender = value),
+      selectedColor: AppColors.primary.withAlpha(30),
+      labelStyle: TextStyle(
+        color: sel ? AppColors.primary : Colors.grey.shade700,
+        fontWeight: sel ? FontWeight.w600 : FontWeight.normal,
+        fontSize: 13,
+      ),
+      side: BorderSide(color: sel ? AppColors.primary : Colors.grey.shade300),
+      backgroundColor: Colors.grey.shade50,
     );
   }
 

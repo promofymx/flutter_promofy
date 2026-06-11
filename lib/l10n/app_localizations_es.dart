@@ -1437,6 +1437,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsName => 'Nombre';
 
   @override
+  String get settingsPersonalizePrompt => '✨ Para promos personalizadas, completa tu fecha de nacimiento y sexo.';
+
+  @override
   String get settingsNameHint => 'Tu nombre completo';
 
   @override

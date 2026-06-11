@@ -443,6 +443,7 @@
   "profileEnterSixCharCode": "Enter the 6-character code the administrator shared with you.",
   "profileWillUpdateOnContinue": "Your profile will update when you continue.",
   "settingsName": "Name",
+  "settingsPersonalizePrompt": "✨ Complete your date of birth and gender for personalized deals.",
   "settingsNameHint": "Your full name",
   "settingsNameEmpty": "The name cannot be empty.",
   "settingsSearchRadius": "Search radius",

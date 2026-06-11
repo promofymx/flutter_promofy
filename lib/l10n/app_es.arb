@@ -442,6 +442,7 @@
   "profileEnterSixCharCode": "Ingresa el código de 6 caracteres que te compartió el administrador.",
   "profileWillUpdateOnContinue": "Tu perfil se actualizará al continuar.",
   "settingsName": "Nombre",
+  "settingsPersonalizePrompt": "✨ Para promos personalizadas, completa tu fecha de nacimiento y sexo.",
   "settingsNameHint": "Tu nombre completo",
   "settingsNameEmpty": "El nombre no puede estar vacío.",
   "settingsSearchRadius": "Radio de búsqueda",

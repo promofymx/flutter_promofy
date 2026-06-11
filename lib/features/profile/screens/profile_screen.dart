@@ -162,6 +162,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 const SizedBox(height: 16),
 
+                // ── Invitación a completar datos (promos personalizadas) ──
+                if (profile.birthDate == null || profile.gender == null) ...[
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => MultiBlocProvider(
+                          providers: [
+                            BlocProvider.value(value: context.read<AuthBloc>()),
+                            BlocProvider.value(value: context.read<HomeBloc>()),
+                          ],
+                          child: SettingsScreen(profile: profile, userId: userId),
+                        ),
+                      ),
+                    ),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [AppColors.primary, AppColors.secondary],
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Row(children: [
+                        const Icon(Icons.auto_awesome,
+                            color: Colors.white, size: 22),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            AppLocalizations.of(context).settingsPersonalizePrompt,
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13),
+                          ),
+                        ),
+                        const Icon(Icons.chevron_right, color: Colors.white),
+                      ]),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+
                 // ── Logros / estadísticas ─────────────────────────────────
                 BlocBuilder<AchievementsCubit, AchievementsState>(
                   bloc: _achievementsCubit,

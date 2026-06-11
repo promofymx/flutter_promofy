@@ -130,8 +130,8 @@ class _PlansBody extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 40),
                 children: [
-                  // Banner promo de lanzamiento
-                  if (hasPromo) ...[
+                  // Banner promo de lanzamiento (oculto en iOS: anuncia precios).
+                  if (hasPromo && !Platform.isIOS) ...[
                     _LaunchPromoBanner(),
                     const SizedBox(height: 16),
                   ],
@@ -444,7 +444,7 @@ class _PlanCard extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 4),
-                      if (plan.hasLaunchPromo) ...[
+                      if (plan.hasLaunchPromo && !Platform.isIOS) ...[
                         // Precio tachado (original)
                         Text(
                           AppLocalizations.of(context).plansPricePerMonth(
@@ -458,6 +458,8 @@ class _PlanCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                       ],
+                      // En iOS no se muestra el precio (regla 3.1.1 de Apple).
+                      if (!Platform.isIOS)
                       RichText(
                         text: TextSpan(
                           children: [
@@ -485,7 +487,7 @@ class _PlanCard extends StatelessWidget {
                         ),
                       ),
                       // Badge crédito de publicidad
-                      if (plan.hasLaunchPromo) ...[
+                      if (plan.hasLaunchPromo && !Platform.isIOS) ...[
                         const SizedBox(height: 6),
                         Container(
                           padding: const EdgeInsets.symmetric(

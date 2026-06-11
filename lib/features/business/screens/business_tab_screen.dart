@@ -273,33 +273,31 @@ class _LoadedBody extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          if (state.isSubscriptionActive) ...[
-            StatsSection(establishmentId: est.id),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => AudienceScreen(
-                      establishmentId:   est.id,
-                      establishmentName: est.name,
-                    ),
+          // Estadísticas siempre visibles para el dueño (sin gate de plan).
+          StatsSection(establishmentId: est.id),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => AudienceScreen(
+                    establishmentId:   est.id,
+                    establishmentName: est.name,
                   ),
                 ),
-                icon:  const Icon(Icons.insights_outlined, size: 18),
-                label: const Text('Mi audiencia'),
-                style: OutlinedButton.styleFrom(
-                  minimumSize:     const Size(double.infinity, 46),
-                  foregroundColor: AppColors.primary,
-                  side:            const BorderSide(color: AppColors.primary),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                ),
+              ),
+              icon:  const Icon(Icons.insights_outlined, size: 18),
+              label: const Text('Mi audiencia'),
+              style: OutlinedButton.styleFrom(
+                minimumSize:     const Size(double.infinity, 46),
+                foregroundColor: AppColors.primary,
+                side:            const BorderSide(color: AppColors.primary),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
               ),
             ),
-          ] else
-            const _SubscriptionGate(),
+          ),
           const SizedBox(height: 24),
 
           OutlinedButton.icon(
@@ -313,66 +311,6 @@ class _LoadedBody extends StatelessWidget {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ─── Candado de estadísticas (sin suscripción activa) ────────────────────────
-
-class _SubscriptionGate extends StatelessWidget {
-  const _SubscriptionGate();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width:       double.infinity,
-      padding:     const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-      decoration:  BoxDecoration(
-        color:        Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Column(
-        children: [
-          Container(
-            padding:    const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color:  AppColors.primary.withAlpha(20),
-              shape:  BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.bar_chart_rounded,
-              size:  32,
-              color: AppColors.primary,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            AppLocalizations.of(context).bizStatsTitle,
-            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            AppLocalizations.of(context).bizStatsGateDesc,
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const PlansScreen()),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor:  AppColors.primary,
-              foregroundColor:  Colors.white,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              minimumSize: const Size(double.infinity, 44),
-            ),
-            child: Text(AppLocalizations.of(context).bizViewPlans),
           ),
         ],
       ),
@@ -425,18 +363,21 @@ class _PlanUsageBar extends StatelessWidget {
           const SizedBox(width: 6),
           _UsagePill(current: promoCount, max: maxPromos, label: AppLocalizations.of(context).bizUsagePromos),
           const Spacer(),
-          TextButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const PlansScreen()),
+          // En iOS no se muestra el CTA de mejorar plan (regla 3.1.1 de Apple).
+          // El dueño contrata/mejora su plan desde la web.
+          if (!Platform.isIOS)
+            TextButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const PlansScreen()),
+              ),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                minimumSize:   Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                foregroundColor: AppColors.secondary,
+              ),
+              child: Text(AppLocalizations.of(context).bizUpgrade, style: const TextStyle(fontSize: 12)),
             ),
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              minimumSize:   Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              foregroundColor: AppColors.secondary,
-            ),
-            child: Text(AppLocalizations.of(context).bizUpgrade, style: const TextStyle(fontSize: 12)),
-          ),
         ],
       ),
     );
@@ -1063,7 +1004,8 @@ class _PromosSection extends StatelessWidget {
             )),
 
           // ── Comprar espacio cuando se llegó al límite de promos ──────────
-          if (maxPromos != null && totalUsed >= maxPromos!) ...[
+          // En iOS no se muestra (regla 3.1.1 de Apple: la compra va por la web).
+          if (!Platform.isIOS && maxPromos != null && totalUsed >= maxPromos!) ...[
             const SizedBox(height: 14),
             Container(
               padding: const EdgeInsets.all(12),

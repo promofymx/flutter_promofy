@@ -30,6 +30,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     if (name != null && name.trim().isNotEmpty) {
       _nameController.text = name.trim();
     }
+    _prefillFromProfile();
+  }
+
+  /// Respaldo: si la metadata no traía nombre (p. ej. Apple lo guardó en el
+  /// perfil), lo tomamos de la tabla profiles.
+  Future<void> _prefillFromProfile() async {
+    if (_nameController.text.trim().isNotEmpty) return;
+    final uid = supabase.auth.currentUser?.id;
+    if (uid == null) return;
+    try {
+      final row = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', uid)
+          .maybeSingle();
+      final n = row?['full_name'] as String?;
+      if (n != null && n.trim().isNotEmpty && mounted) {
+        setState(() => _nameController.text = n.trim());
+      }
+    } catch (_) {/* no crítico */}
   }
 
   @override

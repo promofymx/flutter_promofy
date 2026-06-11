@@ -73,14 +73,21 @@ class AuthRepository {
     );
 
     // Apple solo envía el nombre la PRIMERA vez. Si vino, lo guardamos en el
-    // perfil para que el onboarding lo tenga.
+    // perfil (upsert: persiste aunque la fila aún no exista por timing del
+    // trigger) y en la metadata del usuario, para que quede precargado y el
+    // usuario no tenga que volver a escribirlo (Apple guideline 4).
     final given  = credential.givenName ?? '';
     final family = credential.familyName ?? '';
     final full   = '$given $family'.trim();
     final uid    = supabase.auth.currentUser?.id;
     if (full.isNotEmpty && uid != null) {
       try {
-        await supabase.from('profiles').update({'full_name': full}).eq('id', uid);
+        await supabase.from('profiles').upsert({'id': uid, 'full_name': full});
+      } catch (_) {/* no crítico */}
+      try {
+        await supabase.auth.updateUser(
+          UserAttributes(data: {'full_name': full}),
+        );
       } catch (_) {/* no crítico */}
     }
   }

@@ -56,6 +56,15 @@ class AppRouter {
         if (authState is AuthUnauthenticated) {
           return location == '/login' ? null : '/login';
         }
+        if (authState is AuthGuest) {
+          // El invitado navega libremente por Inicio, Lugares, detalles y Perfil
+          // (este muestra el CTA de iniciar sesión). Puede ir a /login para entrar.
+          const blocked = [
+            '/splash', '/onboarding', '/location-permission',
+            '/business', '/stamps', '/superadmin',
+          ];
+          return blocked.contains(location) ? '/home' : null;
+        }
         if (authState is AuthNeedsOnboarding) {
           return location == '/onboarding' ? null : '/onboarding';
         }

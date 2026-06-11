@@ -94,8 +94,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is! AuthAuthenticated) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+          // Invitado (o aún cargando): mostramos CTA de iniciar sesión.
+          return Scaffold(
+            backgroundColor: AppColors.background,
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              title: Text(AppLocalizations.of(context).profileTitle,
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
+            ),
+            body: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.account_circle_outlined,
+                        size: 72, color: AppColors.primary),
+                    const SizedBox(height: 16),
+                    Text(
+                      AppLocalizations.of(context).loginSubtitle,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey[600], fontSize: 15),
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () => context.go('/login'),
+                        child: Text(
+                            AppLocalizations.of(context).loginSignInButton),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           );
         }
 

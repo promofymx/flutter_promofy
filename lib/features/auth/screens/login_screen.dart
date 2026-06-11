@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
@@ -344,7 +345,28 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 32),
+
+                  const SizedBox(height: 8),
+
+                  // Explorar sin cuenta (Apple 5.1.1: acceso libre a lo no-cuenta)
+                  TextButton(
+                    onPressed: isLoading
+                        ? null
+                        : () {
+                            context.read<AuthBloc>().add(AuthContinueAsGuest());
+                            context.go('/home');
+                          },
+                    child: Text(
+                      AppLocalizations.of(context).loginGuestButton,
+                      style: const TextStyle(
+                        color: AppColors.textDark,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
                 ],
               ),
             ),

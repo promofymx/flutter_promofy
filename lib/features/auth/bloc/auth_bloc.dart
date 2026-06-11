@@ -22,6 +22,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthLocationPermissionHandled>(_onLocationPermissionHandled);
     on<AuthSignOutRequested>(_onSignOut);
     on<AuthProfileRefreshRequested>(_onProfileRefresh);
+    on<AuthContinueAsGuest>((event, emit) => emit(const AuthGuest()));
 
     _authSubscription =
         _authRepository.authStateChanges.listen((authState) {

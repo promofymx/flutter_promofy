@@ -30,6 +30,7 @@
   "loginHaveAccount": "¿Ya tienes cuenta? ",
   "loginSignUpLink": "Regístrate",
   "loginSignInLink": "Inicia sesión",
+  "loginGuestButton": "Explorar sin cuenta",
   "loginResetInvalidEmail": "Ingresa un correo válido.",
   "loginResetTitle": "Recuperar contraseña",
   "loginResetDone": "Listo",
@@ -1161,7 +1162,7 @@
   "paymentResultSubscriptionSubtitle": "Tu plan Promofy ya está activo.\nDisfruta todas las funciones de tu negocio.",
   "locationPermTitle": "¡Las promos te esperan\ncerca de ti!",
   "locationPermSubtitle": "Comparte tu ubicación para ver\nlas mejores promociones ordenadas\npor distancia al instante.",
-  "locationPermAllowButton": "Permitir ubicación",
+  "locationPermAllowButton": "Continuar",
   "locationPermSkipButton": "Ahora no",
   "splashScrTagline": "Descubre promociones cerca de ti",
   "@homeEmptySearch": {

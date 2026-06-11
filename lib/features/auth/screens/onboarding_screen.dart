@@ -5,6 +5,7 @@ import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../main.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -18,6 +19,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final _nameController = TextEditingController();
   DateTime? _birthDate;
   String? _gender;
+
+  @override
+  void initState() {
+    super.initState();
+    // Prefill del nombre cuando el proveedor (Apple/Google) ya lo dio, para no
+    // pedirlo de nuevo (Apple guideline 4 — Sign in with Apple).
+    final meta = supabase.auth.currentUser?.userMetadata;
+    final name = (meta?['full_name'] ?? meta?['name']) as String?;
+    if (name != null && name.trim().isNotEmpty) {
+      _nameController.text = name.trim();
+    }
+  }
 
   @override
   void dispose() {
@@ -49,36 +62,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _submit(BuildContext context) {
-    if (!_formKey.currentState!.validate()) return;
-    if (_birthDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(AppLocalizations.of(context).onboardingSelectBirthDate)),
-      );
-      return;
+    // Nombre, fecha y género son OPCIONALES (Apple 5.1.1 / 4.0).
+    // Si SÍ eligió fecha, validamos mayoría de edad (el picker ya limita a +18).
+    if (_birthDate != null) {
+      final today  = DateTime.now();
+      final minAge = DateTime(today.year - 18, today.month, today.day);
+      if (_birthDate!.isAfter(minAge)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context).onboardingMustBeAdultToUse),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
     }
-    // Verificación de mayoría de edad (segunda barrera, por si acaso)
-    final today  = DateTime.now();
-    final minAge = DateTime(today.year - 18, today.month, today.day);
-    if (_birthDate!.isAfter(minAge)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context).onboardingMustBeAdultToUse),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-    if (_gender == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).onboardingSelectGender)),
-      );
-      return;
-    }
+    final name = _nameController.text.trim();
     context.read<AuthBloc>().add(AuthOnboardingCompleted(
-          fullName: _nameController.text.trim(),
-          birthDate: _birthDate!,
-          gender: _gender!,
+          fullName:  name.isEmpty ? null : name,
+          birthDate: _birthDate,
+          gender:    _gender,
         ));
   }
 
@@ -150,9 +153,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       hintText: AppLocalizations.of(context).onboardingNameHint,
                       prefixIcon: const Icon(Icons.person_outline),
                     ),
-                    validator: (value) => (value == null || value.trim().isEmpty)
-                        ? AppLocalizations.of(context).onboardingNameRequired
-                        : null,
                   ),
 
                   const SizedBox(height: 28),

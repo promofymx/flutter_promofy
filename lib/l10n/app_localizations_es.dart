@@ -102,6 +102,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get loginSignInLink => 'Inicia sesión';
 
   @override
+  String get loginGuestButton => 'Explorar sin cuenta';
+
+  @override
   String get loginResetInvalidEmail => 'Ingresa un correo válido.';
 
   @override
@@ -3784,7 +3787,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get locationPermSubtitle => 'Comparte tu ubicación para ver\nlas mejores promociones ordenadas\npor distancia al instante.';
 
   @override
-  String get locationPermAllowButton => 'Permitir ubicación';
+  String get locationPermAllowButton => 'Continuar';
 
   @override
   String get locationPermSkipButton => 'Ahora no';

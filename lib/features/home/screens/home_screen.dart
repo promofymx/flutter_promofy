@@ -221,13 +221,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   );
                                             }
                                           },
-                                          onFavoriteToggled: () =>
-                                              context
-                                                  .read<HomeBloc>()
-                                                  .add(
-                                                    HomePromoFavoriteToggled(
-                                                        promo: promo),
-                                                  ),
+                                          onFavoriteToggled: () {
+                                            // Favorito es función de cuenta:
+                                            // el invitado va a iniciar sesión.
+                                            if (context.read<AuthBloc>().state
+                                                is! AuthAuthenticated) {
+                                              context.push('/login');
+                                              return;
+                                            }
+                                            context.read<HomeBloc>().add(
+                                                  HomePromoFavoriteToggled(
+                                                      promo: promo),
+                                                );
+                                          },
                                         );
                                       },
                                       childCount: items.length,

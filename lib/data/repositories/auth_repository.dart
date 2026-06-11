@@ -188,18 +188,24 @@ class AuthRepository {
     return ProfileModel.fromJson(response);
   }
 
+  /// Guarda el perfil tras el onboarding. Nombre, fecha y género son OPCIONALES
+  /// (Apple 5.1.1 / 4.0). Siempre marca onboarding_completed = true para que el
+  /// usuario no quede atrapado aunque deje campos vacíos.
   Future<void> saveProfile({
     required String userId,
-    required String fullName,
-    required DateTime birthDate,
-    required String gender,
+    String? fullName,
+    DateTime? birthDate,
+    String? gender,
   }) async {
     await supabase.from('profiles').upsert({
       'id': userId,
-      'full_name': fullName,
-      'birth_date':
-          '${birthDate.year}-${birthDate.month.toString().padLeft(2, '0')}-${birthDate.day.toString().padLeft(2, '0')}',
-      'gender': gender,
+      if (fullName != null && fullName.trim().isNotEmpty)
+        'full_name': fullName.trim(),
+      if (birthDate != null)
+        'birth_date':
+            '${birthDate.year}-${birthDate.month.toString().padLeft(2, '0')}-${birthDate.day.toString().padLeft(2, '0')}',
+      if (gender != null) 'gender': gender,
+      'onboarding_completed': true,
       'updated_at': DateTime.now().toIso8601String(),
     });
   }

@@ -47,17 +47,21 @@ class AuthEmailSignUpRequested extends AuthEvent {
 }
 
 class AuthOnboardingCompleted extends AuthEvent {
-  final String fullName;
-  final DateTime birthDate;
-  final String gender;
+  // Todos opcionales (Apple 5.1.1): el usuario puede dejarlos vacíos.
+  final String? fullName;
+  final DateTime? birthDate;
+  final String? gender;
   const AuthOnboardingCompleted({
-    required this.fullName,
-    required this.birthDate,
-    required this.gender,
+    this.fullName,
+    this.birthDate,
+    this.gender,
   });
   @override
   List<Object?> get props => [fullName, birthDate, gender];
 }
+
+/// El usuario decide explorar sin cuenta (modo invitado).
+class AuthContinueAsGuest extends AuthEvent {}
 
 // Usuario tocó "Permitir" o "Ahora no" en la pantalla de ubicación
 class AuthLocationPermissionHandled extends AuthEvent {}

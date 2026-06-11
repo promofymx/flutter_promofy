@@ -283,6 +283,12 @@ abstract class AppLocalizations {
   /// **'Inicia sesión'**
   String get loginSignInLink;
 
+  /// No description provided for @loginGuestButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Explorar sin cuenta'**
+  String get loginGuestButton;
+
   /// No description provided for @loginResetInvalidEmail.
   ///
   /// In es, this message translates to:
@@ -7066,7 +7072,7 @@ abstract class AppLocalizations {
   /// No description provided for @locationPermAllowButton.
   ///
   /// In es, this message translates to:
-  /// **'Permitir ubicación'**
+  /// **'Continuar'**
   String get locationPermAllowButton;
 
   /// No description provided for @locationPermSkipButton.

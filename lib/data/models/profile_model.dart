@@ -34,12 +34,16 @@ class ProfileModel extends Equatable {
   final String? state;
   final String? postalCode;
 
+  /// El usuario ya pasó por el onboarding (aunque haya dejado campos vacíos).
+  final bool onboardingCompleted;
+
   const ProfileModel({
     required this.id,
     this.fullName,
     this.birthDate,
     this.gender,
     this.cityId,
+    this.onboardingCompleted = false,
     this.role            = 'user',
     this.phone,
     this.phoneVerified   = false,
@@ -58,11 +62,11 @@ class ProfileModel extends Equatable {
     this.postalCode,
   });
 
-  // El onboarding está completo si tiene los 3 campos obligatorios
+  // El onboarding se considera completo si el usuario ya lo pasó (bandera) o,
+  // por compatibilidad con cuentas previas, si ya tiene nombre capturado.
+  // La fecha de nacimiento y el género ahora son OPCIONALES (Apple 5.1.1).
   bool get isOnboardingComplete =>
-      fullName != null && fullName!.isNotEmpty &&
-      birthDate != null &&
-      gender != null;
+      onboardingCompleted || (fullName != null && fullName!.isNotEmpty);
 
   bool get isBusinessOwner => role == 'business_owner' || role == 'admin';
   bool get isAdmin          => role == 'admin';
@@ -109,6 +113,7 @@ class ProfileModel extends Equatable {
       municipality: json['municipality'] as String?,
       state:        json['state']        as String?,
       postalCode:   json['postal_code']  as String?,
+      onboardingCompleted: (json['onboarding_completed'] as bool?) ?? false,
     );
   }
 

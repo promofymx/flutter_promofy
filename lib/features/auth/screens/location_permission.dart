@@ -81,10 +81,6 @@ class _LocationPermissionScreenState
     }
   }
 
-  void _skip() {
-    context.read<AuthBloc>().add(AuthLocationPermissionHandled());
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -174,20 +170,6 @@ class _LocationPermissionScreenState
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                // Botón secundario
-                TextButton(
-                  onPressed: _skip,
-                  child: Text(
-                    AppLocalizations.of(context).locationPermSkipButton,
-                    style: const TextStyle(
-                      color: Colors.white60,
-                      fontSize: 15,
-                    ),
                   ),
                 ),
 

@@ -145,8 +145,10 @@ class _MainScaffoldState extends State<MainScaffold>
           final currAdmin = curr is AuthAuthenticated && curr.profile.isSuperadmin;
           final prevStaff = prev is AuthAuthenticated && prev.profile.isStaff;
           final currStaff = curr is AuthAuthenticated && curr.profile.isStaff;
+          final prevGuest = prev is AuthGuest;
+          final currGuest = curr is AuthGuest;
           return prevOwner != currOwner || prevAdmin != currAdmin ||
-              prevStaff != currStaff;
+              prevStaff != currStaff || prevGuest != currGuest;
         },
         builder: (context, authState) {
           final isBusinessOwner =
@@ -159,6 +161,8 @@ class _MainScaffoldState extends State<MainScaffold>
               authState is AuthAuthenticated && authState.profile.isSuperadmin;
           final isStaff =
               authState is AuthAuthenticated && authState.profile.isStaff;
+          // Invitado: solo Inicio, Lugares y Perfil (este pide iniciar sesión).
+          final isGuest = authState is AuthGuest;
 
           final navDefs = <_NavDef>[
             const _NavDef(
@@ -186,12 +190,13 @@ class _MainScaffoldState extends State<MainScaffold>
                 icon:         Icons.store_outlined,
                 selectedIcon: Icons.store,
               ),
-            const _NavDef(
-              branchIndex:  4,
-              label:        'Visitas',
-              icon:         Icons.loyalty_outlined,
-              selectedIcon: Icons.loyalty,
-            ),
+            if (!isGuest)
+              const _NavDef(
+                branchIndex:  4,
+                label:        'Visitas',
+                icon:         Icons.loyalty_outlined,
+                selectedIcon: Icons.loyalty,
+              ),
             if (isSuperadmin)
               const _NavDef(
                 branchIndex:  5,

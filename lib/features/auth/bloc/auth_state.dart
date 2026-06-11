@@ -42,6 +42,12 @@ class AuthUnauthenticated extends AuthState {
   const AuthUnauthenticated();
 }
 
+/// Modo invitado: el usuario explora sin cuenta. Sin perfil; las funciones de
+/// cuenta (favoritos, lealtad, negocio) piden iniciar sesión al tocarlas.
+class AuthGuest extends AuthState {
+  const AuthGuest();
+}
+
 class AuthError extends AuthState {
   final String message;
   const AuthError({required this.message});

@@ -54,6 +54,11 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/promofy_notification" />
+        <!-- Canal por defecto de FCM: importancia ALTA (creado en MainActivity)
+             para que las notificaciones salgan como banner con sonido. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="promofy_high" />
 
         <!-- Clave para google_maps_flutter y google_places_flutter -->
         <meta-data

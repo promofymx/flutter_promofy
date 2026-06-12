@@ -14,6 +14,9 @@ class NotificationService {
 
   final _messaging = FirebaseMessaging.instance;
 
+  /// Evita registrar el listener de onTokenRefresh más de una vez.
+  bool _refreshListenerSet = false;
+
   GoRouter? _router;
   void setRouter(GoRouter router) => _router = router;
 
@@ -57,22 +60,38 @@ class NotificationService {
   // ── Guardar token en Supabase ─────────────────────────────────────────────
 
   Future<void> saveToken(String userId) async {
+    final platform = kIsWeb
+        ? 'web'
+        : Platform.isIOS
+            ? 'ios'
+            : 'android';
+
+    // Registrar SIEMPRE el listener ANTES de cualquier espera. En iOS el token
+    // FCM puede tardar >8s en estar listo (depende del token de APNs); si solo
+    // confiáramos en el getToken() inmediato, al rendirse por timeout el token
+    // se perdería para siempre. Con el listener registrado de antemano, en
+    // cuanto el token llegue (aunque sea tarde) se guarda igual.
+    if (!_refreshListenerSet) {
+      _refreshListenerSet = true;
+      _messaging.onTokenRefresh.listen((newToken) {
+        _upsertToken(userId, newToken, platform);
+      });
+    }
+
     try {
       // En iOS, getToken() requiere que el token de APNs ya esté disponible.
-      // Al iniciar sesión suele NO estarlo todavía → getToken() devuelve null y
-      // el dispositivo nunca se registra (no llegan push). Esperamos a que APNs
-      // esté listo (con reintentos) antes de pedir el token FCM.
+      // Esperamos hasta ~20s (antes eran 8 y se rendía demasiado pronto).
       if (!kIsWeb && Platform.isIOS) {
         var apns  = await _messaging.getAPNSToken();
         var tries = 0;
-        while (apns == null && tries < 8) {
+        while (apns == null && tries < 20) {
           await Future<void>.delayed(const Duration(seconds: 1));
           apns = await _messaging.getAPNSToken();
           tries++;
         }
         if (apns == null) {
-          debugPrint('⚠️ APNs token no disponible; no se registró push en iOS');
-          return;
+          debugPrint('⚠️ APNs aún no listo tras 20s; se guardará vía onTokenRefresh cuando llegue.');
+          return; // el listener de arriba lo capturará
         }
       }
 
@@ -81,14 +100,15 @@ class NotificationService {
               vapidKey: 'YOUR_VAPID_KEY', // reemplazar en Phase web
             )
           : await _messaging.getToken();
-      if (token == null) return;
+      if (token != null) await _upsertToken(userId, token, platform);
+    } catch (e) {
+      debugPrint('⚠️ NotificationService.saveToken error: $e');
+    }
+  }
 
-      final platform = kIsWeb
-          ? 'web'
-          : Platform.isIOS
-              ? 'ios'
-              : 'android';
-
+  /// Guarda/actualiza el token del dispositivo en Supabase (idempotente).
+  Future<void> _upsertToken(String userId, String token, String platform) async {
+    try {
       await supabase.from('device_tokens').upsert(
         {
           'user_id':    userId,
@@ -98,21 +118,8 @@ class NotificationService {
         },
         onConflict: 'token',
       );
-
-      // Refrescar si el token rota
-      _messaging.onTokenRefresh.listen((newToken) async {
-        await supabase.from('device_tokens').upsert(
-          {
-            'user_id':    userId,
-            'token':      newToken,
-            'platform':   platform,
-            'updated_at': DateTime.now().toIso8601String(),
-          },
-          onConflict: 'token',
-        );
-      });
     } catch (e) {
-      debugPrint('⚠️ NotificationService.saveToken error: $e');
+      debugPrint('⚠️ NotificationService._upsertToken error: $e');
     }
   }
 

@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:promofy/l10n/app_localizations.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/report_sheet.dart';
@@ -81,6 +82,17 @@ class _LoadedView extends StatelessWidget {
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
             actions: [
+              // Compartir establecimiento (link a su página pública)
+              IconButton(
+                icon: const Icon(Icons.ios_share, color: Colors.white),
+                tooltip: 'Compartir',
+                onPressed: () => Share.share(
+                  '¡Mira ${establishment.name} en Promofy! 📲 '
+                  'La app donde decides a dónde ir.\n'
+                  'https://promofy.fun/e/${establishment.id}',
+                  subject: establishment.name,
+                ),
+              ),
               PopupMenuButton<String>(
                 icon: const Icon(Icons.more_vert, color: Colors.white),
                 onSelected: (v) {
@@ -106,8 +118,28 @@ class _LoadedView extends StatelessWidget {
                 ],
               ),
             ],
-            flexibleSpace: FlexibleSpaceBar(
-              background: Stack(
+            flexibleSpace: LayoutBuilder(
+              builder: (context, constraints) {
+                // Al colapsar el header, fijamos el nombre arriba para no perder
+                // de vista qué establecimiento se está viendo.
+                final collapsed = constraints.biggest.height <=
+                    MediaQuery.of(context).padding.top + kToolbarHeight + 8;
+                return FlexibleSpaceBar(
+                  title: collapsed
+                      ? Text(
+                          establishment.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color:      Colors.white,
+                            fontSize:   16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        )
+                      : null,
+                  titlePadding: const EdgeInsetsDirectional.only(
+                      start: 54, end: 96, bottom: 16),
+                  background: Stack(
                 fit: StackFit.expand,
                 children: [
                   if (establishment.photoUrls.isNotEmpty)
@@ -248,7 +280,9 @@ class _LoadedView extends StatelessWidget {
                     ),
                   ),
                 ],
-              ),
+                  ),
+                );
+              },
             ),
           ),
 

@@ -38,6 +38,7 @@ import '../../home/screens/promo_detail_screen.dart';
 import '../../../data/repositories/loyalty_repository.dart';
 import '../../plans/screens/plans_screen.dart';
 import 'admin_metrics_screen.dart';
+import 'qr_poster_screen.dart';
 
 class BusinessTabScreen extends StatefulWidget {
   const BusinessTabScreen({super.key});
@@ -299,6 +300,24 @@ class _LoadedBody extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
+
+          // Cartel QR imprimible para pegar en el local (gancho a favoritos).
+          ElevatedButton.icon(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                  builder: (_) => QrPosterScreen(establishment: est)),
+            ),
+            icon:  const Icon(Icons.qr_code_2_rounded),
+            label: const Text('Descargar QR de mi negocio'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.secondary,
+              foregroundColor: Colors.white,
+              minimumSize:  const Size(double.infinity, 52),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+            ),
+          ),
+          const SizedBox(height: 12),
 
           OutlinedButton.icon(
             onPressed: () => onEditEstablishment(est),

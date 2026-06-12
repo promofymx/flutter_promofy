@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../data/repositories/ads_repository.dart';
 import 'ads_display_state.dart';
 
@@ -23,9 +24,18 @@ class AdsDisplayCubit extends Cubit<AdsDisplayState> {
     lastLng = lng;
     try {
       final ads = await _repo.getAdsForUser(lat: lat, lng: lng, limit: 10);
-      final splashAds   = ads.where((a) => a.format == 'splash').toList();
-      final bannerAds   = ads.where((a) => a.format == 'banner').toList();
-      final featuredAds = ads.where((a) => a.format == 'featured_list').toList();
+
+      // Rotación: cada apertura avanza un offset persistido para alternar a los
+      // anunciantes que pagan por el mismo espacio. Así no sale siempre el #1:
+      // al cerrar y reabrir la app aparece otro establecimiento.
+      final offset = await _nextRotationOffset();
+      final splashAds   = _rotate(
+          ads.where((a) => a.format == 'splash').toList(), offset);
+      final bannerAds   = _rotate(
+          ads.where((a) => a.format == 'banner').toList(), offset);
+      final featuredAds = _rotate(
+          ads.where((a) => a.format == 'featured_list').toList(), offset);
+
       emit(AdsDisplayState(
         splashAds:   splashAds,
         bannerAds:   bannerAds,
@@ -33,16 +43,40 @@ class AdsDisplayCubit extends Cubit<AdsDisplayState> {
         loaded:      true,
       ));
 
-      // Registrar una impresión por cada anuncio servido. El servidor
-      // deduplica por usuario/campaña/día, así que dispararlas en cada carga
-      // no genera sobrecobro pero garantiza que el conteo avance aunque el
-      // feed se mantenga vivo (keep-alive) y los widgets no se re-monten.
-      for (final ad in ads) {
-        trackImpression(ad.id);
+      // Impresión SOLO de los que realmente se muestran (antes se cobraban
+      // todos los traídos → sobrecobro a quien no se mostraba). Splash y banner
+      // muestran 1; el grid cicla por todos los featured.
+      final shown = <String>{};
+      if (splashAds.isNotEmpty) shown.add(splashAds.first.id);
+      if (bannerAds.isNotEmpty) shown.add(bannerAds.first.id);
+      for (final ad in featuredAds) {
+        shown.add(ad.id);
+      }
+      for (final id in shown) {
+        trackImpression(id);
       }
     } catch (_) {
       // Fallo silencioso — la app funciona sin anuncios.
       emit(const AdsDisplayState(loaded: true));
+    }
+  }
+
+  /// Rota la lista [offset] posiciones (round-robin) para alternar anunciantes.
+  List<T> _rotate<T>(List<T> list, int offset) {
+    if (list.length <= 1) return list;
+    final k = offset % list.length;
+    return [...list.sublist(k), ...list.sublist(0, k)];
+  }
+
+  /// Devuelve el offset actual de rotación y lo incrementa para la próxima vez.
+  Future<int> _nextRotationOffset() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final cur = prefs.getInt('ads_rotation_offset') ?? 0;
+      await prefs.setInt('ads_rotation_offset', cur + 1);
+      return cur;
+    } catch (_) {
+      return 0;
     }
   }
 

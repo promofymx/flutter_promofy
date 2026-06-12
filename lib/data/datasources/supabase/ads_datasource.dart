@@ -136,6 +136,28 @@ class AdsDatasource {
         .toList();
   }
 
+  /// Vistas (impresiones) y clics por campaña del establecimiento.
+  /// Cada fila de ad_impressions ya es alcance único diario, así que el conteo
+  /// = lo realmente facturado. Resiliente: si falla, devuelve mapa vacío.
+  Future<Map<String, ({int views, int clicks})>> getCampaignStats(
+      String establishmentId) async {
+    try {
+      final rows = await supabase.rpc('get_campaign_stats',
+          params: {'p_establishment_id': establishmentId});
+      final map = <String, ({int views, int clicks})>{};
+      for (final r in (rows as List)) {
+        final m = r as Map<String, dynamic>;
+        map[m['campaign_id'] as String] = (
+          views:  (m['views']  as num? ?? 0).toInt(),
+          clicks: (m['clicks'] as num? ?? 0).toInt(),
+        );
+      }
+      return map;
+    } catch (_) {
+      return {};
+    }
+  }
+
   Future<AdCampaignModel> createCampaign({
     required String establishmentId,
     required String createdBy,

@@ -43,6 +43,10 @@ class AdsRepository {
   Future<List<AdCampaignModel>> getCampaigns(String estId) =>
       _ds.getCampaigns(estId);
 
+  Future<Map<String, ({int views, int clicks})>> getCampaignStats(
+          String estId) =>
+      _ds.getCampaignStats(estId);
+
   Future<AdCampaignModel> createCampaign({
     required String establishmentId,
     required String createdBy,

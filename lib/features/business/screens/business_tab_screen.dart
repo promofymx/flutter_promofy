@@ -2786,6 +2786,42 @@ class _ActiveCampaignsList extends StatelessWidget {
                           style: const TextStyle(fontSize: 11, color: Colors.grey)),
                     ],
                   ),
+                  // ── Vistas (alcance único diario) + clics facturados ────────
+                  Builder(builder: (context) {
+                    final s      = state.campaignStats[c.id];
+                    final views  = s?.views  ?? 0;
+                    final clicks = s?.clicks ?? 0;
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.visibility_outlined,
+                              size: 15, color: Color(0xFF00838F)),
+                          const SizedBox(width: 4),
+                          Text('$views ${views == 1 ? "vista" : "vistas"}',
+                              style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFF00838F))),
+                          const SizedBox(width: 16),
+                          Icon(Icons.touch_app_outlined,
+                              size: 15, color: Colors.deepPurple.shade400),
+                          const SizedBox(width: 4),
+                          Text('$clicks ${clicks == 1 ? "clic" : "clics"}',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.deepPurple.shade400)),
+                          if (views > 0) ...[
+                            const Spacer(),
+                            Text('${((clicks / views) * 100).toStringAsFixed(0)}% CTR',
+                                style: TextStyle(
+                                    fontSize: 10, color: Colors.grey.shade500)),
+                          ],
+                        ],
+                      ),
+                    );
+                  }),
                   const SizedBox(height: 8),
                   Align(
                     alignment: Alignment.centerRight,

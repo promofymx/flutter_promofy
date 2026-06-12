@@ -29,6 +29,7 @@ class BusinessAdsCubit extends Cubit<BusinessAdsState> {
         _repo.getPricing(),
         _repo.getTotalUserCount(),
         _repo.getWalletCredits(),
+        _repo.getCampaignStats(_establishmentId),
       ]);
 
       emit(BusinessAdsLoaded(
@@ -38,6 +39,7 @@ class BusinessAdsCubit extends Cubit<BusinessAdsState> {
         pricing:        (results[3] as List).cast(),
         totalUserCount: results[4] as int,
         walletMxn:      (results[5] as num).toDouble(),
+        campaignStats:  results[6] as Map<String, ({int views, int clicks})>,
       ));
     } catch (e) {
       emit(BusinessAdsError(e.toString()));

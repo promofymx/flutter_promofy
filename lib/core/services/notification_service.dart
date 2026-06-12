@@ -168,42 +168,48 @@ class NotificationService {
       }
     }
 
-    // Deep link: cargar promo y navegar
-    final type              = message.data['type']               as String?;
-    final promoId           = message.data['promo_id']           as String?;
-    final establishmentId   = message.data['establishment_id']   as String?;
-    final establishmentName = message.data['establishment_name'] as String? ?? '';
+    // Deep link según el payload (lógica compartida con la campanita in-app).
+    await navigateFromData(message.data['type'] as String?, message.data);
+  }
 
+  /// Navega según el [type] y [data] de una notificación. Lo usan TANTO el tap
+  /// del push del sistema COMO el tap de un item de la campanita in-app, para
+  /// abrir la promo o el establecimiento correspondiente.
+  Future<void> navigateFromData(String? type, Map<String, dynamic> data) async {
     if (_router == null) return;
 
-    // Notificaciones de cumpleaños: ir al home con filtro de cumpleaños activo
+    // Cumpleaños → home con el filtro de cumpleaños activo.
     if (type == 'birthday') {
       pendingFilter = const HomeFilters(birthdayOnly: true);
       _router!.go('/home');
       return;
     }
 
-    if (promoId != null) {
+    final promoId           = data['promo_id']           as String?;
+    final establishmentId   = data['establishment_id']   as String?;
+    final establishmentName = data['establishment_name'] as String? ?? '';
+
+    if (promoId != null && promoId.isNotEmpty) {
       try {
-        final data = await supabase
+        final row = await supabase
             .from('promotions')
             .select('id, name, description, type, active_days, start_time, end_time, flash_starts_at, flash_ends_at, photo_url, is_adult_only, category_id, is_featured, establishment_id, created_at')
             .eq('id', promoId)
             .single();
 
         final promo = PromotionModel.fromTable(
-          Map<String, dynamic>.from(data as Map),
+          Map<String, dynamic>.from(row as Map),
           establishmentName: establishmentName,
         );
         _router!.push('/promo/$promoId', extra: promo);
       } catch (e) {
-        debugPrint('⚠️ NotificationService deep link error: $e');
-        // Fallback al restaurante
-        if (establishmentId != null) {
+        debugPrint('⚠️ navigateFromData error: $e');
+        // Fallback al establecimiento.
+        if (establishmentId != null && establishmentId.isNotEmpty) {
           _router!.push('/restaurant/$establishmentId', extra: establishmentName);
         }
       }
-    } else if (establishmentId != null) {
+    } else if (establishmentId != null && establishmentId.isNotEmpty) {
       _router!.push('/restaurant/$establishmentId', extra: establishmentName);
     }
   }

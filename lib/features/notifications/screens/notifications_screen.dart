@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/services/notification_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/user_notification_model.dart';
 import '../../../data/repositories/notifications_inbox_repository.dart';
@@ -74,10 +75,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               itemBuilder: (context, i) => _NotifTile(
                 notif: items[i],
                 onTap: () async {
-                  if (!items[i].isRead) {
-                    await _repo.markRead(items[i].id);
+                  final n = items[i];
+                  if (!n.isRead) {
+                    await _repo.markRead(n.id);
                     await _reload();
                   }
+                  // Abrir la promo o el establecimiento correspondiente.
+                  await NotificationService.instance
+                      .navigateFromData(n.type, n.data);
                 },
               ),
             );

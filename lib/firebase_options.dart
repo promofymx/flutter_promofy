@@ -66,11 +66,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDwLsq3ACPy3kcPPWIfaoPMyli6GkRD0Sk',
-    appId: '1:612781804475:ios:d567c8aa1f0b0edf12529e',
+    appId: '1:612781804475:ios:32967c2068629b6912529e',
     messagingSenderId: '612781804475',
     projectId: 'promofy-765c0',
     storageBucket: 'promofy-765c0.firebasestorage.app',
-    iosBundleId: 'com.promofy.app',
+    iosBundleId: 'mx.promofy.app',
   );
 
 }

@@ -39,6 +39,8 @@ class AdminPlatformMetrics extends Equatable {
   final double campaignSpend7d;
   final double campaignSpend30d;
   final double creditsSold30d;       // ingresos de recarga de créditos
+  final double creditUnused;         // saldo de publicidad sin gastar (todos los locales)
+  final double walletUnused;         // cartera de usuarios sin aplicar (referidos/promo)
 
   // ── Suscripciones ─────────────────────────────────────────────────────────
   final int    activeSubscriptions;
@@ -73,6 +75,8 @@ class AdminPlatformMetrics extends Equatable {
     required this.campaignSpend7d,
     required this.campaignSpend30d,
     required this.creditsSold30d,
+    required this.creditUnused,
+    required this.walletUnused,
     required this.activeSubscriptions,
     required this.newSubscriptions30d,
     required this.monthlyRevenue,
@@ -137,6 +141,8 @@ class AdminPlatformMetrics extends Equatable {
       campaignSpend7d:        d('spend_7d',         c),
       campaignSpend30d:       d('spend_30d',        c),
       creditsSold30d:         d('credits_sold_30d', c),
+      creditUnused:           d('credit_unused',    c),
+      walletUnused:           d('wallet_unused',    c),
       activeSubscriptions:    i('active',          s),
       newSubscriptions30d:    i('new_30d',         s),
       monthlyRevenue:         d('monthly_revenue', s),
@@ -153,6 +159,7 @@ class AdminPlatformMetrics extends Equatable {
     totalTicketRevenue: 0, ticketRevenue30d: 0, avgTicket: 0,
     activeCampaigns: 0, totalCampaigns: 0,
     campaignSpendToday: 0, campaignSpend7d: 0, campaignSpend30d: 0, creditsSold30d: 0,
+    creditUnused: 0, walletUnused: 0,
     activeSubscriptions: 0, newSubscriptions30d: 0, monthlyRevenue: 0,
   );
 

@@ -260,6 +260,30 @@ class _MetricsBody extends StatelessWidget {
             _PeriodItem(AppLocalizations.of(context).adminMetricsPeriod30d,   mxn.format(m.campaignSpend30d)),
           ],
         ),
+        const SizedBox(height: 10),
+
+        // ── Crédito SIN USO (dinero pendiente de consumir) ───────────────────
+        Row(children: [
+          Expanded(
+            child: _SimpleMetricCard(
+              label:  'Crédito sin usar',
+              value:  mxn.format(m.creditUnused),
+              sub:    'Publicidad sin gastar (todos los locales)',
+              icon:   Icons.account_balance_wallet_rounded,
+              color:  Colors.deepOrange.shade400,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: _SimpleMetricCard(
+              label:  'Cartera sin aplicar',
+              value:  mxn.format(m.walletUnused),
+              sub:    'Referidos/promo de usuarios',
+              icon:   Icons.savings_rounded,
+              color:  Colors.deepOrange.shade400,
+            ),
+          ),
+        ]),
         const SizedBox(height: 20),
 
         // ── Suscripciones ────────────────────────────────────────────────────

@@ -8,6 +8,7 @@ import 'package:promofy/l10n/app_localizations.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/establishment_badges_row.dart';
 import '../../../core/widgets/report_sheet.dart';
 import '../../../data/models/establishment_model.dart';
 import '../../../data/models/loyalty_program_model.dart';
@@ -284,6 +285,11 @@ class _LoadedView extends StatelessWidget {
                 );
               },
             ),
+          ),
+
+          // ── Insignias de la zona ─────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: EstablishmentBadgesRow(establishmentId: establishment.id),
           ),
 
           // ── Sección: info + contacto ──────────────────────────────────────
